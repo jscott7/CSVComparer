@@ -20,14 +20,14 @@ namespace CSVComparison
         public int HeaderRowIndex;
 
         /// <summary>
-        /// The index of the first non-data row at the end of the file. All rows after this will be ignored
-        /// </summary>
-        public int TrailerRowIndex;
-
-        /// <summary>
         /// The Tolerance to be used for numeric value columns
         /// </summary>
         public double ToleranceValue;  
+
+        /// <summary>
+        /// How tolerance value is applied, e.g. Absolute or Relative
+        /// </summary>
+        public ToleranceType ToleranceType;
         
         public ComparisonDefinition()
         {

@@ -64,8 +64,8 @@ namespace CSVComparisonTests
         [Test]
         public void TestDifferentValueRowsBeforeHeader()
         {
-            var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVExtraRows.csv");
-            var targetDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVValueBreakExtraRows.csv");
+            var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVExtraHeaderRows.csv");
+            var targetDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVValueBreakExtraHeaderRows.csv");
 
             var comparisonDefinition = new ComparisonDefinition() { Delimiter = ",", HeaderRowIndex = 2 };
             comparisonDefinition.KeyColumns.Add("COL1");

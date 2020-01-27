@@ -65,7 +65,7 @@ namespace CSVComparison
                         // This doesn't manage delimiter characters in comments, i.e. A,"B,Comment",C
                         string[] columns = line.Split(_comparisonDefinition.Delimiter);
 
-                        if (rowIndex == _comparisonDefinition.HeaderRowIndex)
+                        if (rowIndex++ == _comparisonDefinition.HeaderRowIndex)
                         {
                             keyIndexes.AddRange(GetKeyIndexes(columns));
                             dataRow = true;
@@ -83,15 +83,16 @@ namespace CSVComparison
                             {
                                 queue.Enqueue(new CsvRow() { Key = key, Columns = columns });
                             }
-                        }
 
-                        _firstRowLoadedEvent.Set();
+                            _firstRowLoadedEvent.Set();
+                        }
                     }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Problem loading {file} : {ex.Message}");
+                _firstRowLoadedEvent.Set();
             }
 
             Interlocked.Decrement(ref _runningLoaderThreads);
