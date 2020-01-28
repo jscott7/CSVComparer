@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Xml.Serialization;
 
 namespace CSVComparison
 {
@@ -12,6 +13,7 @@ namespace CSVComparison
         /// <summary>
         /// The names of the Columns used to uniquely identify a row
         /// </summary>
+        [XmlArrayItem("Column")]
         public List<string> KeyColumns;
 
         /// <summary>

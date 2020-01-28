@@ -6,9 +6,13 @@ using System.Threading.Tasks;
 
 namespace CSVComparison
 {
+    /// <summary>
+    /// Main class for comparing two CSV files
+    /// There are three threads. Two for loading and one for comparing
+    /// </summary>
     public class CSVComparer
     {
-        private ManualResetEvent _firstRowLoadedEvent = new ManualResetEvent(false);
+        private ManualResetEvent _readyToStartComparisonEvent = new ManualResetEvent(false);
         private readonly object _lockObj = new object();
         private readonly Queue<CsvRow> _referenceQueue = new Queue<CsvRow>();
         private readonly Queue<CsvRow> _targetQueue = new Queue<CsvRow>();
@@ -20,13 +24,9 @@ namespace CSVComparison
         private bool _headerCheck = true;
         private bool _earlyTerminate = false;
 
-        public CSVComparer(ComparisonDefinition comparisonDefinition)
+        public ComparisonResult CompareFiles(string referenceFile, string targetFile, ComparisonDefinition comparisonDefinition)
         {
             _comparisonDefinition = comparisonDefinition;
-        }
-
-        public ComparisonResult CompareFiles(string referenceFile, string targetFile)
-        {
             var referenceLoaderTask = Task.Run(() => LoadFile(referenceFile, _referenceQueue));
             var targetLoaderTask = Task.Run(() => LoadFile(targetFile, _targetQueue));
             var compareTask = Task.Run(() => Compare());
@@ -84,7 +84,7 @@ namespace CSVComparison
                                 queue.Enqueue(new CsvRow() { Key = key, Columns = columns });
                             }
 
-                            _firstRowLoadedEvent.Set();
+                            _readyToStartComparisonEvent.Set();
                         }
                     }
                 }
@@ -92,7 +92,7 @@ namespace CSVComparison
             catch (Exception ex)
             {
                 Console.WriteLine($"Problem loading {file} : {ex.Message}");
-                _firstRowLoadedEvent.Set();
+                _readyToStartComparisonEvent.Set();
             }
 
             Interlocked.Decrement(ref _runningLoaderThreads);
@@ -100,7 +100,8 @@ namespace CSVComparison
 
         void Compare()
         {
-            _firstRowLoadedEvent.WaitOne();
+            // We want to wait until at least one loader has started producing data
+            _readyToStartComparisonEvent.WaitOne();
             bool complete = false;
 
             while (!complete)
@@ -128,6 +129,7 @@ namespace CSVComparison
                     complete = true;
                     continue;
                 }
+
                 var lhs = referenceRow != null ? referenceRow.Key : "null Ref";
                 var rhs = targetRow != null ? targetRow.Key : "null Target";
                 Console.WriteLine($"{lhs} : {rhs}");
@@ -172,7 +174,7 @@ namespace CSVComparison
 
                 if (_earlyTerminate)
                 {
-                    return;
+                    complete = true;
                 }
             }     
         }

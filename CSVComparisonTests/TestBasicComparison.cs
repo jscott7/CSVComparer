@@ -18,9 +18,9 @@ namespace CSVComparisonTests
             var testDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSV.csv");
             var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
             comparisonDefinition.KeyColumns.Add("COL1");
-            var csvComparer = new CSVComparer(comparisonDefinition);
-            
-            var comparisonResult = csvComparer.CompareFiles(testDataFile, testDataFile);
+   
+            var csvComparer = new CSVComparer();
+            var comparisonResult = csvComparer.CompareFiles(testDataFile, testDataFile, comparisonDefinition);
 
             Assert.AreEqual(0, comparisonResult.BreakDetails.Count);
             Assert.AreEqual(testDataFile, comparisonResult.ReferenceSource);
@@ -35,9 +35,9 @@ namespace CSVComparisonTests
 
             var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
             comparisonDefinition.KeyColumns.Add("COL1");
-            var csvComparer = new CSVComparer(comparisonDefinition);
-
-            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, targetDataFile);
+    
+            var csvComparer = new CSVComparer();
+            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, targetDataFile, comparisonDefinition);
 
             Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
             Assert.AreEqual(BreakType.ValueMismatch, comparisonResult.BreakDetails[0].BreakType);
@@ -52,9 +52,9 @@ namespace CSVComparisonTests
 
             var comparisonDefinition = new ComparisonDefinition() { Delimiter = "|" };
             comparisonDefinition.KeyColumns.Add("COL1");
-            var csvComparer = new CSVComparer(comparisonDefinition);
 
-            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, targetDataFile);
+            var csvComparer = new CSVComparer();
+            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, targetDataFile, comparisonDefinition);
 
             Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
             Assert.AreEqual(BreakType.ValueMismatch, comparisonResult.BreakDetails[0].BreakType);
@@ -69,9 +69,9 @@ namespace CSVComparisonTests
 
             var comparisonDefinition = new ComparisonDefinition() { Delimiter = ",", HeaderRowIndex = 2 };
             comparisonDefinition.KeyColumns.Add("COL1");
-            var csvComparer = new CSVComparer(comparisonDefinition);
 
-            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, targetDataFile);
+            var csvComparer = new CSVComparer();
+            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, targetDataFile, comparisonDefinition);
 
             Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
             Assert.AreEqual(BreakType.ValueMismatch, comparisonResult.BreakDetails[0].BreakType);
@@ -86,9 +86,9 @@ namespace CSVComparisonTests
 
             var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
             comparisonDefinition.KeyColumns.Add("COL1");
-            var csvComparer = new CSVComparer(comparisonDefinition);
-
-            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, targetDataFile);
+ 
+            var csvComparer = new CSVComparer();
+            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, targetDataFile, comparisonDefinition);
 
             Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
             Assert.AreEqual(BreakType.RowInTargetNotInReference, comparisonResult.BreakDetails[0].BreakType);
@@ -103,9 +103,9 @@ namespace CSVComparisonTests
 
             var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
             comparisonDefinition.KeyColumns.Add("COL1");
-            var csvComparer = new CSVComparer(comparisonDefinition);
-
-            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, targetDataFile);
+  
+            var csvComparer = new CSVComparer();
+            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, targetDataFile, comparisonDefinition);
 
             Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
             Assert.AreEqual(BreakType.RowInReferenceNotInTarget, comparisonResult.BreakDetails[0].BreakType);
@@ -120,9 +120,9 @@ namespace CSVComparisonTests
 
             var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
             comparisonDefinition.KeyColumns.Add("COL1");
-            var csvComparer = new CSVComparer(comparisonDefinition);
-
-            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, targetDataFile);
+    
+            var csvComparer = new CSVComparer();
+            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, targetDataFile, comparisonDefinition);
 
             Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
             Assert.AreEqual(BreakType.ColumnsDifferent, comparisonResult.BreakDetails[0].BreakType);
