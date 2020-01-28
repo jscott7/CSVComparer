@@ -7,11 +7,6 @@ namespace CSVComparisonTests
 {
     public class Tests
     {
-        [SetUp]
-        public void Setup()
-        {
-        }
-
         [Test]
         public void TestIdenticalFile()
         {
