@@ -91,7 +91,14 @@ namespace CSVComparison
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Problem loading {file} : {ex.Message}");
+                var message = $"Problem loading {file} : {ex.Message}";
+                Console.WriteLine(message);
+                lock (_lockObj)
+                {
+                    _breaks.Add(new BreakDetail() { BreakType = BreakType.ProcessFailure, BreakDescription = message });
+                    _earlyTerminate = true;
+                }
+
                 _readyToStartComparisonEvent.Set();
             }
 
@@ -106,6 +113,12 @@ namespace CSVComparison
 
             while (!complete)
             {
+                if (_earlyTerminate)
+                {
+                    complete = true;
+                    continue;
+                }
+
                 CsvRow referenceRow = null;
                 CsvRow targetRow = null;
                 lock (_lockObj)
@@ -133,6 +146,7 @@ namespace CSVComparison
                 var lhs = referenceRow != null ? referenceRow.Key : "null Ref";
                 var rhs = targetRow != null ? targetRow.Key : "null Target";
                 Console.WriteLine($"{lhs} : {rhs}");
+                bool success = false;
 
                 if (referenceRow != null && targetRow != null)
                 {
@@ -141,18 +155,18 @@ namespace CSVComparison
                         lhsColumns = referenceRow.Columns;
                         rhsColumns = targetRow.Columns;
                         key = referenceRow.Key;
-                        _earlyTerminate = CompareRow(key, lhsColumns, rhsColumns);
+                        success = CompareRow(key, lhsColumns, rhsColumns);
                     }
                     else
                     {
                         if (CheckReferenceOrphan(targetRow, ref key, ref lhsColumns, ref rhsColumns))
                         {
-                            _earlyTerminate = CompareRow(key, lhsColumns, rhsColumns);
+                            success = CompareRow(key, lhsColumns, rhsColumns);
                         }
 
                         if (CheckTargetOrphan(referenceRow, ref key, ref lhsColumns, ref rhsColumns))
                         {
-                            _earlyTerminate = CompareRow(key, lhsColumns, rhsColumns);
+                            success = CompareRow(key, lhsColumns, rhsColumns);
                         }
                     }
                 }
@@ -160,7 +174,7 @@ namespace CSVComparison
                 {
                     if (CheckReferenceOrphan(targetRow, ref key, ref lhsColumns, ref rhsColumns))
                     {
-                        _earlyTerminate = CompareRow(key, lhsColumns, rhsColumns);
+                        success = CompareRow(key, lhsColumns, rhsColumns);
                     }
 
                 }
@@ -168,17 +182,19 @@ namespace CSVComparison
                 {
                     if (CheckTargetOrphan(referenceRow, ref key, ref lhsColumns, ref rhsColumns))
                     {
-                        _earlyTerminate = CompareRow(key, lhsColumns, rhsColumns);
+                        success = CompareRow(key, lhsColumns, rhsColumns);
                     }
                 }  
-
-                if (_earlyTerminate)
-                {
-                    complete = true;
-                }
             }     
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="lhsColumns"></param>
+        /// <param name="rhsColumns"></param>
+        /// <returns>True if row matches</returns>
         bool CompareRow(string key, string[] lhsColumns, string[] rhsColumns)
         {
             Console.WriteLine($"Run compare {key}");
@@ -189,11 +205,14 @@ namespace CSVComparison
                 // Early return for mismatching header
                 if (!success)
                 {
-                    return true;
+                    lock (_lockObj)
+                    {
+                        _earlyTerminate = true;
+                    }                
                 }
             }
 
-            return false;
+            return success;
         }
 
         private bool CheckReferenceOrphan(CsvRow targetRow, ref string key, ref string[] lhsColumns, ref string[] rhsColumns)

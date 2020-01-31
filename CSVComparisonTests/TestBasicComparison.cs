@@ -5,7 +5,7 @@ using System.IO;
 
 namespace CSVComparisonTests
 {
-    public class Tests
+    public class TestBasicComparison
     {
         [Test]
         public void TestIdenticalFile()
@@ -124,7 +124,22 @@ namespace CSVComparisonTests
             Assert.AreEqual("Reference has 3 columns, Target has 4 columns", comparisonResult.BreakDetails[0].BreakDescription);
         }
 
+        [Test]
+        public void TestMissingFile()
+        {
+            var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSV.csv");
+            var targetDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "MissingFile.csv");
 
+            var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
+            comparisonDefinition.KeyColumns.Add("COL1");
+
+            var csvComparer = new CSVComparer();
+            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, targetDataFile, comparisonDefinition);
+
+            Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
+            Assert.IsTrue(comparisonResult.BreakDetails[0].BreakDescription.StartsWith("Problem loading"));
+            Assert.AreEqual(BreakType.ProcessFailure, comparisonResult.BreakDetails[0].BreakType);
+        }
     }
 
 }

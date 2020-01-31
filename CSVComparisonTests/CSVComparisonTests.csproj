@@ -20,6 +20,9 @@
     <None Update="TestData\ComplexReferenceFile.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\ComplexTargetFileDifferentColumns.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\ComplexTargetFile.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

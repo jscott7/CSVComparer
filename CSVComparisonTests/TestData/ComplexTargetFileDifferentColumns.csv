@@ -1,0 +1,6 @@
+ABC,DEF,AnotherColumn,AValueColumn,NewColumn
+A,1,TestData,1.0,a
+A,2,x,1.0,a
+B,1,z,1.1,a
+B,2,x,1.0,a
+C,1,NewData,1.0,a

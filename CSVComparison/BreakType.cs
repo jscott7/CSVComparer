@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CSVComparison
+﻿namespace CSVComparison
 {
     public enum BreakType
     {
@@ -10,6 +6,7 @@ namespace CSVComparison
         ColumnsDifferent,
         RowInReferenceNotInTarget,
         RowInTargetNotInReference,
-        ValueMismatch
+        ValueMismatch,
+        ProcessFailure
     }
 }
