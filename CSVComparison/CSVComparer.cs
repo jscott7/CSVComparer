@@ -145,28 +145,30 @@ namespace CSVComparison
 
                 var lhs = referenceRow != null ? referenceRow.Key : "null Ref";
                 var rhs = targetRow != null ? targetRow.Key : "null Target";
-                Console.WriteLine($"{lhs} : {rhs}");
-                bool success = false;
+                // Console.WriteLine($"{lhs} : {rhs}");
 
                 if (referenceRow != null && targetRow != null)
                 {
+                    // Both rows have the same key
                     if (referenceRow.Key == targetRow.Key)
                     {
                         lhsColumns = referenceRow.Columns;
                         rhsColumns = targetRow.Columns;
                         key = referenceRow.Key;
-                        success = CompareRow(key, lhsColumns, rhsColumns);
+                        CompareRow(key, lhsColumns, rhsColumns);
                     }
                     else
                     {
+                        // See if the target row has a matching row in reference orphans
                         if (CheckReferenceOrphan(targetRow, ref key, ref lhsColumns, ref rhsColumns))
                         {
-                            success = CompareRow(key, lhsColumns, rhsColumns);
+                            CompareRow(key, lhsColumns, rhsColumns);
                         }
 
+                        // See if the reference row has a matching row in target orphans
                         if (CheckTargetOrphan(referenceRow, ref key, ref lhsColumns, ref rhsColumns))
                         {
-                            success = CompareRow(key, lhsColumns, rhsColumns);
+                            CompareRow(key, lhsColumns, rhsColumns);
                         }
                     }
                 }
@@ -174,7 +176,7 @@ namespace CSVComparison
                 {
                     if (CheckReferenceOrphan(targetRow, ref key, ref lhsColumns, ref rhsColumns))
                     {
-                        success = CompareRow(key, lhsColumns, rhsColumns);
+                        CompareRow(key, lhsColumns, rhsColumns);
                     }
 
                 }
@@ -182,20 +184,19 @@ namespace CSVComparison
                 {
                     if (CheckTargetOrphan(referenceRow, ref key, ref lhsColumns, ref rhsColumns))
                     {
-                        success = CompareRow(key, lhsColumns, rhsColumns);
+                        CompareRow(key, lhsColumns, rhsColumns);
                     }
                 }  
             }     
         }
 
         /// <summary>
-        /// 
+        /// Check reference and target rows that have the same key
         /// </summary>
         /// <param name="key"></param>
         /// <param name="lhsColumns"></param>
         /// <param name="rhsColumns"></param>
-        /// <returns>True if row matches</returns>
-        bool CompareRow(string key, string[] lhsColumns, string[] rhsColumns)
+        void CompareRow(string key, string[] lhsColumns, string[] rhsColumns)
         {
             Console.WriteLine($"Run compare {key}");
             bool success = CompareValues(key, lhsColumns, rhsColumns);
@@ -211,26 +212,25 @@ namespace CSVComparison
                     }                
                 }
             }
-
-            return success;
         }
 
         private bool CheckReferenceOrphan(CsvRow targetRow, ref string key, ref string[] lhsColumns, ref string[] rhsColumns)
         {
             Console.WriteLine($"Check for {targetRow.Key} in _referenceOrphans");
             bool doCompare = false;
+
             if (_referenceOrphans.ContainsKey(targetRow.Key))
             {
                 lhsColumns = _referenceOrphans[targetRow.Key];
                 rhsColumns = targetRow.Columns;
                 key = targetRow.Key;
-                Console.WriteLine($"remove reference orphan {targetRow.Key}");
+                // Console.WriteLine($"remove reference orphan {targetRow.Key}");
                 _referenceOrphans.Remove(targetRow.Key);
                 doCompare = true;
             }
             else
             {
-                Console.WriteLine($"Add target orphan {targetRow.Key}");
+                // Console.WriteLine($"Add target orphan {targetRow.Key}");
                 _targetOrphans.Add(targetRow.Key, targetRow.Columns);
             }
 
@@ -246,13 +246,13 @@ namespace CSVComparison
                 lhsColumns = referenceRow.Columns; 
                 rhsColumns = _targetOrphans[referenceRow.Key];
                 key = referenceRow.Key;
-                Console.WriteLine($"remove target orphan {referenceRow.Key}");
+                // Console.WriteLine($"remove target orphan {referenceRow.Key}");
                 _targetOrphans.Remove(referenceRow.Key);
                 doCompare = true;
             }
             else
             {
-                Console.WriteLine($"Add reference orphan {referenceRow.Key}");
+                // Console.WriteLine($"Add reference orphan {referenceRow.Key}");
                 _referenceOrphans.Add(referenceRow.Key, referenceRow.Columns);
             }
 
@@ -260,7 +260,7 @@ namespace CSVComparison
         }
 
         /// <summary>
-        /// 
+        /// Compare the actual values of reference and target rows
         /// </summary>
         /// <param name="key"></param>
         /// <param name="referenceRow"></param>
