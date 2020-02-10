@@ -25,8 +25,9 @@ namespace CSVComparison
         private bool _earlyTerminate = false;
 
         public ComparisonResult CompareFiles(string referenceFile, string targetFile, ComparisonDefinition comparisonDefinition)
-        {
+        {       
             _comparisonDefinition = comparisonDefinition;
+
             var referenceLoaderTask = Task.Run(() => LoadFile(referenceFile, _referenceQueue));
             var targetLoaderTask = Task.Run(() => LoadFile(targetFile, _targetQueue));
             var compareTask = Task.Run(() => Compare());
@@ -276,15 +277,54 @@ namespace CSVComparison
             }
 
             bool success = true;
+
             for (int referenceIndex = 0; referenceIndex < referenceRow.Length; referenceIndex++)
             {
-                string referenceValue = referenceRow[referenceIndex];
-                string targetValue = targetRow[referenceIndex];
-                if (referenceValue != targetValue)
+                var referenceValue = referenceRow[referenceIndex];
+                var targetValue = targetRow[referenceIndex];
+
+                if (_comparisonDefinition.ToleranceType != ToleranceType.Exact)
+                {
+                    success &= CompareWithTolerance(key, referenceValue, targetValue);
+                }              
+                else if (referenceValue != targetValue)
                 {
                     success = false;
                     _breaks.Add(new BreakDetail() { BreakType = BreakType.ValueMismatch, BreakDescription = $"{key}: {referenceValue} != {targetValue}" });
                 }
+            }
+
+            return success;
+        }
+
+        private bool CompareWithTolerance(string key, string referenceValue, string targetValue)
+        {
+            var success = true;
+            double referenceDouble, targetDouble;
+            if (double.TryParse(referenceValue, out referenceDouble) && double.TryParse(targetValue, out targetDouble))
+            {
+                if (_comparisonDefinition.ToleranceType == ToleranceType.Absolute)
+                {
+                    if (Math.Abs(referenceDouble - targetDouble) > _comparisonDefinition.ToleranceValue)
+                    {
+                        success = false;
+                        _breaks.Add(new BreakDetail { BreakType = BreakType.ValueMismatch, BreakDescription = $"{key}: {referenceValue} != {targetValue}" });
+                    }
+                }
+                else if (_comparisonDefinition.ToleranceType == ToleranceType.Relative)
+                {
+                    double relativeDifference = (referenceDouble - targetDouble) / referenceDouble;
+                    if (Math.Abs(relativeDifference) > _comparisonDefinition.ToleranceValue)
+                    {
+                        success = false;
+                        _breaks.Add(new BreakDetail { BreakType = BreakType.ValueMismatch, BreakDescription = $"{key}: {referenceValue} != {targetValue}" });
+                    }
+                }
+            }
+            else if (referenceValue != targetValue)
+            {
+                success = false;
+                _breaks.Add(new BreakDetail() { BreakType = BreakType.ValueMismatch, BreakDescription = $"{key}: {referenceValue} != {targetValue}" });
             }
 
             return success;

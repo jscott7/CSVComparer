@@ -140,6 +140,59 @@ namespace CSVComparisonTests
             Assert.IsTrue(comparisonResult.BreakDetails[0].BreakDescription.StartsWith("Problem loading"));
             Assert.AreEqual(BreakType.ProcessFailure, comparisonResult.BreakDetails[0].BreakType);
         }
-    }
 
+        [Test]
+        public void TestAbsoluteComparison()
+        {
+            var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVWithDouble.csv");
+            var targetDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVWithDoubleBreak.csv");
+
+            var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
+            comparisonDefinition.KeyColumns.Add("COL1");
+            comparisonDefinition.ToleranceType = ToleranceType.Absolute;
+            comparisonDefinition.ToleranceValue = 0.1;
+
+            var csvComparer = new CSVComparer();
+            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, targetDataFile, comparisonDefinition);
+            Assert.AreEqual(2, comparisonResult.BreakDetails.Count, "Absolute tolerance");
+            Assert.AreEqual("A: 1.0 != 1.2", comparisonResult.BreakDetails[0].BreakDescription);
+            Assert.AreEqual("C: 2.5 != 2.61", comparisonResult.BreakDetails[0].BreakDescription);
+
+        }
+
+        [Test]
+        public void TestRelativeToleranceComparison()
+        {
+            var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVWithDouble.csv");
+            var targetDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVWithDoubleBreak.csv");
+
+            var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
+            comparisonDefinition.KeyColumns.Add("COL1");
+            comparisonDefinition.ToleranceType = ToleranceType.Relative;
+            comparisonDefinition.ToleranceValue = 0.1;
+
+            var csvComparer = new CSVComparer();
+            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, targetDataFile, comparisonDefinition);
+            Assert.AreEqual(1, comparisonResult.BreakDetails.Count, "Relative tolerance");
+            Assert.AreEqual("A: 1.0 != 1.2", comparisonResult.BreakDetails[0].BreakDescription);
+        }
+
+        [Test]
+        public void TestExactDoubleComparison()
+        {
+            var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVWithDouble.csv");
+            var targetDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVWithDoubleBreak.csv");
+
+            var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
+            comparisonDefinition.KeyColumns.Add("COL1");
+            comparisonDefinition.ToleranceValue = 0.1;
+
+            var csvComparer = new CSVComparer();
+            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, targetDataFile, comparisonDefinition);
+            Assert.AreEqual(2, comparisonResult.BreakDetails.Count, "Absolute tolerance");
+            Assert.AreEqual("A: 1.0 != 1.2", comparisonResult.BreakDetails[0].BreakDescription);
+            Assert.AreEqual("C: 2.5 != 2.61", comparisonResult.BreakDetails[1].BreakDescription);
+
+        }
+    }
 }

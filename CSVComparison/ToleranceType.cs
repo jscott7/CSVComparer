@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CSVComparison
+﻿namespace CSVComparison
 {
     public enum ToleranceType
     {
+        Exact,
         Relative,
         Absolute
     }
