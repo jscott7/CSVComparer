@@ -156,7 +156,7 @@ namespace CSVComparisonTests
             var comparisonResult = csvComparer.CompareFiles(referenceDataFile, targetDataFile, comparisonDefinition);
             Assert.AreEqual(2, comparisonResult.BreakDetails.Count, "Absolute tolerance");
             Assert.AreEqual("A: 1.0 != 1.2", comparisonResult.BreakDetails[0].BreakDescription);
-            Assert.AreEqual("C: 2.5 != 2.61", comparisonResult.BreakDetails[0].BreakDescription);
+            Assert.AreEqual("C: 2.5 != 2.61", comparisonResult.BreakDetails[1].BreakDescription);
 
         }
 
