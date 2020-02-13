@@ -33,7 +33,7 @@ namespace CSVComparison
             var comparisonResult = csvComparer.CompareFiles(referenceFilePath, targetFilePatch, comparisonDefinition);
 
             Console.WriteLine($"Reference: {comparisonResult.ReferenceSource}");
-            Console.WriteLine($"Target: {comparisonResult.TargetSource}");
+            Console.WriteLine($"Target: {comparisonResult.CandidateSource}");
 
             foreach (var breakResult in comparisonResult.BreakDetails)
             {

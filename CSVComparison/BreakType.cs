@@ -4,8 +4,8 @@
     {
         Match,
         ColumnsDifferent,
-        RowInReferenceNotInTarget,
-        RowInTargetNotInReference,
+        RowInReferenceNotInCandidate,
+        RowInCandidateNotInReference,
         ValueMismatch,
         ProcessFailure
     }

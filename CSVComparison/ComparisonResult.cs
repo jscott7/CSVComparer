@@ -8,7 +8,7 @@ namespace CSVComparison
     {
         public string ReferenceSource;
 
-        public string TargetSource;
+        public string CandidateSource;
 
         public DateTime Date;
 

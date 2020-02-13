@@ -37,7 +37,7 @@ namespace CSVComparisonTests
             var comparisonResult = csvComparer.CompareFiles(referenceDataFile, targetDataFile, comparisonDefinition);
 
             Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
-            Assert.AreEqual("Reference has 4 columns, Target has 5 columns", comparisonResult.BreakDetails[0].BreakDescription);
+            Assert.AreEqual("Reference has 4 columns, Candidate has 5 columns", comparisonResult.BreakDetails[0].BreakDescription);
             Assert.AreEqual(BreakType.ColumnsDifferent, comparisonResult.BreakDetails[0].BreakType);
 
         }
