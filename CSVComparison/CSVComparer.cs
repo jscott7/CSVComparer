@@ -18,8 +18,8 @@ namespace CSVComparison
         private readonly Queue<CsvRow> _candidateQueue = new Queue<CsvRow>();
         private int _runningLoaderThreads = 2;
         private ComparisonDefinition _comparisonDefinition;
-        private Dictionary<string, string[]> _referenceOrphans = new Dictionary<string, string[]>();
-        private Dictionary<string, string[]> _candidateOrphans = new Dictionary<string, string[]>();
+        private Dictionary<string, CsvRow> _referenceOrphans = new Dictionary<string, CsvRow>();
+        private Dictionary<string, CsvRow> _candidateOrphans = new Dictionary<string, CsvRow>();
         private List<BreakDetail> _breaks = new List<BreakDetail>();
         private bool _headerCheck = true;
         private bool _earlyTerminate = false;
@@ -50,6 +50,11 @@ namespace CSVComparison
             return new ComparisonResult(_breaks) { ReferenceSource = referenceFile, CandidateSource = candidateFile };
         }
 
+        /// <summary>
+        /// The thread function for loading data from each input file
+        /// </summary>
+        /// <param name="file">Full path to csv file</param>
+        /// <param name="queue">Target data queue</param>
         void LoadFile(string file, Queue<CsvRow> queue)
         {
             try
@@ -66,7 +71,7 @@ namespace CSVComparison
                         // This doesn't manage delimiter characters in comments, i.e. A,"B,Comment",C
                         string[] columns = line.Split(_comparisonDefinition.Delimiter);
 
-                        if (rowIndex++ == _comparisonDefinition.HeaderRowIndex)
+                        if (rowIndex == _comparisonDefinition.HeaderRowIndex)
                         {
                             keyIndexes.AddRange(GetKeyIndexes(columns));
                             dataRow = true;
@@ -82,11 +87,13 @@ namespace CSVComparison
 
                             lock (_lockObj)
                             {
-                                queue.Enqueue(new CsvRow() { Key = key, Columns = columns });
+                                queue.Enqueue(new CsvRow() { Key = key, Columns = columns, RowIndex = rowIndex });
                             }
 
                             _readyToStartComparisonEvent.Set();
                         }
+
+                        rowIndex++;
                     }
                 }
             }
@@ -133,10 +140,6 @@ namespace CSVComparison
                         candidateRow = _candidateQueue.Dequeue();
                     }
                 }
-
-                string[] lhsColumns = null;
-                string[] rhsColumns = null;
-                string key = "";
                
                 if (referenceRow == null && candidateRow == null && _runningLoaderThreads == 0)
                 {
@@ -144,48 +147,44 @@ namespace CSVComparison
                     continue;
                 }
 
-                var lhs = referenceRow != null ? referenceRow.Key : "null Ref";
-                var rhs = candidateRow != null ? candidateRow.Key : "null candidate";
-                // Console.WriteLine($"{lhs} : {rhs}");
-
                 if (referenceRow != null && candidateRow != null)
                 {
                     // Both rows have the same key
                     if (referenceRow.Key == candidateRow.Key)
-                    {
-                        lhsColumns = referenceRow.Columns;
-                        rhsColumns = candidateRow.Columns;
-                        key = referenceRow.Key;
-                        CompareRow(key, lhsColumns, rhsColumns);
+                    {                              
+                        CompareRow(referenceRow.Key, referenceRow, candidateRow);
                     }
                     else
                     {
                         // See if the candidate row has a matching row in reference orphans
-                        if (CheckReferenceOrphan(candidateRow, ref key, ref lhsColumns, ref rhsColumns))
-                        {
-                            CompareRow(key, lhsColumns, rhsColumns);
+                        var foundReferenceOrphan = CheckReferenceOrphan(candidateRow);
+                        if (foundReferenceOrphan != null)
+                        { 
+                            CompareRow(candidateRow.Key, foundReferenceOrphan, candidateRow);
                         }
 
                         // See if the reference row has a matching row in candidate orphans
-                        if (CheckcandidateOrphan(referenceRow, ref key, ref lhsColumns, ref rhsColumns))
+                        var foundCandidateOrphan = CheckCandidateOrphan(referenceRow);
+                        if (foundCandidateOrphan != null)
                         {
-                            CompareRow(key, lhsColumns, rhsColumns);
+                            CompareRow(referenceRow.Key, referenceRow, foundCandidateOrphan);
                         }
                     }
                 }
                 else if (candidateRow != null)
                 {
-                    if (CheckReferenceOrphan(candidateRow, ref key, ref lhsColumns, ref rhsColumns))
-                    {
-                        CompareRow(key, lhsColumns, rhsColumns);
+                    var foundReferenceOrphan = CheckReferenceOrphan(candidateRow);
+                    if (foundReferenceOrphan != null)
+                    {             
+                        CompareRow(candidateRow.Key, foundReferenceOrphan, candidateRow);
                     }
-
                 }
                 else if (referenceRow != null)
                 {
-                    if (CheckcandidateOrphan(referenceRow, ref key, ref lhsColumns, ref rhsColumns))
+                    var foundCandidateOrphan = CheckCandidateOrphan(referenceRow);
+                    if (foundCandidateOrphan != null)
                     {
-                        CompareRow(key, lhsColumns, rhsColumns);
+                        CompareRow(referenceRow.Key, referenceRow, foundCandidateOrphan);
                     }
                 }  
             }     
@@ -197,10 +196,10 @@ namespace CSVComparison
         /// <param name="key"></param>
         /// <param name="lhsColumns"></param>
         /// <param name="rhsColumns"></param>
-        void CompareRow(string key, string[] lhsColumns, string[] rhsColumns)
+        void CompareRow(string key, CsvRow referenceRow, CsvRow candidateRow)
         {
             Console.WriteLine($"Run compare {key}");
-            bool success = CompareValues(key, lhsColumns, rhsColumns);
+            bool success = CompareValues(key, referenceRow, candidateRow);
             if (_headerCheck)
             {
                 _headerCheck = false;
@@ -215,49 +214,48 @@ namespace CSVComparison
             }
         }
 
-        private bool CheckReferenceOrphan(CsvRow candidateRow, ref string key, ref string[] lhsColumns, ref string[] rhsColumns)
+        private CsvRow CheckReferenceOrphan(CsvRow candidateRow)
         {
             Console.WriteLine($"Check for {candidateRow.Key} in _referenceOrphans");
-            bool doCompare = false;
+
+            CsvRow csvRow = null;
 
             if (_referenceOrphans.ContainsKey(candidateRow.Key))
             {
-                lhsColumns = _referenceOrphans[candidateRow.Key];
-                rhsColumns = candidateRow.Columns;
-                key = candidateRow.Key;
+                csvRow = _referenceOrphans[candidateRow.Key];
+                
                 // Console.WriteLine($"remove reference orphan {candidateRow.Key}");
                 _referenceOrphans.Remove(candidateRow.Key);
-                doCompare = true;
+       
             }
             else
             {
                 // Console.WriteLine($"Add candidate orphan {candidateRow.Key}");
-                _candidateOrphans.Add(candidateRow.Key, candidateRow.Columns);
+                _candidateOrphans.Add(candidateRow.Key, candidateRow);
             }
 
-            return doCompare;
+            return csvRow;
         }
 
-        private bool CheckcandidateOrphan(CsvRow referenceRow, ref string key, ref string[] lhsColumns, ref string[] rhsColumns)
+        private CsvRow CheckCandidateOrphan(CsvRow referenceRow)
         {
             Console.WriteLine($"Check for {referenceRow.Key} in _candidateOrphans");
-            bool doCompare = false;
+            CsvRow csvRow = null;
             if (_candidateOrphans.ContainsKey(referenceRow.Key))
-            {
-                lhsColumns = referenceRow.Columns; 
-                rhsColumns = _candidateOrphans[referenceRow.Key];
-                key = referenceRow.Key;
+            {             
+                csvRow = _candidateOrphans[referenceRow.Key];
+             
                 // Console.WriteLine($"remove candidate orphan {referenceRow.Key}");
                 _candidateOrphans.Remove(referenceRow.Key);
-                doCompare = true;
+             
             }
             else
             {
                 // Console.WriteLine($"Add reference orphan {referenceRow.Key}");
-                _referenceOrphans.Add(referenceRow.Key, referenceRow.Columns);
+                _referenceOrphans.Add(referenceRow.Key, referenceRow);
             }
 
-            return doCompare;
+            return csvRow;
         }
 
         /// <summary>
@@ -268,36 +266,40 @@ namespace CSVComparison
         /// <param name="candidateRow"></param>
         /// <returns>True for successful comparison</returns>
         /// <remarks>We assume the columns will be in the same order</remarks>   
-        bool CompareValues(string key, string[] referenceRow, string[] candidateRow)
+        //     bool CompareValues(string key, string[] referenceRow, string[] candidateRow)
+        bool CompareValues(string key, CsvRow referenceRow, CsvRow candidateRow)
         {
-            if (referenceRow.Length != candidateRow.Length)
+            var referenceColumns = referenceRow.Columns;
+            var candidateColumns = candidateRow.Columns;
+
+            if (referenceColumns.Length != candidateColumns.Length)
             { 
-                _breaks.Add(new BreakDetail() { BreakType = BreakType.ColumnsDifferent, BreakDescription = $"Reference has {referenceRow.Length} columns, Candidate has {candidateRow.Length} columns" });
+                _breaks.Add(new BreakDetail() { BreakType = BreakType.ColumnsDifferent, BreakDescription = $"Reference has {referenceColumns.Length} columns, Candidate has {candidateColumns.Length} columns" });
                 return false;
             }
 
             bool success = true;
 
-            for (int referenceIndex = 0; referenceIndex < referenceRow.Length; referenceIndex++)
+            for (int referenceIndex = 0; referenceIndex < referenceColumns.Length; referenceIndex++)
             {
-                var referenceValue = referenceRow[referenceIndex];
-                var candidateValue = candidateRow[referenceIndex];
+                var referenceValue = referenceColumns[referenceIndex];
+                var candidateValue = candidateColumns[referenceIndex];
 
                 if (_comparisonDefinition.ToleranceType != ToleranceType.Exact)
                 {
-                    success &= CompareWithTolerance(key, referenceValue, candidateValue);
+                    success &= CompareWithTolerance(key, referenceValue, candidateValue, referenceRow.RowIndex, candidateRow.RowIndex);
                 }              
                 else if (referenceValue != candidateValue)
                 {
                     success = false;
-                    _breaks.Add(new BreakDetail() { BreakType = BreakType.ValueMismatch, BreakDescription = $"{key}: {referenceValue} != {candidateValue}" });
+                    _breaks.Add(new BreakDetail() { BreakType = BreakType.ValueMismatch, BreakDescription = $"{key}: Row: {referenceRow.RowIndex} Value: {referenceValue} != Row: {candidateRow.RowIndex} Value: {candidateValue}" });
                 }
             }
 
             return success;
         }
 
-        private bool CompareWithTolerance(string key, string referenceValue, string candidateValue)
+        private bool CompareWithTolerance(string key, string referenceValue, string candidateValue, int referenceRowIndex, int candidateRowIndex)
         {
             var success = true;
             double referenceDouble, candidateDouble;
@@ -317,14 +319,14 @@ namespace CSVComparison
                     if (Math.Abs(relativeDifference) > _comparisonDefinition.ToleranceValue)
                     {
                         success = false;
-                        _breaks.Add(new BreakDetail { BreakType = BreakType.ValueMismatch, BreakDescription = $"{key}: {referenceValue} != {candidateValue}" });
+                        _breaks.Add(new BreakDetail { BreakType = BreakType.ValueMismatch, BreakDescription = $"{key}: Row: {referenceRowIndex} Value: {referenceValue} != Row: {candidateRowIndex} Value: {candidateValue}" });
                     }
                 }
             }
             else if (referenceValue != candidateValue)
             {
                 success = false;
-                _breaks.Add(new BreakDetail() { BreakType = BreakType.ValueMismatch, BreakDescription = $"{key}: {referenceValue} != {candidateValue}" });
+                _breaks.Add(new BreakDetail() { BreakType = BreakType.ValueMismatch, BreakDescription = $"{key}: Row: {referenceRowIndex} Value: {referenceValue} != Row: {candidateRowIndex} Value: {candidateValue}" });
             }
 
             return success;

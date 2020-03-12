@@ -5,5 +5,7 @@
         public string Key;
 
         public string[] Columns;
+
+        public int RowIndex;
     }
 }

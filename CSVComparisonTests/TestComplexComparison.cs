@@ -39,7 +39,6 @@ namespace CSVComparisonTests
             Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
             Assert.AreEqual("Reference has 4 columns, Candidate has 5 columns", comparisonResult.BreakDetails[0].BreakDescription);
             Assert.AreEqual(BreakType.ColumnsDifferent, comparisonResult.BreakDetails[0].BreakType);
-
         }
     }
 }
