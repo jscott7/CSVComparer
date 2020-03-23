@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "TestDataGenerator": {
+      "commandName": "Project",
+      "commandLineArgs": "100000"
+    }
+  }
+}
