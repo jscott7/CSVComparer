@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -29,18 +30,20 @@ namespace CSVComparison
             var xmlSerializer = new XmlSerializer(typeof(ComparisonDefinition));
             var comparisonDefinition = (ComparisonDefinition)xmlSerializer.Deserialize(new XmlNodeReader((XmlNode)xmlDocument.DocumentElement));
 
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             var csvComparer = new CSVComparer();
             var comparisonResult = csvComparer.CompareFiles(referenceFilePath, targetFilePatch, comparisonDefinition);
-
+            stopwatch.Stop();
             Console.WriteLine($"Reference: {comparisonResult.ReferenceSource}");
             Console.WriteLine($"Target: {comparisonResult.CandidateSource}");
 
             foreach (var breakResult in comparisonResult.BreakDetails)
             {
-                Console.WriteLine($"Break Type: {breakResult.BreakType}. Description {breakResult.BreakDescription}");
+                Console.WriteLine(breakResult.ToString());
             }
 
-            Console.WriteLine("Finished");
+            Console.WriteLine($"Finished. Comparison took {stopwatch.ElapsedMilliseconds}ms");
         }
     }
 }

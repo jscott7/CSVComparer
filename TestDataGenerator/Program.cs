@@ -57,6 +57,7 @@ namespace TestDataGenerator
                             dIndex = random.Next(0, 3);
                             row = $"{index},{colBValues[bIndex]},{colCValues[cIndex]},{colDValues[dIndex]}";
                         }
+
                         candidateWriter.WriteLine(row);
                     }
                 }

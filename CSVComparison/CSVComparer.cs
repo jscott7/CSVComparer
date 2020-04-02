@@ -198,7 +198,6 @@ namespace CSVComparison
         /// <param name="rhsColumns"></param>
         void CompareRow(string key, CsvRow referenceRow, CsvRow candidateRow)
         {
-            Console.WriteLine($"Run compare {key}");
             bool success = CompareValues(key, referenceRow, candidateRow);
             if (_headerCheck)
             {
@@ -216,21 +215,16 @@ namespace CSVComparison
 
         private CsvRow CheckReferenceOrphan(CsvRow candidateRow)
         {
-            Console.WriteLine($"Check for {candidateRow.Key} in _referenceOrphans");
-
             CsvRow csvRow = null;
 
             if (_referenceOrphans.ContainsKey(candidateRow.Key))
             {
                 csvRow = _referenceOrphans[candidateRow.Key];
-                
-                // Console.WriteLine($"remove reference orphan {candidateRow.Key}");
                 _referenceOrphans.Remove(candidateRow.Key);
        
             }
             else
             {
-                // Console.WriteLine($"Add candidate orphan {candidateRow.Key}");
                 _candidateOrphans.Add(candidateRow.Key, candidateRow);
             }
 
@@ -239,19 +233,15 @@ namespace CSVComparison
 
         private CsvRow CheckCandidateOrphan(CsvRow referenceRow)
         {
-            Console.WriteLine($"Check for {referenceRow.Key} in _candidateOrphans");
             CsvRow csvRow = null;
             if (_candidateOrphans.ContainsKey(referenceRow.Key))
             {             
-                csvRow = _candidateOrphans[referenceRow.Key];
-             
-                // Console.WriteLine($"remove candidate orphan {referenceRow.Key}");
+                csvRow = _candidateOrphans[referenceRow.Key];          
                 _candidateOrphans.Remove(referenceRow.Key);
              
             }
             else
             {
-                // Console.WriteLine($"Add reference orphan {referenceRow.Key}");
                 _referenceOrphans.Add(referenceRow.Key, referenceRow);
             }
 
@@ -292,7 +282,7 @@ namespace CSVComparison
                 else if (referenceValue != candidateValue)
                 {
                     success = false;
-                    _breaks.Add(new BreakDetail() { BreakType = BreakType.ValueMismatch, BreakDescription = $"{key}: Row: {referenceRow.RowIndex} Value: {referenceValue} != Row: {candidateRow.RowIndex} Value: {candidateValue}" });
+                    _breaks.Add(new BreakDetail(BreakType.ValueMismatch, key, referenceRow.RowIndex, candidateRow.RowIndex, referenceValue, candidateValue));
                 }
             }
 
@@ -310,7 +300,7 @@ namespace CSVComparison
                     if (Math.Abs(referenceDouble - candidateDouble) > _comparisonDefinition.ToleranceValue)
                     {
                         success = false;
-                        _breaks.Add(new BreakDetail { BreakType = BreakType.ValueMismatch, BreakDescription = $"{key}: {referenceValue} != {candidateValue}" });
+                        _breaks.Add(new BreakDetail(BreakType.ValueMismatch, key, referenceRowIndex, candidateRowIndex, referenceValue, candidateValue));
                     }
                 }
                 else if (_comparisonDefinition.ToleranceType == ToleranceType.Relative)
@@ -319,14 +309,14 @@ namespace CSVComparison
                     if (Math.Abs(relativeDifference) > _comparisonDefinition.ToleranceValue)
                     {
                         success = false;
-                        _breaks.Add(new BreakDetail { BreakType = BreakType.ValueMismatch, BreakDescription = $"{key}: Row: {referenceRowIndex} Value: {referenceValue} != Row: {candidateRowIndex} Value: {candidateValue}" });
+                        _breaks.Add(new BreakDetail(BreakType.ValueMismatch, key, referenceRowIndex, candidateRowIndex, referenceValue, candidateValue));
                     }
                 }
             }
             else if (referenceValue != candidateValue)
             {
                 success = false;
-                _breaks.Add(new BreakDetail() { BreakType = BreakType.ValueMismatch, BreakDescription = $"{key}: Row: {referenceRowIndex} Value: {referenceValue} != Row: {candidateRowIndex} Value: {candidateValue}" });
+                _breaks.Add(new BreakDetail(BreakType.ValueMismatch, key, referenceRowIndex, candidateRowIndex, referenceValue, candidateValue));
             }
 
             return success;

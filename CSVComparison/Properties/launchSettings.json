@@ -2,7 +2,7 @@
   "profiles": {
     "CSVComparison": {
       "commandName": "Project",
-      "commandLineArgs": "\"C:\\Family Files\\Jonathan\\IT\\GitHub\\CSVComparer\\ReferenceFile.csv\" \"C:\\Family Files\\Jonathan\\IT\\GitHub\\CSVComparer\\TargetFile.csv\" \"C:\\Family Files\\Jonathan\\IT\\GitHub\\CSVComparer\\Configuration.xml\""
+      "commandLineArgs": "\"C:\\temp\\ReferenceTest.csv\" \"C:\\temp\\CandidateTest.csv\" \"C:\\temp\\Configuration.xml\""
     }
   }
 }

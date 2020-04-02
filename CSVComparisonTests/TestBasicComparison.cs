@@ -36,7 +36,7 @@ namespace CSVComparisonTests
 
             Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
             Assert.AreEqual(BreakType.ValueMismatch, comparisonResult.BreakDetails[0].BreakType);
-            Assert.AreEqual("A: Row: 1 Value: B != Row: 1 Value: D", comparisonResult.BreakDetails[0].BreakDescription);
+            Assert.AreEqual("Key:A, Reference Row:1, Value:B != Candidate Row:1, Value:D", comparisonResult.BreakDetails[0].BreakDescription);
         }
 
         [Test]
@@ -53,7 +53,7 @@ namespace CSVComparisonTests
 
             Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
             Assert.AreEqual(BreakType.ValueMismatch, comparisonResult.BreakDetails[0].BreakType);
-            Assert.AreEqual("A: Row: 1 Value: B != Row: 1 Value: D", comparisonResult.BreakDetails[0].BreakDescription);
+            Assert.AreEqual("Key:A, Reference Row:1, Value:B != Candidate Row:1, Value:D", comparisonResult.BreakDetails[0].BreakDescription);
         }
 
         [Test]
@@ -70,7 +70,7 @@ namespace CSVComparisonTests
 
             Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
             Assert.AreEqual(BreakType.ValueMismatch, comparisonResult.BreakDetails[0].BreakType);
-            Assert.AreEqual("A: Row: 3 Value: B != Row: 3 Value: D", comparisonResult.BreakDetails[0].BreakDescription);
+            Assert.AreEqual("Key:A, Reference Row:3, Value:B != Candidate Row:3, Value:D", comparisonResult.BreakDetails[0].BreakDescription);
         }
 
         [Test]
@@ -155,9 +155,8 @@ namespace CSVComparisonTests
             var csvComparer = new CSVComparer();
             var comparisonResult = csvComparer.CompareFiles(referenceDataFile, CandidateDataFile, comparisonDefinition);
             Assert.AreEqual(2, comparisonResult.BreakDetails.Count, "Absolute tolerance");
-            Assert.AreEqual("A: 1.0 != 1.2", comparisonResult.BreakDetails[0].BreakDescription);
-            Assert.AreEqual("C: 2.5 != 2.61", comparisonResult.BreakDetails[1].BreakDescription);
-
+            Assert.AreEqual("Key:A, Reference Row:1, Value:1.0 != Candidate Row:1, Value:1.2", comparisonResult.BreakDetails[0].BreakDescription);
+            Assert.AreEqual("Key:C, Reference Row:2, Value:2.5 != Candidate Row:2, Value:2.61", comparisonResult.BreakDetails[1].BreakDescription);
         }
 
         [Test]
@@ -174,7 +173,7 @@ namespace CSVComparisonTests
             var csvComparer = new CSVComparer();
             var comparisonResult = csvComparer.CompareFiles(referenceDataFile, CandidateDataFile, comparisonDefinition);
             Assert.AreEqual(1, comparisonResult.BreakDetails.Count, "Relative tolerance");
-            Assert.AreEqual("A: Row: 1 Value: 1.0 != Row: 1 Value: 1.2", comparisonResult.BreakDetails[0].BreakDescription);
+            Assert.AreEqual("Key:A, Reference Row:1, Value:1.0 != Candidate Row:1, Value:1.2", comparisonResult.BreakDetails[0].BreakDescription);
         }
 
         [Test]
@@ -190,9 +189,8 @@ namespace CSVComparisonTests
             var csvComparer = new CSVComparer();
             var comparisonResult = csvComparer.CompareFiles(referenceDataFile, CandidateDataFile, comparisonDefinition);
             Assert.AreEqual(2, comparisonResult.BreakDetails.Count, "Absolute tolerance");
-            Assert.AreEqual("A: Row: 1 Value: 1.0 != Row: 1 Value: 1.2", comparisonResult.BreakDetails[0].BreakDescription);
-            Assert.AreEqual("C: Row: 2 Value: 2.5 != Row: 2 Value: 2.61", comparisonResult.BreakDetails[1].BreakDescription);
-
+            Assert.AreEqual("Key:A, Reference Row:1, Value:1.0 != Candidate Row:1, Value:1.2", comparisonResult.BreakDetails[0].BreakDescription);
+            Assert.AreEqual("Key:C, Reference Row:2, Value:2.5 != Candidate Row:2, Value:2.61", comparisonResult.BreakDetails[1].BreakDescription);
         }
     }
 }
