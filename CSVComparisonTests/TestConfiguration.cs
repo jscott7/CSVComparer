@@ -1,5 +1,6 @@
 ﻿using CSVComparison;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -42,6 +43,27 @@ namespace CSVComparisonTests
             Assert.AreEqual(comparisonDefinition.ToleranceType, deserializedDefinition.ToleranceType, "ToleranceType");
             Assert.AreEqual(comparisonDefinition.ToleranceValue, deserializedDefinition.ToleranceValue, "ToleranceValue");
             Assert.AreEqual(comparisonDefinition.KeyColumns.Count, deserializedDefinition.KeyColumns.Count, "KeyColumns count");
+        }
+
+        [Test]
+        public void TestInvalidKeyColumns()
+        {
+            var comparisonDefinition = new ComparisonDefinition()
+            {
+                Delimiter = ",",
+                HeaderRowIndex = 0,
+                ToleranceValue = 0.1
+            };
+
+            comparisonDefinition.KeyColumns = new List<string>() { "A", "B" };
+
+            var testDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSV.csv");
+            var csvComparer = new CSVComparer();
+            var comparisonResult = csvComparer.CompareFiles(testDataFile, testDataFile, comparisonDefinition);
+
+            Assert.AreEqual(2, comparisonResult.BreakDetails.Count);
+            Assert.AreEqual(BreakType.ProcessFailure, comparisonResult.BreakDetails[0].BreakType);
+            Assert.IsTrue(comparisonResult.BreakDetails[0].BreakDescription.Contains("No columns match the key columns defined in configuration"));
         }
     }
 }

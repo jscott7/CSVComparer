@@ -334,6 +334,11 @@ namespace CSVComparison
                 }
             }
 
+            if (_comparisonDefinition.KeyColumns.Count > 0 && keyIndexes.Count == 0)
+            {
+                throw new ComparisonException("No columns match the key columns defined in configuration");
+            }
+
             return keyIndexes;
         }
     }
