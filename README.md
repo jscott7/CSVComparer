@@ -6,7 +6,7 @@ This is a simple project to compare 2 CSV files and report differences
 
 Run the CSVComparison executable with the following arguments
 
-*"Path to reference csv file" "Path to candidate reference file" "Path to configuration file"
+*"Path to reference csv file" "Path to candidate reference file" "Path to configuration file"*
 
 The output will list the differences between the files
 
@@ -28,7 +28,7 @@ The configuration is used to define how to treat the CSV files:
   <ToleranceType>Relative</ToleranceType>
   <ToleranceValue>0.1</ToleranceValue>
 </ComparisonDefinition>
-```html
+```
 
 **Delimiter**  Allows other separaters, i.e. pipe '|' to be used
 
