@@ -65,7 +65,9 @@ namespace CSVComparison
                     string line;
                     int rowIndex = 0;
                     bool dataRow = false;
+                    int expectedColumnCount = 0;
                     List<int> keyIndexes = new List<int>();
+
                     while ((line = streamReader.ReadLine()) != null)
                     {
                         // This doesn't manage delimiter characters in comments, i.e. A,"B,Comment",C
@@ -74,20 +76,26 @@ namespace CSVComparison
                         if (rowIndex == _comparisonDefinition.HeaderRowIndex)
                         {
                             keyIndexes.AddRange(GetKeyIndexes(columns));
+                            expectedColumnCount = columns.Length;
                             dataRow = true;
                         }
 
                         if (dataRow)
                         {
-                            string key = "";
-                            foreach (int index in keyIndexes)
+                            if (columns.Length == expectedColumnCount || !_comparisonDefinition.IgnoreInvalidRows)
                             {
-                                key += columns[index];
-                            }
+                                string key = "";
+                                foreach (int index in keyIndexes)
+                                {
+                                    key += columns[index] + ":";
+                                }
 
-                            lock (_lockObj)
-                            {
-                                queue.Enqueue(new CsvRow() { Key = key, Columns = columns, RowIndex = rowIndex });
+                                key = key.Trim(':');
+
+                                lock (_lockObj)
+                                {
+                                    queue.Enqueue(new CsvRow() { Key = key, Columns = columns, RowIndex = rowIndex });
+                                }
                             }
 
                             _readyToStartComparisonEvent.Set();

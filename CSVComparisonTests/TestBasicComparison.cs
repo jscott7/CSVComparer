@@ -192,5 +192,28 @@ namespace CSVComparisonTests
             Assert.AreEqual("Key:A, Reference Row:1, Value:1.0 != Candidate Row:1, Value:1.2", comparisonResult.BreakDetails[0].BreakDescription);
             Assert.AreEqual("Key:C, Reference Row:2, Value:2.5 != Candidate Row:2, Value:2.61", comparisonResult.BreakDetails[1].BreakDescription);
         }
+
+        [Test]
+        public void TestFooter()
+        {
+            var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVValueExtraFooterRows.csv");
+            var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVValueBreakExtraFooterRows.csv");
+
+            var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
+            comparisonDefinition.KeyColumns.Add("COL1");
+
+            var csvComparer = new CSVComparer();
+            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile, comparisonDefinition);
+
+            Assert.AreEqual(2, comparisonResult.BreakDetails.Count);
+
+            var comparisonDefinition2 = new ComparisonDefinition() { Delimiter = ",", IgnoreInvalidRows = true };
+            comparisonDefinition2.KeyColumns.Add("COL1");
+
+            var csvComparer2 = new CSVComparer();
+            var comparisonResult2 = csvComparer2.CompareFiles(referenceDataFile, candidateDataFile, comparisonDefinition2);
+
+            Assert.AreEqual(0, comparisonResult2.BreakDetails.Count);
+        }
     }
 }

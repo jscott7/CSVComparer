@@ -38,7 +38,6 @@
 
         public override string ToString()
         {
-       
             return $"Break Type: {BreakType}. Description {BreakDescription}";
         }
     }

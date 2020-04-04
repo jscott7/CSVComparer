@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel;
 using System.Xml.Serialization;
 
 namespace CSVComparison
@@ -25,7 +24,12 @@ namespace CSVComparison
         /// <summary>
         /// The Tolerance to be used for numeric value columns
         /// </summary>
-        public double ToleranceValue;  
+        public double ToleranceValue;
+
+        /// <summary>
+        /// Flag to ignore rows with a different number of columns, typically Footer rows
+        /// </summary>
+        public bool IgnoreInvalidRows;
 
         /// <summary>
         /// How tolerance value is applied, e.g. Absolute or Relative
