@@ -2,7 +2,7 @@
   "profiles": {
     "CSVComparison": {
       "commandName": "Project",
-      "commandLineArgs": "\"C:\\temp\\ReferenceTest.csv\" \"C:\\temp\\CandidateTest.csv\" \"C:\\temp\\Configuration.xml\""
+      "commandLineArgs": "\"C:\\temp\\ReferenceTest.csv\" \"C:\\temp\\CandidateTest.csv\" \"C:\\temp\\Configuration.xml\" \"C:\\temp\\Results.csv\""
     }
   }
 }

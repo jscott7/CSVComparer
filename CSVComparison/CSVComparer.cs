@@ -38,12 +38,12 @@ namespace CSVComparison
             {
                 foreach (var extracandidate in _candidateOrphans)
                 {
-                    _breaks.Add(new BreakDetail() { BreakType = BreakType.RowInCandidateNotInReference, BreakDescription = extracandidate.Key });
+                    _breaks.Add(new BreakDetail() { BreakType = BreakType.RowInCandidateNotInReference, BreakKey = extracandidate.Key, CandidateRow = extracandidate.Value.RowIndex });
                 }
 
                 foreach (var extraReference in _referenceOrphans)
                 {
-                    _breaks.Add(new BreakDetail() { BreakType = BreakType.RowInReferenceNotInCandidate, BreakDescription = extraReference.Key });
+                    _breaks.Add(new BreakDetail() { BreakType = BreakType.RowInReferenceNotInCandidate, BreakKey = extraReference.Key, ReferenceRow = extraReference.Value.RowIndex});
                 }
             }
 

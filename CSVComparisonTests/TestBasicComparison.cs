@@ -87,7 +87,7 @@ namespace CSVComparisonTests
 
             Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
             Assert.AreEqual(BreakType.RowInCandidateNotInReference, comparisonResult.BreakDetails[0].BreakType);
-            Assert.AreEqual("D", comparisonResult.BreakDetails[0].BreakDescription);
+            Assert.AreEqual("D", comparisonResult.BreakDetails[0].BreakKey);
         }
 
         [Test]
@@ -104,7 +104,7 @@ namespace CSVComparisonTests
 
             Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
             Assert.AreEqual(BreakType.RowInReferenceNotInCandidate, comparisonResult.BreakDetails[0].BreakType);
-            Assert.AreEqual("D", comparisonResult.BreakDetails[0].BreakDescription);
+            Assert.AreEqual("D", comparisonResult.BreakDetails[0].BreakKey);
         }
 
         [Test]
