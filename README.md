@@ -6,11 +6,14 @@ This is a simple project to compare 2 CSV files and report differences
 
 Run the CSVComparison executable with the following arguments
 
-*"Path to reference csv file" "Path to candidate reference file" "Path to configuration file"*
+*"Path to reference csv file" "Path to candidate reference file" "Path to configuration file" "Optional Path to output file*
 
-The output will list the differences between the files
+If no output file is specficied the console will list the differences between the files
 
 `Key:C, Reference Row:2, Value:2.5 != Candidate Row:2, Value:2.61`
+
+The output file will list the configuration used, the input files, time taken to run the comparison and a tabular view of the differences
+See the ExampleOutputFile.csv
 
 ##  Configuration
 The configuration is used to define how to treat the CSV files:
