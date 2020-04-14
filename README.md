@@ -48,7 +48,7 @@ The configuration is used to define how to treat the CSV files:
 ## API
 To run from your own C# code:
 
-`
+```csharp
  # You can either deserialize the comparison definition xml or create your own in code
  var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
  comparisonDefinition.KeyColumns.Add("ABC");
@@ -58,4 +58,4 @@ To run from your own C# code:
  var comparisonResult = csvComparer.CompareFiles(referenceDataFilePath, targetDataFilePath, comparisonDefinition);
 
  # Add code to interrogate the comparison result
- `
+```
