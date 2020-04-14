@@ -44,3 +44,18 @@ The configuration is used to define how to treat the CSV files:
 **ToleranceType** How to compare numeric values
 
 **ToleranceValue** The tolerance to use for numeric values
+
+## API
+To run from your own C# code:
+
+`
+ # You can either deserialize the comparison definition xml or create your own in code
+ var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
+ comparisonDefinition.KeyColumns.Add("ABC");
+ comparisonDefinition.KeyColumns.Add("DEF");
+
+ var csvComparer = new CSVComparer();
+ var comparisonResult = csvComparer.CompareFiles(referenceDataFilePath, targetDataFilePath, comparisonDefinition);
+
+ # Add code to interrogate the comparison result
+ `

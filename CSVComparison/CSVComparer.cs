@@ -14,8 +14,8 @@ namespace CSVComparison
     {
         private ManualResetEvent _readyToStartComparisonEvent = new ManualResetEvent(false);
         private readonly object _lockObj = new object();
-        private readonly Queue<CsvRow> _referenceQueue = new Queue<CsvRow>();
-        private readonly Queue<CsvRow> _candidateQueue = new Queue<CsvRow>();
+        private Queue<CsvRow> _referenceQueue = new Queue<CsvRow>();
+        private Queue<CsvRow> _candidateQueue = new Queue<CsvRow>();
         private int _runningLoaderThreads = 2;
         private ComparisonDefinition _comparisonDefinition;
         private Dictionary<string, CsvRow> _referenceOrphans = new Dictionary<string, CsvRow>();
@@ -25,7 +25,8 @@ namespace CSVComparison
         private bool _earlyTerminate = false;
 
         public ComparisonResult CompareFiles(string referenceFile, string candidateFile, ComparisonDefinition comparisonDefinition)
-        {       
+        {
+            ResetState();
             _comparisonDefinition = comparisonDefinition;
 
             var referenceLoaderTask = Task.Run(() => LoadFile(referenceFile, _referenceQueue));
@@ -48,6 +49,19 @@ namespace CSVComparison
             }
 
             return new ComparisonResult(_breaks) { ReferenceSource = referenceFile, CandidateSource = candidateFile };
+        }
+
+        private void ResetState()
+        {
+            _readyToStartComparisonEvent = new ManualResetEvent(false);    
+            _referenceQueue.Clear();
+            _candidateQueue.Clear();
+            _referenceOrphans.Clear();
+            _candidateOrphans.Clear();
+            _breaks.Clear();
+            _headerCheck = true;
+            _earlyTerminate = false;
+            _runningLoaderThreads = 2;
         }
 
         /// <summary>
