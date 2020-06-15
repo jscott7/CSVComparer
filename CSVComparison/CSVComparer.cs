@@ -24,6 +24,13 @@ namespace CSVComparison
         private bool _headerCheck = true;
         private bool _earlyTerminate = false;
 
+        public CSVComparer() { }
+
+        public CSVComparer(ComparisonDefinition comparisonDefinition)
+        {
+            _comparisonDefinition = comparisonDefinition;
+        }
+
         public ComparisonResult CompareFiles(string referenceFile, string candidateFile, ComparisonDefinition comparisonDefinition)
         {
             ResetState();
@@ -84,8 +91,17 @@ namespace CSVComparison
 
                     while ((line = streamReader.ReadLine()) != null)
                     {
-                        // This doesn't manage delimiter characters in comments, i.e. A,"B,Comment",C
-                        string[] columns = line.Split(_comparisonDefinition.Delimiter);
+                        string[] columns;
+                        if (_comparisonDefinition.Delimiter.Length == 1 || line.IndexOf("\"") > -1)
+                        {
+                            // If the delimiter is in quotes we don't want to split on it
+                            // However complex delimiters do not support this
+                            columns = SplitStringWithQuotes(line).ToArray();
+                        }
+                        else
+                        {
+                            columns = line.Split(_comparisonDefinition.Delimiter);
+                        }
 
                         if (rowIndex == _comparisonDefinition.HeaderRowIndex)
                         {
@@ -362,6 +378,46 @@ namespace CSVComparison
             }
 
             return keyIndexes;
+        }
+
+        public List<string> SplitStringWithQuotes(string line)
+        {
+            var startingQuoteIndex = line.IndexOf("\"");
+            var columnValues = new List<string>();
+
+            int lastIndex = 0;
+            int currentIndex = 0;
+            while ((currentIndex = line.IndexOf(_comparisonDefinition.Delimiter, lastIndex)) > 0)
+            {
+                int startIndex = lastIndex;
+
+                if (startingQuoteIndex > -1 && startingQuoteIndex >= lastIndex && startingQuoteIndex < currentIndex)
+                {
+                    // Get the next quote
+                    int nextQuoteIndex = line.IndexOf("\"", startingQuoteIndex + 1);
+                    
+                    // if the next qoute is past the current delimter index, get the next delimiter indes
+                    while (nextQuoteIndex > currentIndex)
+                    {
+                        lastIndex = currentIndex + 1;
+                        currentIndex = line.IndexOf(_comparisonDefinition.Delimiter, lastIndex);
+                    }
+
+                    // Get next starting quoteIndex;
+                    startingQuoteIndex = line.IndexOf("\"", currentIndex + 1);
+                }
+
+                //A,B,"C,D",D           
+                columnValues.Add(line.Substring(startIndex, currentIndex - startIndex));
+                lastIndex = currentIndex + 1;            
+            }
+
+            if (lastIndex <= line.Length)
+            {
+                columnValues.Add(line.Substring(lastIndex, line.Length - lastIndex));
+            }
+
+            return columnValues;
         }
     }
 }
