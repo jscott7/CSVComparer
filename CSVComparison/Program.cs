@@ -10,7 +10,7 @@ namespace CSVComparison
     {
         static void Main(string[] args)
         {
-            if (args.Length <= 3)
+            if (args.Length < 3)
             {
                 Console.WriteLine($"Invalid number of arguments {args.Length}. Expecting at least 3");
                 Console.WriteLine("Arguments used:");
@@ -19,7 +19,7 @@ namespace CSVComparison
                     Console.WriteLine(arg);
                 }
 
-                Console.WriteLine("Usage: CsVComparison [ReferenceFilePath] [CandidateFilePath] [ConfigurationFilePath]");
+                Console.WriteLine("Usage: CsVComparison ReferenceFilePath CandidateFilePath ConfigurationFilePath [OutputFile]");
                 return;
             }
 

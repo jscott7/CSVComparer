@@ -7,14 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSVComparison", "CSVCompari
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSVComparisonTests", "CSVComparisonTests\CSVComparisonTests.csproj", "{06E886F4-08AC-4837-AFE9-BF5C6E786099}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ExampleData", "ExampleData", "{74E7E2F6-4008-4275-A636-95D1E527A204}"
-	ProjectSection(SolutionItems) = preProject
-		Configuration.xml = Configuration.xml
-		ReferenceFile.csv = ReferenceFile.csv
-		TargetFile.csv = TargetFile.csv
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestDataGenerator", "TestDataGenerator\TestDataGenerator.csproj", "{B719C3E6-6F53-42D1-97AB-CC5AB19C140C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestDataGenerator", "TestDataGenerator\TestDataGenerator.csproj", "{B719C3E6-6F53-42D1-97AB-CC5AB19C140C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
