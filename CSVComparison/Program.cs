@@ -18,11 +18,13 @@ namespace CSVComparison
                 {
                     Console.WriteLine(arg);
                 }
+
+                Console.WriteLine("Usage: CsVComparison [ReferenceFilePath] [CandidateFilePath] [ConfigurationFilePath]");
                 return;
             }
 
             var referenceFilePath = args[0];
-            var targetFilePatch = args[1];
+            var candidateFilePatch = args[1];
             var configurationFilePath = args[2];
 
             string outputFile = "";
@@ -40,11 +42,11 @@ namespace CSVComparison
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             var csvComparer = new CSVComparer();
-            var comparisonResult = csvComparer.CompareFiles(referenceFilePath, targetFilePatch, comparisonDefinition);
+            var comparisonResult = csvComparer.CompareFiles(referenceFilePath, candidateFilePatch, comparisonDefinition);
             stopwatch.Stop();
 
             Console.WriteLine($"Reference: {comparisonResult.ReferenceSource}");
-            Console.WriteLine($"Target: {comparisonResult.CandidateSource}");
+            Console.WriteLine($"Candidate: {comparisonResult.CandidateSource}");
 
             if (string.IsNullOrEmpty(outputFile))
             {
