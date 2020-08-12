@@ -396,25 +396,39 @@ namespace CSVComparison
                     // Get the next quote
                     int nextQuoteIndex = line.IndexOf("\"", startingQuoteIndex + 1);
                     
-                    // if the next qoute is past the current delimter index, get the next delimiter indes
-                    while (nextQuoteIndex > currentIndex)
+                    // If the next qoute is past the current delimiter index, get the next delimiter index
+                    while (nextQuoteIndex > currentIndex && nextQuoteIndex < line.Length -1)
                     {
                         lastIndex = currentIndex + 1;
                         currentIndex = line.IndexOf(_comparisonDefinition.Delimiter, lastIndex);
                     }
 
-                    // Get next starting quoteIndex;
-                    startingQuoteIndex = line.IndexOf("\"", currentIndex + 1);
+                    if (nextQuoteIndex == line.Length - 1)
+                    {
+                        // The next quote is the final character in the line 
+                        startIndex += 1;
+                        currentIndex = line.Length - 1;
+                    }
+                    else
+                    {
+                        // Get next startingQuoteIndex;
+                        startingQuoteIndex = line.IndexOf("\"", currentIndex + 1);
+                    }
                 }
-
-                //A,B,"C,D",D           
+       
                 columnValues.Add(line.Substring(startIndex, currentIndex - startIndex));
                 lastIndex = currentIndex + 1;            
             }
 
-            if (lastIndex <= line.Length)
+            if (lastIndex < line.Length)
             {
                 columnValues.Add(line.Substring(lastIndex, line.Length - lastIndex));
+            }
+
+            // If the last character is a delimiter we will use the convention that this indicates there is one more column 
+            if (line.EndsWith(_comparisonDefinition.Delimiter))
+            {
+                columnValues.Add("");
             }
 
             return columnValues;

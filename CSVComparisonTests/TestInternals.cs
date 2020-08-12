@@ -80,5 +80,16 @@ namespace CSVComparisonTests
             var columnValues = CSVComparer.SplitStringWithQuotes(complexLine);
             Assert.AreEqual(5, columnValues.Count);
         }
+
+        [Test]
+        public void TestQuoteAsLastCharacter()
+        {
+            var complexLine = "A,B,\"C,D\"";
+            var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
+            var CSVComparer = new CSVComparer(comparisonDefinition);
+
+            var columnValues = CSVComparer.SplitStringWithQuotes(complexLine);
+            Assert.AreEqual(3, columnValues.Count);
+        }
     }
 }
