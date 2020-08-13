@@ -17,8 +17,8 @@ namespace CSVComparisonTests
             comparisonDefinition.KeyColumns.Add("ABC");
             comparisonDefinition.KeyColumns.Add("DEF");       
 
-            var csvComparer = new CSVComparer();
-            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, targetDataFile, comparisonDefinition);
+            var csvComparer = new CSVComparer(comparisonDefinition);
+            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, targetDataFile);
 
             Assert.AreEqual(3, comparisonResult.BreakDetails.Count);
         }
@@ -33,8 +33,8 @@ namespace CSVComparisonTests
             comparisonDefinition.KeyColumns.Add("ABC");
             comparisonDefinition.KeyColumns.Add("DEF");
 
-            var csvComparer = new CSVComparer();
-            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, targetDataFile, comparisonDefinition);
+            var csvComparer = new CSVComparer(comparisonDefinition);
+            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, targetDataFile);
 
             Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
             Assert.AreEqual("Reference has 4 columns, Candidate has 5 columns", comparisonResult.BreakDetails[0].BreakDescription);
@@ -51,12 +51,12 @@ namespace CSVComparisonTests
             comparisonDefinition.KeyColumns.Add("ABC");
             comparisonDefinition.KeyColumns.Add("DEF");
 
-            var csvComparer = new CSVComparer();
-            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, targetDataFile, comparisonDefinition);
+            var csvComparer = new CSVComparer(comparisonDefinition);
+            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, targetDataFile);
 
             Assert.AreEqual(3, comparisonResult.BreakDetails.Count);
 
-            var comparisonResult2 = csvComparer.CompareFiles(referenceDataFile, referenceDataFile, comparisonDefinition);
+            var comparisonResult2 = csvComparer.CompareFiles(referenceDataFile, referenceDataFile);
             Assert.AreEqual(0, comparisonResult.BreakDetails.Count);
         }
     }

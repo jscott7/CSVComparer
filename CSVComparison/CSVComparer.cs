@@ -24,17 +24,14 @@ namespace CSVComparison
         private bool _headerCheck = true;
         private bool _earlyTerminate = false;
 
-        public CSVComparer() { }
-
         public CSVComparer(ComparisonDefinition comparisonDefinition)
         {
             _comparisonDefinition = comparisonDefinition;
         }
 
-        public ComparisonResult CompareFiles(string referenceFile, string candidateFile, ComparisonDefinition comparisonDefinition)
+        public ComparisonResult CompareFiles(string referenceFile, string candidateFile)
         {
             ResetState();
-            _comparisonDefinition = comparisonDefinition;
 
             var referenceLoaderTask = Task.Run(() => LoadFile(referenceFile, _referenceQueue));
             var candidateLoaderTask = Task.Run(() => LoadFile(candidateFile, _candidateQueue));
@@ -294,7 +291,6 @@ namespace CSVComparison
         /// <param name="candidateRow"></param>
         /// <returns>True for successful comparison</returns>
         /// <remarks>We assume the columns will be in the same order</remarks>   
-        //     bool CompareValues(string key, string[] referenceRow, string[] candidateRow)
         bool CompareValues(string key, CsvRow referenceRow, CsvRow candidateRow)
         {
             var referenceColumns = referenceRow.Columns;
@@ -380,6 +376,11 @@ namespace CSVComparison
             return keyIndexes;
         }
 
+        /// <summary>
+        /// Split a string that can have delimiters embedded in quotes, for example: A,B,"C,D",E
+        /// </summary>
+        /// <param name="line"></param>
+        /// <returns></returns>
         public List<string> SplitStringWithQuotes(string line)
         {
             var startingQuoteIndex = line.IndexOf("\"");

@@ -24,7 +24,7 @@ namespace CSVComparison
             }
 
             var referenceFilePath = args[0];
-            var candidateFilePatch = args[1];
+            var candidateFilePath = args[1]; 
             var configurationFilePath = args[2];
 
             string outputFile = "";
@@ -41,8 +41,8 @@ namespace CSVComparison
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            var csvComparer = new CSVComparer();
-            var comparisonResult = csvComparer.CompareFiles(referenceFilePath, candidateFilePatch, comparisonDefinition);
+            var csvComparer = new CSVComparer(comparisonDefinition);
+            var comparisonResult = csvComparer.CompareFiles(referenceFilePath, candidateFilePath);
             stopwatch.Stop();
 
             Console.WriteLine($"Reference: {comparisonResult.ReferenceSource}");
@@ -62,6 +62,11 @@ namespace CSVComparison
             }
 
             Console.WriteLine($"Finished. Comparison took {stopwatch.ElapsedMilliseconds}ms");
+        }
+
+        private static void RunSingleComparison()
+        {
+
         }
 
         private static void SaveResults(string outputFile, ComparisonResult comparisonResult, ComparisonDefinition comparisonDefinition, long elapsedMillis)
