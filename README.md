@@ -54,8 +54,8 @@ To run from your own C# code:
  comparisonDefinition.KeyColumns.Add("ABC");
  comparisonDefinition.KeyColumns.Add("DEF");
 
- var csvComparer = new CSVComparer();
- var comparisonResult = csvComparer.CompareFiles(referenceDataFilePath, targetDataFilePath, comparisonDefinition);
+ var csvComparer = new CSVComparer(comparisonDefinition);
+ var comparisonResult = csvComparer.CompareFiles(referenceDataFilePath, targetDataFilePath);
 
  # Add code to interrogate the comparison result
 ```
