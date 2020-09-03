@@ -45,7 +45,54 @@ The configuration is used to define how to treat the CSV files:
 
 **ToleranceValue** The tolerance to use for numeric values
 
+## Directory comparison
+
+If the Reference and Candidate paths are directories you can compare multiple files. If the files have different structures a configuration can
+be created that can define all comparisons
+
+```html
+<MultipleComparisonDefinition>
+  <FileComparisonDefinitions>
+    <Comparison>
+      <Key>Test</Key>
+      <FilePattern>Test</FilePattern>
+      <ComparisonDefinition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <Delimiter>,</Delimiter>
+        <KeyColumns>
+          <Column>COL A</Column>
+        </KeyColumns>
+        <HeaderRowIndex>0</HeaderRowIndex>
+        <ToleranceValue>0.1</ToleranceValue>
+        <ToleranceType>Relative</ToleranceType>
+      </ComparisonDefinition>
+    </Comparison>
+    <Comparison>
+      <Key>Test2</Key>
+      <FilePattern>File</FilePattern>
+      <ComparisonDefinition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <Delimiter>,</Delimiter>
+        <KeyColumns>
+          <Column>COL 1</Column>
+          <Column>COL 2</Column>
+        </KeyColumns>
+        <HeaderRowIndex>0</HeaderRowIndex>
+        <ToleranceValue>0.1</ToleranceValue>
+        <ToleranceType>Relative</ToleranceType>
+      </ComparisonDefinition>
+    </Comparison>
+  </FileComparisonDefinitions>
+</MultipleComparisonDefinition>
+```
+
+### Current limitations
+
+Files must have the same name in both directories
+
+To discover the configuration, there is a simple check that the filename contains the pattern. We don't yet support
+Test1.csv and Type2Test1.csv for example with different schemas
+
 ## API
+
 To run from your own C# code:
 
 ```csharp

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -33,6 +34,79 @@ namespace CSVComparison
                 outputFile = args[3];
             }
 
+            if (Directory.Exists(referenceFilePath))
+            {
+                // This is a directory
+                RunDirectoryComparison(configurationFilePath, referenceFilePath, candidateFilePath, outputFile);
+            }
+            else
+            {
+                // Default to single file comparison
+                RunSingleComparison(configurationFilePath, referenceFilePath, candidateFilePath, outputFile);
+            }
+        }
+
+        private static void RunDirectoryComparison(string configurationFilePath, string referenceFilePath, string candidateFilePath, string outputFile)
+        {
+            var xmlDocument = new XmlDocument();
+            xmlDocument.Load(configurationFilePath);
+
+            var xmlSerializer = new XmlSerializer(typeof(MultipleComparisonDefinition));
+            var comparisonDefinition = (MultipleComparisonDefinition)xmlSerializer.Deserialize(new XmlNodeReader((XmlNode)xmlDocument.DocumentElement));
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            // Now enumerate directory
+            var referenceDirectory = new DirectoryInfo(referenceFilePath);
+            bool appendFile = false;
+
+            foreach (var file in referenceDirectory.GetFiles())
+            {
+                // Get the comparisondefinition for the file, using the pattern
+                var currentDefinition = comparisonDefinition.FileComparisonDefinitions.Where(x => file.Name.Contains(x.FilePattern));
+               
+                if (currentDefinition.Count() == 0)
+                {
+                    Console.WriteLine($"No Comparison Definition found for {file.FullName}");
+                    continue;
+                }
+
+                var csvComparer = new CSVComparer(currentDefinition.FirstOrDefault().ComparisonDefinition);
+                var comparisonResult = csvComparer.CompareFiles(file.FullName, Path.Combine(candidateFilePath, file.Name));
+                stopwatch.Stop();
+
+                Console.WriteLine($"Reference: {comparisonResult.ReferenceSource}");
+                Console.WriteLine($"Candidate: {comparisonResult.CandidateSource}");
+
+                if (comparisonResult.BreakDetails.Count() == 0)
+                {
+                    Console.WriteLine("No differences found.");
+                }
+
+                if (string.IsNullOrEmpty(outputFile))
+                {
+                    foreach (var breakResult in comparisonResult.BreakDetails)
+                    {
+                        Console.WriteLine(breakResult.ToString());
+                    }                
+                }
+                else
+                {
+                    Console.WriteLine($"Saving results to {outputFile}");
+                    SaveResults(outputFile, comparisonResult, currentDefinition.FirstOrDefault().ComparisonDefinition, stopwatch.ElapsedMilliseconds, appendFile);
+                    if (!appendFile)
+                    {
+                        appendFile = true;
+                    }
+                }
+            }
+
+            Console.WriteLine($"Finished. Comparison took {stopwatch.ElapsedMilliseconds}ms");
+        }
+
+        private static void RunSingleComparison(string configurationFilePath, string referenceFilePath, string candidateFilePath, string outputFile)
+        {
             var xmlDocument = new XmlDocument();
             xmlDocument.Load(configurationFilePath);
 
@@ -58,20 +132,15 @@ namespace CSVComparison
             else
             {
                 Console.WriteLine($"Saving results to {outputFile}");
-                SaveResults(outputFile, comparisonResult, comparisonDefinition, stopwatch.ElapsedMilliseconds);
+                SaveResults(outputFile, comparisonResult, comparisonDefinition, stopwatch.ElapsedMilliseconds, false);
             }
 
             Console.WriteLine($"Finished. Comparison took {stopwatch.ElapsedMilliseconds}ms");
         }
 
-        private static void RunSingleComparison()
+        private static void SaveResults(string outputFile, ComparisonResult comparisonResult, ComparisonDefinition comparisonDefinition, long elapsedMillis, bool append)
         {
-
-        }
-
-        private static void SaveResults(string outputFile, ComparisonResult comparisonResult, ComparisonDefinition comparisonDefinition, long elapsedMillis)
-        {
-            using (var sw = new StreamWriter(outputFile))
+            using (var sw = new StreamWriter(outputFile, append))
             {
                 var xmlSerializer = new XmlSerializer(typeof(ComparisonDefinition));
                 xmlSerializer.Serialize(sw, comparisonDefinition);
@@ -79,7 +148,7 @@ namespace CSVComparison
                 sw.WriteLine($"Reference: {comparisonResult.ReferenceSource}");
                 sw.WriteLine($"Target: {comparisonResult.CandidateSource}");
                 sw.WriteLine($"Comparison took {elapsedMillis}ms");
-
+                sw.WriteLine($"Number of breaks {comparisonResult.BreakDetails.Count()}");
                 sw.WriteLine("Break Type,Key,Reference Row, Reference Value, Candidate Row, Candidate Value");
                 foreach(var breakResult in comparisonResult.BreakDetails)
                 {
