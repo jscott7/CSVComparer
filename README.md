@@ -48,7 +48,9 @@ The configuration is used to define how to treat the CSV files:
 ## Directory comparison
 
 If the Reference and Candidate paths are directories you can compare multiple files. If the files have different structures a configuration can
-be created that can define all comparisons
+be created that can define all comparisons.
+
+The FilePattern element is a Regex pattern that is used to determine the configuration.
 
 ```html
 <MultipleComparisonDefinition>
@@ -87,9 +89,6 @@ be created that can define all comparisons
 ### Current limitations
 
 Files must have the same name in both directories
-
-To discover the configuration, there is a simple check that the filename contains the pattern. We don't yet support
-Test1.csv and Type2Test1.csv for example with different schemas
 
 ## API
 

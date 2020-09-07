@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -64,15 +65,16 @@ namespace CSVComparison
             foreach (var file in referenceDirectory.GetFiles())
             {
                 // Get the comparisondefinition for the file, using the pattern
-                var currentDefinition = comparisonDefinition.FileComparisonDefinitions.Where(x => file.Name.Contains(x.FilePattern));
-               
-                if (currentDefinition.Count() == 0)
+                var comparisonDefinitionForFileType = comparisonDefinition.FileComparisonDefinitions.Where(x => Regex.IsMatch(file.Name, x.FilePattern));
+
+                if (comparisonDefinitionForFileType.Count() != 1)
                 {
-                    Console.WriteLine($"No Comparison Definition found for {file.FullName}");
+                    Console.WriteLine($"No valid Comparison Definition found for {file.FullName}");
                     continue;
                 }
 
-                var csvComparer = new CSVComparer(currentDefinition.FirstOrDefault().ComparisonDefinition);
+                Console.WriteLine($"Found Comparison Definition: {comparisonDefinitionForFileType.First().Key}");
+                var csvComparer = new CSVComparer(comparisonDefinitionForFileType.First().ComparisonDefinition);
                 var comparisonResult = csvComparer.CompareFiles(file.FullName, Path.Combine(candidateFilePath, file.Name));
                 stopwatch.Stop();
 
@@ -93,8 +95,18 @@ namespace CSVComparison
                 }
                 else
                 {
-                    Console.WriteLine($"Saving results to {outputFile}");
-                    SaveResults(outputFile, comparisonResult, currentDefinition.FirstOrDefault().ComparisonDefinition, stopwatch.ElapsedMilliseconds, appendFile);
+                    var resultsFile = "";
+                    if (Directory.Exists(outputFile))
+                    {
+                        resultsFile = Path.Combine(outputFile, $"Reconciliation-Results-{comparisonDefinitionForFileType.First().Key}.csv");
+                    }
+                    else
+                    {
+                        resultsFile = outputFile;
+                    }
+
+                    Console.WriteLine($"Saving results to {resultsFile}");
+                    SaveResults(resultsFile, comparisonResult, comparisonDefinitionForFileType.First().ComparisonDefinition, stopwatch.ElapsedMilliseconds, appendFile);
                     if (!appendFile)
                     {
                         appendFile = true;
