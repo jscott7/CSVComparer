@@ -86,9 +86,12 @@ The FilePattern element is a Regex pattern that is used to determine the configu
 </MultipleComparisonDefinition>
 ```
 
-### Current limitations
+The comparison will check each file in the reference directory. If a Comparison is found using the file pattern an exact file match is first attempted in the 
+candidate directory. If an exact match does not happen then a search for a single file that matches the pattern will be performed. 
 
-Files must have the same name in both directories
+The comparison will be performed only if:
+* A comparison definition is found
+* Exactly one candidate file is found, either by exact match or file pattern match
 
 ## API
 
