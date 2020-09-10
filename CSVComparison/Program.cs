@@ -10,6 +10,8 @@ namespace CSVComparison
 {
     class Program
     {
+        private static bool AppendFile = false;
+
         static void Main(string[] args)
         {
             if (args.Length < 3)
@@ -53,19 +55,19 @@ namespace CSVComparison
             xmlDocument.Load(configurationFilePath);
 
             var xmlSerializer = new XmlSerializer(typeof(MultipleComparisonDefinition));
-            var comparisonDefinition = (MultipleComparisonDefinition)xmlSerializer.Deserialize(new XmlNodeReader((XmlNode)xmlDocument.DocumentElement));
-
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
+            var multiComparisonDefinition = (MultipleComparisonDefinition)xmlSerializer.Deserialize(new XmlNodeReader((XmlNode)xmlDocument.DocumentElement));
 
             // Now enumerate directory
             var referenceDirectory = new DirectoryInfo(referenceFilePath);
-            bool appendFile = false;
+            AppendFile = false;
 
             foreach (var file in referenceDirectory.GetFiles())
             {
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
+
                 // Get the comparisondefinition for the file, using the pattern
-                var comparisonDefinitionForFileType = comparisonDefinition.FileComparisonDefinitions.Where(x => Regex.IsMatch(file.Name, x.FilePattern));
+                var comparisonDefinitionForFileType = multiComparisonDefinition.FileComparisonDefinitions.Where(x => Regex.IsMatch(file.Name, x.FilePattern));
 
                 if (comparisonDefinitionForFileType.Count() != 1)
                 {
@@ -73,48 +75,39 @@ namespace CSVComparison
                     continue;
                 }
 
-                Console.WriteLine($"Found Comparison Definition: {comparisonDefinitionForFileType.First().Key}");
-                var csvComparer = new CSVComparer(comparisonDefinitionForFileType.First().ComparisonDefinition);
-                var comparisonResult = csvComparer.CompareFiles(file.FullName, Path.Combine(candidateFilePath, file.Name));
-                stopwatch.Stop();
+                var fileComparisonDefinition = comparisonDefinitionForFileType.First();
 
-                Console.WriteLine($"Reference: {comparisonResult.ReferenceSource}");
-                Console.WriteLine($"Candidate: {comparisonResult.CandidateSource}");
+                Console.WriteLine($"Found Comparison Definition: {fileComparisonDefinition.Key}");
+                var csvComparer = new CSVComparer(fileComparisonDefinition.ComparisonDefinition);
 
-                if (comparisonResult.BreakDetails.Count() == 0)
+                // Search for candidate file. Try exact file match first, then try filepattern match
+                ComparisonResult comparisonResult;
+                if (File.Exists(Path.Combine(candidateFilePath, file.Name)))
                 {
-                    Console.WriteLine("No differences found.");
-                }
-
-                if (string.IsNullOrEmpty(outputFile))
-                {
-                    foreach (var breakResult in comparisonResult.BreakDetails)
-                    {
-                        Console.WriteLine(breakResult.ToString());
-                    }                
+                    comparisonResult = csvComparer.CompareFiles(file.FullName, Path.Combine(candidateFilePath, file.Name));
                 }
                 else
                 {
-                    var resultsFile = "";
-                    if (Directory.Exists(outputFile))
+                    var directoryInfo = new DirectoryInfo(candidateFilePath);
+                    var regex = new Regex(fileComparisonDefinition.FilePattern);
+                    var candidatePaths = directoryInfo.GetFiles().Where(candidateFile => regex.IsMatch(candidateFile.Name));
+
+                    if (candidatePaths.Count() != 1)
                     {
-                        resultsFile = Path.Combine(outputFile, $"Reconciliation-Results-{comparisonDefinitionForFileType.First().Key}.csv");
-                    }
-                    else
-                    {
-                        resultsFile = outputFile;
+                        Console.WriteLine($"Unable to find a single matching file to compare with {file.FullName}. Found {candidatePaths.Count()}");
+                        continue;
                     }
 
-                    Console.WriteLine($"Saving results to {resultsFile}");
-                    SaveResults(resultsFile, comparisonResult, comparisonDefinitionForFileType.First().ComparisonDefinition, stopwatch.ElapsedMilliseconds, appendFile);
-                    if (!appendFile)
-                    {
-                        appendFile = true;
-                    }
+                    comparisonResult = csvComparer.CompareFiles(file.FullName, candidatePaths.First().FullName);
                 }
+
+                stopwatch.Stop();
+                var elapsedTime = stopwatch.ElapsedMilliseconds;
+                HandleResult(comparisonResult, elapsedTime, fileComparisonDefinition, outputFile);
+                Console.WriteLine($"Comparison took {stopwatch.ElapsedMilliseconds}ms");
             }
 
-            Console.WriteLine($"Finished. Comparison took {stopwatch.ElapsedMilliseconds}ms");
+            Console.WriteLine("Finished.");
         }
 
         private static void RunSingleComparison(string configurationFilePath, string referenceFilePath, string candidateFilePath, string outputFile)
@@ -144,21 +137,61 @@ namespace CSVComparison
             else
             {
                 Console.WriteLine($"Saving results to {outputFile}");
-                SaveResults(outputFile, comparisonResult, comparisonDefinition, stopwatch.ElapsedMilliseconds, false);
+                AppendFile = false;
+                SaveResults(outputFile, comparisonResult, comparisonDefinition, stopwatch.ElapsedMilliseconds);
             }
 
             Console.WriteLine($"Finished. Comparison took {stopwatch.ElapsedMilliseconds}ms");
         }
 
-        private static void SaveResults(string outputFile, ComparisonResult comparisonResult, ComparisonDefinition comparisonDefinition, long elapsedMillis, bool append)
+        private static void HandleResult(ComparisonResult comparisonResult, long elapsedTime, FileComparisonDefinition fileComparisonDefinition, string outputFile)
         {
-            using (var sw = new StreamWriter(outputFile, append))
+            Console.WriteLine($"Reference: {comparisonResult.ReferenceSource}");
+            Console.WriteLine($"Candidate: {comparisonResult.CandidateSource}");
+
+            if (comparisonResult.BreakDetails.Count() == 0)
+            {
+                Console.WriteLine("No differences found.");
+            }
+
+            if (string.IsNullOrEmpty(outputFile))
+            {
+                foreach (var breakResult in comparisonResult.BreakDetails)
+                {
+                    Console.WriteLine(breakResult.ToString());
+                }
+            }
+            else
+            {
+                var resultsFile = "";
+                if (Directory.Exists(outputFile))
+                {
+                    resultsFile = Path.Combine(outputFile, $"Reconciliation-Results-{fileComparisonDefinition.Key}.csv");
+                }
+                else
+                {
+                    resultsFile = outputFile;
+                }
+
+                Console.WriteLine($"Saving results to {resultsFile}");
+                SaveResults(resultsFile, comparisonResult, fileComparisonDefinition.ComparisonDefinition, elapsedTime);
+                if (!AppendFile)
+                {
+                    AppendFile = true;
+                }
+            }
+        }
+
+
+        private static void SaveResults(string outputFile, ComparisonResult comparisonResult, ComparisonDefinition comparisonDefinition, long elapsedMillis)
+        {
+            using (var sw = new StreamWriter(outputFile, AppendFile))
             {
                 var xmlSerializer = new XmlSerializer(typeof(ComparisonDefinition));
                 xmlSerializer.Serialize(sw, comparisonDefinition);
                 sw.WriteLine();
                 sw.WriteLine($"Reference: {comparisonResult.ReferenceSource}");
-                sw.WriteLine($"Target: {comparisonResult.CandidateSource}");
+                sw.WriteLine($"Candidate: {comparisonResult.CandidateSource}");
                 sw.WriteLine($"Comparison took {elapsedMillis}ms");
                 sw.WriteLine($"Number of breaks {comparisonResult.BreakDetails.Count()}");
                 sw.WriteLine("Break Type,Key,Reference Row, Reference Value, Candidate Row, Candidate Value");
