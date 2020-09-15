@@ -84,6 +84,7 @@ namespace CSVComparison
                 ComparisonResult comparisonResult;
                 if (File.Exists(Path.Combine(candidateFilePath, file.Name)))
                 {
+                    Console.WriteLine($"Comparing {file.FullName} with {Path.Combine(candidateFilePath, file.Name)}");
                     comparisonResult = csvComparer.CompareFiles(file.FullName, Path.Combine(candidateFilePath, file.Name));
                 }
                 else
@@ -97,6 +98,8 @@ namespace CSVComparison
                         Console.WriteLine($"Unable to find a single matching file to compare with {file.FullName}. Found {candidatePaths.Count()}");
                         continue;
                     }
+
+                    Console.WriteLine($"Comparing {file.FullName} with {candidatePaths.First().FullName}");
 
                     comparisonResult = csvComparer.CompareFiles(file.FullName, candidatePaths.First().FullName);
                 }
