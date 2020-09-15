@@ -23,6 +23,8 @@ namespace CSVComparison
         private List<BreakDetail> _breaks = new List<BreakDetail>();
         private bool _headerCheck = true;
         private bool _earlyTerminate = false;
+        private long _numberOfReferenceRows = 0;
+        private long _numberOfCandidateRows = 0;
 
         public CSVComparer(ComparisonDefinition comparisonDefinition)
         {
@@ -52,7 +54,11 @@ namespace CSVComparison
                 }
             }
 
-            return new ComparisonResult(_breaks) { ReferenceSource = referenceFile, CandidateSource = candidateFile };
+            return new ComparisonResult(_breaks) { 
+                ReferenceSource = referenceFile, 
+                CandidateSource = candidateFile, 
+                NumberOfReferenceRows = _numberOfReferenceRows,
+                NumberOfCandidateRows = _numberOfCandidateRows };
         }
 
         private void ResetState()
@@ -169,10 +175,12 @@ namespace CSVComparison
                     if (_referenceQueue.Count > 0)
                     {
                         referenceRow = _referenceQueue.Dequeue();
+                        _numberOfReferenceRows++;
                     }
                     if (_candidateQueue.Count > 0)
                     {
                         candidateRow = _candidateQueue.Dequeue();
+                        _numberOfCandidateRows++;
                     }
                 }
                

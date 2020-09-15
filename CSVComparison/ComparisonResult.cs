@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace CSVComparison
 {
@@ -13,6 +12,10 @@ namespace CSVComparison
         public DateTime Date;
 
         public List<BreakDetail> BreakDetails = new List<BreakDetail>();
+
+        public long NumberOfReferenceRows;
+
+        public long NumberOfCandidateRows;
 
         public ComparisonResult(List<BreakDetail> breakDetails)
         {

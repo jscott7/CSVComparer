@@ -59,10 +59,10 @@ namespace CSVComparison
 
             // Now enumerate directory
             var referenceDirectory = new DirectoryInfo(referenceFilePath);
-            AppendFile = false;
-
+  
             foreach (var file in referenceDirectory.GetFiles())
             {
+                AppendFile = false;
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
 
@@ -104,7 +104,7 @@ namespace CSVComparison
                 stopwatch.Stop();
                 var elapsedTime = stopwatch.ElapsedMilliseconds;
                 HandleResult(comparisonResult, elapsedTime, fileComparisonDefinition, outputFile);
-                Console.WriteLine($"Comparison took {stopwatch.ElapsedMilliseconds}ms");
+                Console.WriteLine($"Comparison took {stopwatch.ElapsedMilliseconds}ms\r\n");
             }
 
             Console.WriteLine("Finished.");
@@ -182,22 +182,35 @@ namespace CSVComparison
             }
         }
 
-
         private static void SaveResults(string outputFile, ComparisonResult comparisonResult, ComparisonDefinition comparisonDefinition, long elapsedMillis)
-        {
+        {  
             using (var sw = new StreamWriter(outputFile, AppendFile))
             {
                 var xmlSerializer = new XmlSerializer(typeof(ComparisonDefinition));
-                xmlSerializer.Serialize(sw, comparisonDefinition);
+
+                // If we are checking multiple files with the same configuration we don't want to write it out more than once
+                if (!AppendFile)
+                {                 
+                    xmlSerializer.Serialize(sw, comparisonDefinition);
+                    sw.WriteLine();
+                }
+
                 sw.WriteLine();
                 sw.WriteLine($"Reference: {comparisonResult.ReferenceSource}");
                 sw.WriteLine($"Candidate: {comparisonResult.CandidateSource}");
+                sw.WriteLine($"Number of Reference rows: {comparisonResult.NumberOfReferenceRows}");
+                sw.WriteLine($"Number of Candidate rows: {comparisonResult.NumberOfCandidateRows}");
                 sw.WriteLine($"Comparison took {elapsedMillis}ms");
                 sw.WriteLine($"Number of breaks {comparisonResult.BreakDetails.Count()}");
-                sw.WriteLine("Break Type,Key,Reference Row, Reference Value, Candidate Row, Candidate Value");
-                foreach(var breakResult in comparisonResult.BreakDetails)
+                sw.WriteLine();
+
+                if (comparisonResult.BreakDetails.Count() > 0)
                 {
-                    sw.WriteLine($"{breakResult.BreakType},{breakResult.BreakKey},{breakResult.ReferenceRow},{breakResult.ReferenceValue},{breakResult.CandidateRow},{breakResult.CandidateValue}");
+                    sw.WriteLine("Break Type,Key,Reference Row, Reference Value, Candidate Row, Candidate Value");
+                    foreach (var breakResult in comparisonResult.BreakDetails)
+                    {
+                        sw.WriteLine($"{breakResult.BreakType},{breakResult.BreakKey},{breakResult.ReferenceRow},{breakResult.ReferenceValue},{breakResult.CandidateRow},{breakResult.CandidateValue}");
+                    }
                 }
             }
         }

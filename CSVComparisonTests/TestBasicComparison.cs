@@ -17,9 +17,11 @@ namespace CSVComparisonTests
             var csvComparer = new CSVComparer(comparisonDefinition);
             var comparisonResult = csvComparer.CompareFiles(testDataFile, testDataFile);
 
-            Assert.AreEqual(0, comparisonResult.BreakDetails.Count);
-            Assert.AreEqual(testDataFile, comparisonResult.ReferenceSource);
-            Assert.AreEqual(testDataFile, comparisonResult.CandidateSource);
+            Assert.AreEqual(0, comparisonResult.BreakDetails.Count, "Invalid number of breaks");
+            Assert.AreEqual(2, comparisonResult.NumberOfReferenceRows, "Invalid number of reference rows");
+            Assert.AreEqual(2, comparisonResult.NumberOfCandidateRows, "Invalid number of candidate rows");
+            Assert.AreEqual(testDataFile, comparisonResult.ReferenceSource, "Invalid reference source name");
+            Assert.AreEqual(testDataFile, comparisonResult.CandidateSource, "Invalid candidate source name");
         }
 
         [Test]
