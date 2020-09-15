@@ -72,6 +72,8 @@ namespace CSVComparison
             _headerCheck = true;
             _earlyTerminate = false;
             _runningLoaderThreads = 2;
+            _numberOfReferenceRows = 0;
+            _numberOfCandidateRows = 0;
         }
 
         /// <summary>
@@ -268,6 +270,11 @@ namespace CSVComparison
             }
             else
             {
+                if (_candidateOrphans.ContainsKey(candidateRow.Key))
+                {
+                    throw new ComparisonException($"Candidate orphan {candidateRow.Key} already exists. This usually means the key columns do not define unique rows.");
+                }
+
                 _candidateOrphans.Add(candidateRow.Key, candidateRow);
             }
 
@@ -285,6 +292,11 @@ namespace CSVComparison
             }
             else
             {
+                if (_referenceOrphans.ContainsKey(referenceRow.Key))
+                {
+                    throw new ComparisonException($"Reference orphan {referenceRow.Key} already exists. This usually means the key columns do not define unique rows.");
+                }
+
                 _referenceOrphans.Add(referenceRow.Key, referenceRow);
             }
 
