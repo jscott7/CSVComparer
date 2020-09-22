@@ -1,6 +1,7 @@
 ﻿using CSVComparison;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace CSVComparisonTests
@@ -57,7 +58,25 @@ namespace CSVComparisonTests
             Assert.AreEqual(3, comparisonResult.BreakDetails.Count);
 
             var comparisonResult2 = csvComparer.CompareFiles(referenceDataFile, referenceDataFile);
-            Assert.AreEqual(0, comparisonResult.BreakDetails.Count);
+            Assert.AreEqual(0, comparisonResult2.BreakDetails.Count);
+        }
+
+        [Test]
+        public void TestWithExcludedColumn()
+        {
+            var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "ComplexReferenceFile.csv");
+            var targetDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "ComplexTargetFile.csv");
+
+            var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
+            comparisonDefinition.KeyColumns.Add("ABC");
+            comparisonDefinition.KeyColumns.Add("DEF");
+
+            comparisonDefinition.ExcludedColumns = new List<string> () { "AValueColumn" };
+
+            var csvComparer = new CSVComparer(comparisonDefinition);
+            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, targetDataFile);
+
+            Assert.AreEqual(2, comparisonResult.BreakDetails.Count);
         }
     }
 }

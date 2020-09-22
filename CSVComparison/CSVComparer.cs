@@ -25,6 +25,7 @@ namespace CSVComparison
         private bool _earlyTerminate = false;
         private long _numberOfReferenceRows = 0;
         private long _numberOfCandidateRows = 0;
+        private HashSet<int> _excludedColumns = null;
 
         public CSVComparer(ComparisonDefinition comparisonDefinition)
         {
@@ -74,6 +75,7 @@ namespace CSVComparison
             _runningLoaderThreads = 2;
             _numberOfReferenceRows = 0;
             _numberOfCandidateRows = 0;
+            _excludedColumns = null;
         }
 
         /// <summary>
@@ -113,6 +115,17 @@ namespace CSVComparison
                             keyIndexes.AddRange(GetKeyIndexes(columns));
                             expectedColumnCount = columns.Length;
                             dataRow = true;
+
+                            // Both loader threads can set excluded columns, but we only want to update once
+                            // If the columns are different we will early terminate the comparison
+                            var excludedColumns = GetExcludedColumns(columns);
+                            lock(_lockObj)
+                            {
+                                if (_excludedColumns == null)
+                                {
+                                    _excludedColumns = excludedColumns;
+                                }
+                            }
                         }
 
                         if (dataRow)
@@ -326,6 +339,13 @@ namespace CSVComparison
 
             for (int referenceIndex = 0; referenceIndex < referenceColumns.Length; referenceIndex++)
             {
+
+                // Don't lock - _excludedColumns is only updated by one of the loader threads
+                if (_excludedColumns.Contains(referenceIndex))
+                {
+                    continue;
+                }
+                
                 var referenceValue = referenceColumns[referenceIndex];
                 var candidateValue = candidateColumns[referenceIndex];
 
@@ -378,7 +398,7 @@ namespace CSVComparison
 
         List<int> GetKeyIndexes(string[] headerRow)
         {
-            List<int> keyIndexes = new List<int>();
+            var keyIndexes = new List<int>();
 
             for (int columnIndex = 0; columnIndex < headerRow.Length; columnIndex++)
             {
@@ -394,6 +414,21 @@ namespace CSVComparison
             }
 
             return keyIndexes;
+        }
+
+        HashSet<int> GetExcludedColumns(string[] headerRow)
+        {
+            var excludedColumns = new HashSet<int>();
+
+            for(int columnIndex = 0; columnIndex < headerRow.Length; columnIndex++)
+            {
+                if (_comparisonDefinition.ExcludedColumns != null && _comparisonDefinition.ExcludedColumns.Contains(headerRow[columnIndex]))
+                {
+                    excludedColumns.Add(columnIndex);
+                }
+            }
+
+            return excludedColumns;
         }
 
         /// <summary>

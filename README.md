@@ -26,6 +26,10 @@ The configuration is used to define how to treat the CSV files:
     <Column>COL A</Column>
     <Column>COL B</Column>
   </KeyColumns>
+  <ExcludedColumns>
+    <Column>COL D</Column>
+    <Column>COL E</Column>
+  </ExcludedColumns>
   <IgnoreInvalidRows>true</IgnoreInvalidRows>
   <HeaderRowIndex>0</HeaderRowIndex>
   <ToleranceType>Relative</ToleranceType>
@@ -36,6 +40,8 @@ The configuration is used to define how to treat the CSV files:
 **Delimiter**  Allows other separaters, i.e. pipe '|' to be used
 
 **KeyColumns** Lists the columns required to obtain a unique key for each row
+
+**ExcludedColumns** List the columns to be excluded from the comparison
 
 **IgnoreInvalidRows** If a row doesn't have the same number of columns (it may be a descriptive footer for example) do not include in the comparison
 

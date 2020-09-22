@@ -35,6 +35,12 @@ namespace CSVComparison
         /// How tolerance value is applied, e.g. Absolute or Relative
         /// </summary>
         public ToleranceType ToleranceType;
+
+        /// <summary>
+        /// The names of Columns to be excluded from the comparison
+        /// </summary>
+        [XmlArrayItem("Column")]
+        public List<string> ExcludedColumns;
         
         public ComparisonDefinition()
         {
