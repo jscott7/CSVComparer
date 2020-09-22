@@ -6,7 +6,7 @@ This is a simple project to compare 2 CSV files and report differences
 
 Run the CSVComparison executable with the following arguments
 
-*"Path to reference csv file" "Path to candidate reference file" "Path to configuration file" "Optional Path to output file*
+*"Path to reference csv file" "Path to candidate reference file" "Path to configuration file" "Optional Path to directory to save output*
 
 If no output file is specficied the console will list the differences between the files
 

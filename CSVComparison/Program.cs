@@ -23,7 +23,7 @@ namespace CSVComparison
                     Console.WriteLine(arg);
                 }
 
-                Console.WriteLine("Usage: CsVComparison ReferenceFilePath CandidateFilePath ConfigurationFilePath [OutputFile]");
+                Console.WriteLine("Usage: CsVComparison ReferenceFilePath CandidateFilePath ConfigurationFilePath [PathToOutputFile]");
                 return;
             }
 
@@ -31,25 +31,31 @@ namespace CSVComparison
             var candidateFilePath = args[1]; 
             var configurationFilePath = args[2];
 
-            string outputFile = "";
+            string outputFilePath = "";
             if (args.Length > 3)
             {
-                outputFile = args[3];
+                outputFilePath = args[3];
+                if (!Directory.Exists(outputFilePath))
+                {
+                    Console.WriteLine($"Creating {outputFilePath} to save results");
+                    Directory.CreateDirectory(outputFilePath);
+                }
             }
 
+      
             if (Directory.Exists(referenceFilePath))
             {
                 // This is a directory
-                RunDirectoryComparison(configurationFilePath, referenceFilePath, candidateFilePath, outputFile);
+                RunDirectoryComparison(configurationFilePath, referenceFilePath, candidateFilePath, outputFilePath);
             }
             else
             {
                 // Default to single file comparison
-                RunSingleComparison(configurationFilePath, referenceFilePath, candidateFilePath, outputFile);
+                RunSingleComparison(configurationFilePath, referenceFilePath, candidateFilePath, outputFilePath);
             }
         }
 
-        private static void RunDirectoryComparison(string configurationFilePath, string referenceFilePath, string candidateFilePath, string outputFile)
+        private static void RunDirectoryComparison(string configurationFilePath, string referenceFilePath, string candidateFilePath, string outputFilePath)
         {
             var xmlDocument = new XmlDocument();
             xmlDocument.Load(configurationFilePath);
@@ -106,14 +112,14 @@ namespace CSVComparison
 
                 stopwatch.Stop();
                 var elapsedTime = stopwatch.ElapsedMilliseconds;
-                HandleResult(comparisonResult, elapsedTime, fileComparisonDefinition, outputFile);
+                HandleResult(comparisonResult, elapsedTime, fileComparisonDefinition, outputFilePath);
                 Console.WriteLine($"Comparison took {stopwatch.ElapsedMilliseconds}ms\r\n");
             }
 
             Console.WriteLine("Finished.");
         }
 
-        private static void RunSingleComparison(string configurationFilePath, string referenceFilePath, string candidateFilePath, string outputFile)
+        private static void RunSingleComparison(string configurationFilePath, string referenceFilePath, string candidateFilePath, string outputFilePath)
         {
             var xmlDocument = new XmlDocument();
             xmlDocument.Load(configurationFilePath);
@@ -130,7 +136,7 @@ namespace CSVComparison
             Console.WriteLine($"Reference: {comparisonResult.ReferenceSource}");
             Console.WriteLine($"Candidate: {comparisonResult.CandidateSource}");
 
-            if (string.IsNullOrEmpty(outputFile))
+            if (string.IsNullOrEmpty(outputFilePath))
             {
                 foreach (var breakResult in comparisonResult.BreakDetails)
                 {
@@ -139,15 +145,16 @@ namespace CSVComparison
             }
             else
             {
-                Console.WriteLine($"Saving results to {outputFile}");
+                var resultsFile = Path.Combine(outputFilePath, "ComparisonResults.csv");
+                Console.WriteLine($"Saving results to {resultsFile}");
                 AppendFile = false;
-                SaveResults(outputFile, comparisonResult, comparisonDefinition, stopwatch.ElapsedMilliseconds);
+                SaveResults(resultsFile, comparisonResult, comparisonDefinition, stopwatch.ElapsedMilliseconds);
             }
 
             Console.WriteLine($"Finished. Comparison took {stopwatch.ElapsedMilliseconds}ms");
         }
 
-        private static void HandleResult(ComparisonResult comparisonResult, long elapsedTime, FileComparisonDefinition fileComparisonDefinition, string outputFile)
+        private static void HandleResult(ComparisonResult comparisonResult, long elapsedTime, FileComparisonDefinition fileComparisonDefinition, string outputFilePath)
         {
             Console.WriteLine($"Reference: {comparisonResult.ReferenceSource}");
             Console.WriteLine($"Candidate: {comparisonResult.CandidateSource}");
@@ -157,7 +164,7 @@ namespace CSVComparison
                 Console.WriteLine("No differences found.");
             }
 
-            if (string.IsNullOrEmpty(outputFile))
+            if (string.IsNullOrEmpty(outputFilePath))
             {
                 foreach (var breakResult in comparisonResult.BreakDetails)
                 {
@@ -166,16 +173,8 @@ namespace CSVComparison
             }
             else
             {
-                var resultsFile = "";
-                if (Directory.Exists(outputFile))
-                {
-                    resultsFile = Path.Combine(outputFile, $"Reconciliation-Results-{fileComparisonDefinition.Key}.csv");
-                }
-                else
-                {
-                    resultsFile = outputFile;
-                }
-
+                var resultsFile = Path.Combine(outputFilePath, $"Reconciliation-Results-{fileComparisonDefinition.Key}.csv");
+        
                 Console.WriteLine($"Saving results to {resultsFile}");
                 SaveResults(resultsFile, comparisonResult, fileComparisonDefinition.ComparisonDefinition, elapsedTime);
                 if (!AppendFile)
@@ -187,6 +186,11 @@ namespace CSVComparison
 
         private static void SaveResults(string outputFile, ComparisonResult comparisonResult, ComparisonDefinition comparisonDefinition, long elapsedMillis)
         {  
+            if (comparisonResult.BreakDetails.Any())
+            {
+                outputFile = outputFile.Replace(".csv", ".BREAKS.csv");
+            }
+
             using (var sw = new StreamWriter(outputFile, AppendFile))
             {
                 var xmlSerializer = new XmlSerializer(typeof(ComparisonDefinition));
