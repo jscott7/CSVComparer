@@ -26,6 +26,9 @@
     <None Update="TestData\ComplexTargetFile.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\EmptyFile.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\SimpleCSVValueBreakExtraFooterRows.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -151,6 +151,12 @@ namespace CSVComparison
 
                         rowIndex++;
                     }
+
+                    if (rowIndex == 0)
+                    {
+                        // There were no rows in this file. 
+                        _readyToStartComparisonEvent.Set();
+                    }
                 }
             }
             catch (Exception ex)
