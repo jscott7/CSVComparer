@@ -213,10 +213,10 @@ namespace CSVComparison
 
                 if (comparisonResult.BreakDetails.Count() > 0)
                 {
-                    sw.WriteLine("Break Type,Key,Reference Row, Reference Value, Candidate Row, Candidate Value");
+                    sw.WriteLine("Break Type,Key,Column Name,Reference Row, Reference Value, Candidate Row, Candidate Value");
                     foreach (var breakResult in comparisonResult.BreakDetails)
                     {
-                        sw.WriteLine($"{breakResult.BreakType},{breakResult.BreakKey},{breakResult.ReferenceRow},{breakResult.ReferenceValue},{breakResult.CandidateRow},{breakResult.CandidateValue}");
+                        sw.WriteLine($"{breakResult.BreakType},{breakResult.BreakKey},{breakResult.Column},{breakResult.ReferenceRow},{breakResult.ReferenceValue},{breakResult.CandidateRow},{breakResult.CandidateValue}");
                     }
                 }
             }

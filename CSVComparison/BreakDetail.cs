@@ -12,6 +12,8 @@
 
         public int CandidateRow;
 
+        public string Column;
+
         public string ReferenceValue;
 
         public string CandidateValue;
@@ -23,6 +25,7 @@
             string breakKey, 
             int referenceRow, 
             int candidateRow, 
+            string column,
             string referenceValue, 
             string candidateValue)
         {
@@ -30,6 +33,7 @@
             BreakKey = breakKey;
             ReferenceRow = referenceRow;
             CandidateRow = candidateRow;
+            Column = column;
             ReferenceValue = referenceValue;
             CandidateValue = candidateValue;
 
