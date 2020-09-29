@@ -2,13 +2,20 @@
 
 This is a simple project to compare 2 CSV files and report differences
 
+## Some terminology
+
+* **Reference file** The file being compared with.
+* **Candidate file** The file to compare with the reference file.
+* **Break** A single difference between the files.
+* **Orphan** A row in the reference file but not in the candidate file. Or vice-versa.
+
 ## How to use
 
 Run the CSVComparison executable with the following arguments
 
 *"Path to reference csv file" "Path to candidate reference file" "Path to configuration file" "Optional Path to directory to save output*
 
-If no output file is specficied the console will list the differences between the files
+If no output file is specified the console will list the breaks between the files
 
 `Key:C, Reference Row:2, Value:2.5 != Candidate Row:2, Value:2.61`
 
