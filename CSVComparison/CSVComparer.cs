@@ -60,7 +60,9 @@ namespace CSVComparison
                 ReferenceSource = referenceFile, 
                 CandidateSource = candidateFile, 
                 NumberOfReferenceRows = _numberOfReferenceRows,
-                NumberOfCandidateRows = _numberOfCandidateRows };
+                NumberOfCandidateRows = _numberOfCandidateRows,
+                Date = DateTime.Now
+            };
         }
 
         private void ResetState()

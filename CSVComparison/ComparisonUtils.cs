@@ -177,6 +177,7 @@ namespace CSVComparison
                 }
 
                 sw.WriteLine();
+                sw.WriteLine($"Date run: {comparisonResult.Date}");
                 sw.WriteLine($"Reference: {comparisonResult.ReferenceSource}");
                 sw.WriteLine($"Candidate: {comparisonResult.CandidateSource}");
                 sw.WriteLine($"Number of Reference rows: {comparisonResult.NumberOfReferenceRows}");

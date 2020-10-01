@@ -18,7 +18,6 @@ namespace CSVComparison
         /// <summary>
         /// Date the Comparison was made
         /// </summary>
-        // TODO: This is not being set correctly
         public DateTime Date;
 
         /// <summary>
