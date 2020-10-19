@@ -78,5 +78,21 @@ namespace CSVComparisonTests
 
             Assert.AreEqual(2, comparisonResult.BreakDetails.Count);
         }
+
+        [Test]
+        public void TestNonUniqueKey()
+        {
+            var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "ComplexReferenceFile.csv");
+            var targetDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "ComplexCandidateFile.csv");
+
+            var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
+            comparisonDefinition.KeyColumns.Add("ABC");
+            comparisonDefinition.KeyColumns.Add("AnotherColumn");
+
+            var csvComparer = new CSVComparer(comparisonDefinition);
+            var exception = Assert.Throws<AggregateException>(delegate { csvComparer.CompareFiles(referenceDataFile, targetDataFile); });
+        
+            Assert.AreEqual("Reference orphan A:x already exists. This usually means the key columns do not define unique rows.", exception.InnerException.Message);
+        }
     }
 }

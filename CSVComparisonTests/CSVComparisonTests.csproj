@@ -17,6 +17,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="TestData\ComplexCandidateFile.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\ComplexReferenceFile.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
