@@ -32,6 +32,12 @@
     <None Update="TestData\EmptyFile.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\SimpleCSVCommaInColumnBreak.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\SimpleCSVCommaInColumn.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\SimpleCSVValueBreakExtraFooterRows.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

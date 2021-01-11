@@ -235,5 +235,33 @@ namespace CSVComparisonTests
 
             Assert.AreEqual(0, comparisonResult2.BreakDetails.Count);
         }
+
+        [Test]
+        public void TestOrphanColumnWithCommaInValue()
+        {
+            var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSV.csv");
+            var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVCommaInColumn.csv");
+            var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
+            comparisonDefinition.KeyColumns.Add("COL1");
+
+            var csvComparer = new CSVComparer(comparisonDefinition);
+            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
+            Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
+        }
+
+        [Test]
+        public void TestBreakColumnWithCommaInValue()
+        {
+            var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVCommaInColumn.csv");
+            var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVCommaInColumnBreak.csv");
+            var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
+            comparisonDefinition.KeyColumns.Add("COL1");
+
+            var csvComparer = new CSVComparer(comparisonDefinition);
+            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
+            Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
+            Assert.AreEqual("A column without a comma!", comparisonResult.BreakDetails[0].CandidateValue);
+            Assert.AreEqual("A column, with a comma!", comparisonResult.BreakDetails[0].ReferenceValue);
+        }
     }
 }
