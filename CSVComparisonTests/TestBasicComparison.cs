@@ -261,7 +261,7 @@ namespace CSVComparisonTests
             var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
             Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
             Assert.AreEqual("A column without a comma!", comparisonResult.BreakDetails[0].CandidateValue);
-            Assert.AreEqual("A column, with a comma!", comparisonResult.BreakDetails[0].ReferenceValue);
+            Assert.AreEqual("\"A column, with a comma!\"", comparisonResult.BreakDetails[0].ReferenceValue);
         }
     }
 }

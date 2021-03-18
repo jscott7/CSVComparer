@@ -39,7 +39,7 @@ namespace CSVComparison
 
             var referenceLoaderTask = Task.Run(() => LoadFile(referenceFile, _referenceQueue));
             var candidateLoaderTask = Task.Run(() => LoadFile(candidateFile, _candidateQueue));
-            var compareTask = Task.Run(() => Compare());
+            var compareTask = Task.Run(() => CompareCsvs());
 
             Task.WaitAll(referenceLoaderTask, candidateLoaderTask, compareTask);
 
@@ -94,7 +94,7 @@ namespace CSVComparison
         }
 
         /// <summary>
-        /// The thread function for loading data from each input file
+        /// Task used for loading csv data from each input file
         /// </summary>
         /// <param name="file">Full path to csv file</param>
         /// <param name="queue">Target data queue</param>
@@ -114,7 +114,7 @@ namespace CSVComparison
                     while ((line = streamReader.ReadLine()) != null)
                     {
                         string[] columns;
-                        if (_comparisonDefinition.Delimiter.Length == 1 || line.IndexOf("\"") > -1)
+                        if (_comparisonDefinition.Delimiter.Length == 1 && line.IndexOf("\"") > -1)
                         {
                             // If the delimiter is in quotes we don't want to split on it
                             // However complex delimiters do not support this
@@ -190,7 +190,10 @@ namespace CSVComparison
             Interlocked.Decrement(ref _runningLoaderThreads);
         }
 
-        void Compare()
+        /// <summary>
+        /// Task used to compare the data from the two input files
+        /// </summary>
+        void CompareCsvs()
         {
             // We want to wait until at least one loader has started producing data
             _readyToStartComparisonEvent.WaitOne();
@@ -460,51 +463,49 @@ namespace CSVComparison
         /// <summary>
         /// Split a string that can have delimiters embedded in quotes, for example: A,B,"C,D",E
         /// </summary>
-        /// <param name="line"></param>
-        /// <returns></returns>
+        /// <param name="line">The full CSV line</param>
+        /// <returns>List of each CSV Column</returns>
         public List<string> SplitStringWithQuotes(string line)
         {
             var startingQuoteIndex = line.IndexOf("\"");
             var columnValues = new List<string>();
 
-            int lastIndex = 0;
-            int currentIndex = 0;
-            while ((currentIndex = line.IndexOf(_comparisonDefinition.Delimiter, lastIndex)) > 0)
+            int quoteSearchIndex = 0;
+            int endQuoteIndex;
+            int currentIndex;
+            while ((currentIndex = line.IndexOf(_comparisonDefinition.Delimiter, quoteSearchIndex)) > 0)
             {
-                int startIndex = lastIndex;
-
-                if (startingQuoteIndex > -1 && startingQuoteIndex >= lastIndex && startingQuoteIndex < currentIndex)
+                int startIndex = quoteSearchIndex;
+                
+                if (startingQuoteIndex > -1 && startingQuoteIndex >= quoteSearchIndex && startingQuoteIndex < currentIndex)
                 {
-                    // Get the next quote
-                    int nextQuoteIndex = line.IndexOf("\"", startingQuoteIndex + 1);
-                    
-                    // If the next qoute is past the current delimiter index, get the next delimiter index
-                    while (nextQuoteIndex > currentIndex && nextQuoteIndex < line.Length -1)
+                    // Get the end quote
+                    endQuoteIndex = GetEndQuoteIndex(line, startingQuoteIndex);
+                    if (endQuoteIndex == -1 || endQuoteIndex == line.Length - 1)
                     {
-                        lastIndex = currentIndex + 1;
-                        currentIndex = line.IndexOf(_comparisonDefinition.Delimiter, lastIndex);
-                    }
-
-                    if (nextQuoteIndex == line.Length - 1)
-                    {
-                        // The next quote is the final character in the line 
-                        startIndex += 1;
-                        currentIndex = line.Length - 1;
+                        currentIndex = line.Length;
                     }
                     else
                     {
-                        // Get next startingQuoteIndex;
+                        currentIndex = endQuoteIndex + 1;
                         startingQuoteIndex = line.IndexOf("\"", currentIndex + 1);
                     }
                 }
-       
+
                 columnValues.Add(line.Substring(startIndex, currentIndex - startIndex));
-                lastIndex = currentIndex + 1;            
+                if (currentIndex < line.Length)
+                {
+                    quoteSearchIndex = currentIndex + 1;
+                }
+                else
+                {
+                    quoteSearchIndex = currentIndex;
+                }
             }
 
-            if (lastIndex < line.Length)
+            if (quoteSearchIndex < line.Length)
             {
-                columnValues.Add(line.Substring(lastIndex, line.Length - lastIndex));
+                columnValues.Add(line.Substring(quoteSearchIndex, line.Length - quoteSearchIndex));
             }
 
             // If the last character is a delimiter we will use the convention that this indicates there is one more column 
@@ -514,6 +515,45 @@ namespace CSVComparison
             }
 
             return columnValues;
+        }
+
+        /// <summary>
+        /// Get the location of the end matching quote
+        /// </summary>
+        /// <param name="line">The full CSV line</param>
+        /// <param name="startingQuoteIndex">Index of the opening quite</param>
+        /// <returns>The index of the end quote matching the opening quote</returns>
+        /// <remarks>As per CSV RFC-4180 pairs of quotes are ignored, ""
+        /// For example A,B,"A ""Test"" Value
+        /// Will return "A ""Test"" Value" as a single field</remarks>
+        private static int GetEndQuoteIndex(string line, int startingQuoteIndex)
+        {
+            bool terminated = false;
+            int queryIndex = startingQuoteIndex;
+            while (!terminated)
+            {
+                int nextQuoteIndex = line.IndexOf("\"", queryIndex + 1);
+
+                if (nextQuoteIndex + 1 == line.Length || (nextQuoteIndex + 1 < line.Length && line[nextQuoteIndex + 1] != '\"'))
+                {
+                    return nextQuoteIndex;
+                }
+                else if (line[nextQuoteIndex + 1] == '\"')
+                {
+                    //This is a double quote
+                    queryIndex = nextQuoteIndex + 1;
+                }
+                else if (nextQuoteIndex == -1)
+                {
+                    terminated = true;
+                }
+                else
+                {
+                    throw new Exception($"Unable to determine quotes for {line}");
+                }
+            }
+
+            return -1;
         }
     }
 }
