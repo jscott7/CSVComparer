@@ -216,19 +216,19 @@ namespace CSVComparison
                         referenceRow = _referenceQueue.Dequeue();
                         _numberOfReferenceRows++;
                     }
+
                     if (_candidateQueue.Count > 0)
                     {
                         candidateRow = _candidateQueue.Dequeue();
                         _numberOfCandidateRows++;
                     }
-                }
-               
-                if (referenceRow == null && candidateRow == null && _runningLoaderThreads == 0)
-                {
-                    complete = true;
-                    continue;
-                }
 
+                    if (_referenceQueue.Count == 0 && _candidateQueue.Count == 0 && _runningLoaderThreads == 0)
+                    {
+                        complete = true;
+                    }
+                }
+             
                 if (referenceRow != null && candidateRow != null)
                 {
                     // Both rows have the same key
