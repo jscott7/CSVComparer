@@ -1,12 +1,12 @@
 # CSVComparison
 
-This is a simple project to compare 2 CSV files and report differences
+A tool to compare 2 CSV files. Results of the comparison are saved to an output file or can be interrogated via an API.
 
 ## Some terminology
 
-* **Reference file** The file being compared with.
-* **Candidate file** The file to compare with the reference file.
-* **Break** A single difference between the files.
+* **Reference file** The first CSV file for the comparison.
+* **Candidate file** The second CSV file for the comparison.
+* **Break** A single difference between the files. There may be multiple breaks.
 * **Orphan** A row in the reference file but not in the candidate file. Or vice-versa.
 
 ## How to use
@@ -20,7 +20,36 @@ If no output file is specified the console will list the breaks between the file
 `Key:C, Reference Row:2, Value:2.5 != Candidate Row:2, Value:2.61`
 
 The output file will list the configuration used, the input files, time taken to run the comparison and a tabular view of the differences
-See the ExampleOutputFile.csv
+
+```html
+<?xml version="1.0" encoding="utf-8"?>
+<ComparisonDefinition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Delimiter>,</Delimiter>
+  <KeyColumns>
+    <Column>COL A</Column>
+  </KeyColumns>
+  <HeaderRowIndex>0</HeaderRowIndex>
+  <ToleranceValue>0.1</ToleranceValue>
+  <IgnoreInvalidRows>false</IgnoreInvalidRows>
+  <ToleranceType>Relative</ToleranceType>
+  <ExcludedColumns />
+</ComparisonDefinition>
+
+Date run: 11/01/2021 18:32:48
+Reference: C:\temp\ReferenceDirectory\Test.csv
+Candidate: C:\temp\CandidateDirectory\Test.csv
+Number of Reference rows: 100001
+Number of Candidate rows: 100001
+Comparison took 906ms
+Number of breaks 5
+
+Break Type,Key,Column Name,Reference Row, Reference Value, Candidate Row, Candidate Value
+ValueMismatch,1,COL B,2,A,2,"A,X"
+ValueMismatch,7,COL D,8,32.1,8,42.1
+ValueMismatch,77,COL B,78,B,78,A
+RowInCandidateNotInReference,100000,,-1,,100000,
+RowInReferenceNotInCandidate,99,,100,,-1,
+```
 
 ##  Configuration
 The configuration is used to define how to treat the CSV files:
@@ -119,5 +148,9 @@ To run from your own C# code:
  var csvComparer = new CSVComparer(comparisonDefinition);
  var comparisonResult = csvComparer.CompareFiles(referenceDataFilePath, targetDataFilePath);
 
- # Add code to interrogate the comparison result
+ # Add code to interrogate the comparison result.
+ foreach(var breakDetail in comparisonResult.BreakDetails)
+ {
+      Console.WriteLine($"{breakDetail.BreakType} - {breakDetail.BreakDescription}");
+ }
 ```
