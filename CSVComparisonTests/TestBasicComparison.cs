@@ -263,5 +263,34 @@ namespace CSVComparisonTests
             Assert.AreEqual("A column without a comma!", comparisonResult.BreakDetails[0].CandidateValue);
             Assert.AreEqual("\"A column, with a comma!\"", comparisonResult.BreakDetails[0].ReferenceValue);
         }
+
+        [Test]
+        public void TestDoubleComparisonInQuotes()
+        {
+            var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVWithDoubleInQuotes.csv");
+            var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVWithDoubleInQuotesBreak.csv");
+            var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
+            comparisonDefinition.KeyColumns.Add("COL1");
+
+            var csvComparer = new CSVComparer(comparisonDefinition);
+            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
+
+            // Default is no tolerance, absolute match
+            Assert.AreEqual(2, comparisonResult.BreakDetails.Count, "Exact match test");
+
+            comparisonDefinition.ToleranceValue = 0.1;
+            comparisonDefinition.ToleranceType = ToleranceType.Absolute;
+            csvComparer = new CSVComparer(comparisonDefinition);
+            comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
+
+            Assert.AreEqual(1, comparisonResult.BreakDetails.Count, "Absolute Tolerance 0.1 test");
+
+            comparisonDefinition.ToleranceValue = 0.25;
+            comparisonDefinition.ToleranceType = ToleranceType.Relative;
+            csvComparer = new CSVComparer(comparisonDefinition);
+            comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
+
+            Assert.AreEqual(0, comparisonResult.BreakDetails.Count, "Relative Tolerance 0.25 test");
+        }
     }
 }

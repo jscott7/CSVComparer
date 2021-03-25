@@ -44,6 +44,12 @@
     <None Update="TestData\SimpleCSVValueExtraFooterRows.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\SimpleCSVWithDoubleInQuotes.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\SimpleCSVWithDoubleInQuotesBreak.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\SimpleCSVWithDoubleBreak.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -367,7 +367,6 @@ namespace CSVComparison
 
             for (int referenceIndex = 0; referenceIndex < referenceColumns.Length; referenceIndex++)
             {
-
                 // Don't lock - _excludedColumns is only updated by one of the loader threads
                 if (_excludedColumns.Contains(referenceIndex))
                 {
@@ -396,7 +395,7 @@ namespace CSVComparison
         {
             var success = true;
             double referenceDouble, candidateDouble;
-            if (double.TryParse(referenceValue, out referenceDouble) && double.TryParse(candidateValue, out candidateDouble))
+            if (double.TryParse(referenceValue.Trim('\"'), out referenceDouble) && double.TryParse(candidateValue.Trim('\"'), out candidateDouble))
             {
                 if (_comparisonDefinition.ToleranceType == ToleranceType.Absolute)
                 {
