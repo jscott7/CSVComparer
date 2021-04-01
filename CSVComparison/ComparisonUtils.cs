@@ -149,7 +149,6 @@ namespace CSVComparison
             {
                 var resultsFile = Path.Combine(outputFilePath, $"Reconciliation-Results-{fileComparisonDefinition.Key}.csv");
 
-                Console.WriteLine($"Saving results to {resultsFile}");
                 SaveResults(resultsFile, comparisonResult, fileComparisonDefinition.ComparisonDefinition, elapsedTime);
                 if (!AppendFile)
                 {
@@ -164,6 +163,8 @@ namespace CSVComparison
             {
                 outputFile = outputFile.Replace(".csv", ".BREAKS.csv");
             }
+
+            Console.WriteLine($"Saving results to {outputFile}");
 
             using (var sw = new StreamWriter(outputFile, AppendFile))
             {
