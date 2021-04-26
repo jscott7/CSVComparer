@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -47,23 +48,12 @@ namespace CSVComparison
             {
                 foreach (var extracandidate in _candidateOrphans)
                 {
-                    _breaks.Add(new BreakDetail()
-                    {
-                        BreakType = BreakType.RowInCandidateNotInReference,
-                        BreakKey = extracandidate.Key,
-                        CandidateRow = extracandidate.Value.RowIndex,
-                        ReferenceRow = -1
-                    });
+                    AddOrphan(extracandidate, BreakType.RowInCandidateNotInReference);
                 }
 
                 foreach (var extraReference in _referenceOrphans)
                 {
-                    _breaks.Add(new BreakDetail() { 
-                        BreakType = BreakType.RowInReferenceNotInCandidate,
-                        BreakKey = extraReference.Key,
-                        ReferenceRow = extraReference.Value.RowIndex,
-                        CandidateRow = -1
-                    });
+                    AddOrphan(extraReference, BreakType.RowInReferenceNotInCandidate);             
                 }
             }
 
@@ -74,6 +64,34 @@ namespace CSVComparison
                 NumberOfCandidateRows = _numberOfCandidateRows,
                 Date = DateTime.Now
             };
+        }
+
+        private void AddOrphan(KeyValuePair<string, CsvRow> orphan, BreakType breakType)
+        {
+            bool excludeBreak = false;
+
+            if (_comparisonDefinition.OrphanExclusions != null)
+            {
+                foreach (var exclusion in _comparisonDefinition.OrphanExclusions)
+                {
+                    if (Regex.IsMatch(orphan.Key, exclusion))
+                    {
+                        excludeBreak = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!excludeBreak)
+            {
+                _breaks.Add(new BreakDetail()
+                {
+                    BreakType = breakType,
+                    BreakKey = orphan.Key,
+                    ReferenceRow = breakType == BreakType.RowInReferenceNotInCandidate ? orphan.Value.RowIndex : -1,
+                    CandidateRow = breakType == BreakType.RowInCandidateNotInReference ? orphan.Value.RowIndex : -1
+                });
+            }
         }
 
         private void ResetState()
@@ -385,7 +403,7 @@ namespace CSVComparison
                 {
                     success = false;
                     _breaks.Add(new BreakDetail(BreakType.ValueMismatch, key, referenceRow.RowIndex, candidateRow.RowIndex, columnName, referenceValue, candidateValue));
-                }
+                }           
             }
 
             return success;

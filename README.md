@@ -70,6 +70,9 @@ The configuration is used to define how to treat the CSV files:
   <HeaderRowIndex>0</HeaderRowIndex>
   <ToleranceType>Relative</ToleranceType>
   <ToleranceValue>0.1</ToleranceValue>
+  <OrphanExclusions>
+    <ExclusionPattern>RegexPattern</ExclusionPattern>
+  </OrphanExclusions>
 </ComparisonDefinition>
 ```
 
@@ -86,6 +89,8 @@ The configuration is used to define how to treat the CSV files:
 **ToleranceType** How to compare numeric values
 
 **ToleranceValue** The tolerance to use for numeric values
+
+**OrphanExlusions** A list of Regex Patterns used to exclude orphans whose key matches the pattern
 
 ## Directory comparison
 

@@ -94,5 +94,28 @@ namespace CSVComparisonTests
         
             Assert.AreEqual("Reference orphan A:x already exists. This usually means the key columns do not define unique rows.", exception.InnerException.Message);
         }
+
+        [Test]    
+        public void TestOrphanExclusions()
+        {
+            //TODO Implement this
+            var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "ComplexReferenceFile.csv");
+            var targetDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "ComplexTargetFile.csv");
+            var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
+            comparisonDefinition.KeyColumns.Add("ABC");
+            comparisonDefinition.KeyColumns.Add("DEF");
+            comparisonDefinition.KeyColumns.Add("AnotherColumn");
+
+            var csvComparer = new CSVComparer(comparisonDefinition);
+            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, targetDataFile);
+
+            Assert.AreEqual(4, comparisonResult.BreakDetails.Count, "Number of breaks without exclusions");
+
+            comparisonDefinition.OrphanExclusions = new List<string> { "NewData" };
+            csvComparer = new CSVComparer(comparisonDefinition);
+            comparisonResult = csvComparer.CompareFiles(referenceDataFile, targetDataFile);
+
+            Assert.AreEqual(3, comparisonResult.BreakDetails.Count, "Number of breaks with single orphan value exclusion");
+        }
     }
 }
