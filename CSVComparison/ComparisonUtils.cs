@@ -178,13 +178,13 @@ namespace CSVComparison
                 }
 
                 sw.WriteLine();
-                sw.WriteLine($"Date run: {comparisonResult.Date}");
-                sw.WriteLine($"Reference: {comparisonResult.ReferenceSource}");
-                sw.WriteLine($"Candidate: {comparisonResult.CandidateSource}");
-                sw.WriteLine($"Number of Reference rows: {comparisonResult.NumberOfReferenceRows}");
-                sw.WriteLine($"Number of Candidate rows: {comparisonResult.NumberOfCandidateRows}");
-                sw.WriteLine($"Comparison took {elapsedMillis}ms");
-                sw.WriteLine($"Number of breaks {comparisonResult.BreakDetails.Count()}");
+                sw.WriteLine($"Date run,{comparisonResult.Date}");
+                sw.WriteLine($"Reference,{comparisonResult.ReferenceSource}");
+                sw.WriteLine($"Candidate,{comparisonResult.CandidateSource}");
+                sw.WriteLine($"Number of Reference rows,{comparisonResult.NumberOfReferenceRows}");
+                sw.WriteLine($"Number of Candidate rows,{comparisonResult.NumberOfCandidateRows}");
+                sw.WriteLine($"Duration,{elapsedMillis}ms");
+                sw.WriteLine($"Number of breaks,{comparisonResult.BreakDetails.Count()}");
                 sw.WriteLine();
 
                 if (comparisonResult.BreakDetails.Count() > 0)
