@@ -39,6 +39,7 @@ namespace CSVComparison
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
 
+                Console.WriteLine($"Searching for comparison definition for {file}");
                 // Get the comparisondefinition for the file, using the pattern
                 var comparisonDefinitionForFileType = multiComparisonDefinition.FileComparisonDefinitions.Where(x => Regex.IsMatch(file.Name, x.FilePattern));
 
@@ -50,7 +51,7 @@ namespace CSVComparison
 
                 var fileComparisonDefinition = comparisonDefinitionForFileType.First();
 
-                Console.WriteLine($"Found Comparison Definition: {fileComparisonDefinition.Key}");
+                Console.WriteLine($"Found Comparison Definition. ID = {fileComparisonDefinition.Key}");
                 var csvComparer = new CSVComparer(fileComparisonDefinition.ComparisonDefinition);
 
                 // Search for candidate file. Try exact file match first, then try filepattern match
@@ -64,6 +65,7 @@ namespace CSVComparison
                 {
                     var directoryInfo = new DirectoryInfo(candidateFilePath);
                     var regex = new System.Text.RegularExpressions.Regex(fileComparisonDefinition.FilePattern);
+                    Console.WriteLine($"Exact file match for reference: '{file.Name}' not found. Search using pattern: '{fileComparisonDefinition.FilePattern}'");
                     var candidatePaths = directoryInfo.GetFiles().Where(candidateFile => regex.IsMatch(candidateFile.Name));
 
                     if (candidatePaths.Count() != 1)
@@ -83,7 +85,7 @@ namespace CSVComparison
                 Console.WriteLine($"Comparison took {stopwatch.ElapsedMilliseconds}ms\r\n");
             }
 
-            Console.WriteLine("Finished.");
+            Console.WriteLine("\nFinished.");
         }
 
         /// <summary>
@@ -136,6 +138,10 @@ namespace CSVComparison
             if (comparisonResult.BreakDetails.Count() == 0)
             {
                 Console.WriteLine("No differences found.");
+            }
+            else
+            {
+                Console.WriteLine($"{comparisonResult.BreakDetails.Count()} differences found");
             }
 
             if (string.IsNullOrEmpty(outputFilePath))
