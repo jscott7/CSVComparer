@@ -25,6 +25,9 @@
     <None Update="TestData\ComplexReferenceFile.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\ComplexTargetFileKeyExclusion.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\ComplexTargetFileDifferentColumns.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

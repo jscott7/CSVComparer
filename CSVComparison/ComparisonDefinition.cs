@@ -45,8 +45,14 @@ namespace CSVComparison
         /// <summary>
         /// Regex Patterns for excluding orphan keys from the list of breaks
         /// </summary>
-        [XmlArrayItem("ExlusionPattern")]
-        public List<string> OrphanExclusions;
+        [XmlArrayItem("ExclusionPattern")]
+        public List<string> OrphanExclusions = new List<string>();
+       
+        /// <summary>
+        /// Regex Patterns for excluding orphan keys from the list of breaks
+        /// </summary>
+        [XmlArrayItem("ExclusionPattern")]
+        public List<string> KeyExclusions = new List<string>();
 
         public ComparisonDefinition()
         {

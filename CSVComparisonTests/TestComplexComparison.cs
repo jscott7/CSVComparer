@@ -117,5 +117,28 @@ namespace CSVComparisonTests
 
             Assert.AreEqual(3, comparisonResult.BreakDetails.Count, "Number of breaks with single orphan value exclusion");
         }
+
+        [Test]
+        public void TestKeyExclusions()
+        {
+            //TODO Implement this
+            var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "ComplexReferenceFile.csv");
+            var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "ComplexTargetFileKeyExclusion.csv");
+            var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
+            comparisonDefinition.KeyColumns.Add("ABC");
+            comparisonDefinition.KeyColumns.Add("DEF");
+            comparisonDefinition.KeyColumns.Add("AnotherColumn");
+
+            var csvComparer = new CSVComparer(comparisonDefinition);
+            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
+
+            Assert.AreEqual(5, comparisonResult.BreakDetails.Count, "Number of breaks without exclusions");
+
+            comparisonDefinition.KeyExclusions = new List<string> { "TestData" };
+            csvComparer = new CSVComparer(comparisonDefinition);
+            comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
+
+            Assert.AreEqual(4, comparisonResult.BreakDetails.Count, "Number of breaks with single orphan value exclusion");
+        }
     }
 }

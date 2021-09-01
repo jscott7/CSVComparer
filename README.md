@@ -6,8 +6,10 @@ A tool to compare 2 CSV files. Results of the comparison are saved to an output 
 
 * **Reference file** The first CSV file for the comparison.
 * **Candidate file** The second CSV file for the comparison.
+* **Key** Unique definition of a single CSV Row. This can be made from one or more Columns
 * **Break** A single difference between the files. There may be multiple breaks.
 * **Orphan** A row in the reference file but not in the candidate file. Or vice-versa.
+* **Value Break** A difference in a column value between a row with matching key on Reference and Candidate file 
 
 ## How to use
 
@@ -73,6 +75,9 @@ The configuration is used to define how to treat the CSV files:
   <OrphanExclusions>
     <ExclusionPattern>RegexPattern</ExclusionPattern>
   </OrphanExclusions>
+  <KeyExclusions>
+    <ExclusionPattern>RegexPattern</ExclusionPattern>
+  </KeyExclusions>
 </ComparisonDefinition>
 ```
 
@@ -90,8 +95,10 @@ The configuration is used to define how to treat the CSV files:
 
 **ToleranceValue** The tolerance to use for numeric values
 
-**OrphanExlusions** A list of Regex Patterns used to exclude orphans whose key matches the pattern
+**OrphanExclusions** A list of Regex Patterns used to exclude orphans whose key matches the pattern
 
+**KeyExclusions** A list of Regex Patterns used to exclude Value breaks whose key matches the pattern
+ 
 ## Directory comparison
 
 If the Reference and Candidate paths are directories you can compare multiple files. If the files have different structures a configuration can

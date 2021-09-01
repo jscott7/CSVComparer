@@ -70,15 +70,12 @@ namespace CSVComparison
         {
             bool excludeBreak = false;
 
-            if (_comparisonDefinition.OrphanExclusions != null)
+            foreach (var exclusion in _comparisonDefinition.OrphanExclusions)
             {
-                foreach (var exclusion in _comparisonDefinition.OrphanExclusions)
+                if (Regex.IsMatch(orphan.Key, exclusion))
                 {
-                    if (Regex.IsMatch(orphan.Key, exclusion))
-                    {
-                        excludeBreak = true;
-                        break;
-                    }
+                    excludeBreak = true;
+                    break;
                 }
             }
 
@@ -390,7 +387,7 @@ namespace CSVComparison
                 {
                     continue;
                 }
-                
+
                 var referenceValue = referenceColumns[referenceIndex];
                 var candidateValue = candidateColumns[referenceIndex];
                 var columnName = _headerColumns[referenceIndex];
@@ -398,12 +395,12 @@ namespace CSVComparison
                 if (_comparisonDefinition.ToleranceType != ToleranceType.Exact)
                 {
                     success &= CompareWithTolerance(key, columnName, referenceValue, candidateValue, referenceRow.RowIndex, candidateRow.RowIndex);
-                }              
+                }
                 else if (referenceValue != candidateValue)
                 {
                     success = false;
-                    _breaks.Add(new BreakDetail(BreakType.ValueMismatch, key, referenceRow.RowIndex, candidateRow.RowIndex, columnName, referenceValue, candidateValue));
-                }           
+                    AddBreak(BreakType.ValueMismatch, key, referenceRow.RowIndex, candidateRow.RowIndex, columnName, referenceValue, candidateValue);
+                }
             }
 
             return success;
@@ -420,7 +417,7 @@ namespace CSVComparison
                     if (Math.Abs(referenceDouble - candidateDouble) > _comparisonDefinition.ToleranceValue)
                     {
                         success = false;
-                        _breaks.Add(new BreakDetail(BreakType.ValueMismatch, key, referenceRowIndex, candidateRowIndex, columnName, referenceValue, candidateValue));
+                        AddBreak(BreakType.ValueMismatch, key, referenceRowIndex, candidateRowIndex, columnName, referenceValue, candidateValue);
                     }
                 }
                 else if (_comparisonDefinition.ToleranceType == ToleranceType.Relative)
@@ -429,17 +426,36 @@ namespace CSVComparison
                     if (Math.Abs(relativeDifference) > _comparisonDefinition.ToleranceValue)
                     {
                         success = false;
-                        _breaks.Add(new BreakDetail(BreakType.ValueMismatch, key, referenceRowIndex, candidateRowIndex, columnName, referenceValue, candidateValue));
+                        AddBreak(BreakType.ValueMismatch, key, referenceRowIndex, candidateRowIndex, columnName, referenceValue, candidateValue);
                     }
                 }
             }
             else if (referenceValue != candidateValue)
             {
                 success = false;
-                _breaks.Add(new BreakDetail(BreakType.ValueMismatch, key, referenceRowIndex, candidateRowIndex, columnName, referenceValue, candidateValue));
+                AddBreak(BreakType.ValueMismatch, key, referenceRowIndex, candidateRowIndex, columnName, referenceValue, candidateValue);
             }
 
             return success;
+        }
+
+        void AddBreak(BreakType breakType,
+            string breakKey,
+            int referenceRowIndex,
+            int candidateRowIndex,
+            string columnName,
+            string referenceValue,
+            string candidateValue)
+        {
+            foreach (var exclusion in _comparisonDefinition.KeyExclusions)
+            {
+                if (Regex.IsMatch(breakKey, exclusion))
+                {
+                    return;
+                }
+            }
+
+            _breaks.Add(new BreakDetail(breakType, breakKey, referenceRowIndex, candidateRowIndex, columnName, referenceValue, candidateValue));
         }
 
         List<int> GetKeyIndexes(string[] headerRow)
