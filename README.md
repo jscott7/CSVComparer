@@ -1,3 +1,5 @@
+[![Build Status](https://dev.azure.com/jonathanscott80/CSVComparer/_apis/build/status/jscott7.CSVComparer)](https://dev.azure.com/jonathanscott80/CSVComparer/_build/latest?definitionId=2)
+
 # CSVComparison
 
 A tool to compare 2 CSV files. Results of the comparison are saved to an output file or can be interrogated via an API.
