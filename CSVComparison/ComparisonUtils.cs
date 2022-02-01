@@ -121,6 +121,12 @@ namespace CSVComparison
             }
             else
             {
+                if (!Directory.Exists(outputFilePath))
+                {
+                    Console.WriteLine($"Creating: {outputFilePath}");
+                    Directory.CreateDirectory(outputFilePath);
+                }
+
                 var resultsFile = Path.Combine(outputFilePath, "ComparisonResults.csv");
                 Console.WriteLine($"Saving results to {resultsFile}");
                 AppendFile = false;
@@ -153,6 +159,12 @@ namespace CSVComparison
             }
             else
             {
+                if (!Directory.Exists(outputFilePath))
+                {
+                    Console.WriteLine($"Creating: {outputFilePath}");
+                    Directory.CreateDirectory(outputFilePath);
+                }
+
                 var resultsFile = Path.Combine(outputFilePath, $"Reconciliation-Results-{fileComparisonDefinition.Key}.csv");
 
                 SaveResults(resultsFile, comparisonResult, fileComparisonDefinition.ComparisonDefinition, elapsedTime);
