@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29324.140
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSVComparison", "CSVComparison\CSVComparison.csproj", "{885DEBB0-D776-41A9-A0EB-328D43211E64}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSVComparisonTests", "CSVComparisonTests\CSVComparisonTests.csproj", "{06E886F4-08AC-4837-AFE9-BF5C6E786099}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestDataGenerator", "TestDataGenerator\TestDataGenerator.csproj", "{B719C3E6-6F53-42D1-97AB-CC5AB19C140C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComparisonRunner", "ComparisonRunner\ComparisonRunner.csproj", "{8CA0DB2B-C46E-4272-90F9-D9E767E55D16}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{B719C3E6-6F53-42D1-97AB-CC5AB19C140C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B719C3E6-6F53-42D1-97AB-CC5AB19C140C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B719C3E6-6F53-42D1-97AB-CC5AB19C140C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CA0DB2B-C46E-4272-90F9-D9E767E55D16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CA0DB2B-C46E-4272-90F9-D9E767E55D16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CA0DB2B-C46E-4272-90F9-D9E767E55D16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CA0DB2B-C46E-4272-90F9-D9E767E55D16}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
