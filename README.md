@@ -3,6 +3,7 @@
 # CSVComparison
 
 A tool to compare 2 CSV files. Results of the comparison are saved to an output file or can be interrogated via an API.
+[See here for more information and a list of updates](https://github.com/jscott7/CSVComparer/wiki)
 
 ## Some terminology
 
