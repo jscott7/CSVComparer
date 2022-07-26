@@ -36,11 +36,11 @@ namespace CSVComparison
             foreach (var file in referenceDirectory.GetFiles())
             {
                 AppendFile = false;
-                var stopwatch = new Stopwatch();
-                stopwatch.Start();
-
+                var stopwatch = Stopwatch.StartNew();
+           
                 Console.WriteLine($"Searching for comparison definition for {file}");
-                // Get the comparisondefinition for the file, using the pattern
+
+                // Get the comparisondefinition for the file, using the regex pattern
                 var comparisonDefinitionForFileType = multiComparisonDefinition.FileComparisonDefinitions.Where(x => Regex.IsMatch(file.Name, x.FilePattern));
 
                 if (comparisonDefinitionForFileType.Count() != 1)
@@ -54,31 +54,15 @@ namespace CSVComparison
                 Console.WriteLine($"Found Comparison Definition. ID = {fileComparisonDefinition.Key}");
                 var csvComparer = new CSVComparer(fileComparisonDefinition.ComparisonDefinition);
 
-                // Search for candidate file. Try exact file match first, then try filepattern match
-                ComparisonResult comparisonResult;
-                if (File.Exists(Path.Combine(candidateFilePath, file.Name)))
+                var candidateFile = FindCandidateFile(candidateFilePath, file, fileComparisonDefinition);
+                if (string.IsNullOrEmpty(candidateFile))
                 {
-                    Console.WriteLine($"Comparing {file.FullName} with {Path.Combine(candidateFilePath, file.Name)}");
-                    comparisonResult = csvComparer.CompareFiles(file.FullName, Path.Combine(candidateFilePath, file.Name));
+                    continue;
                 }
-                else
-                {
-                    var directoryInfo = new DirectoryInfo(candidateFilePath);
-                    var regex = new System.Text.RegularExpressions.Regex(fileComparisonDefinition.FilePattern);
-                    Console.WriteLine($"Exact file match for reference: '{file.Name}' not found. Search using pattern: '{fileComparisonDefinition.FilePattern}'");
-                    var candidatePaths = directoryInfo.GetFiles().Where(candidateFile => regex.IsMatch(candidateFile.Name));
-
-                    if (candidatePaths.Count() != 1)
-                    {
-                        Console.WriteLine($"Unable to find a single matching file to compare with {file.FullName}. Found {candidatePaths.Count()}");
-                        continue;
-                    }
-
-                    Console.WriteLine($"Comparing {file.FullName} with {candidatePaths.First().FullName}");
-
-                    comparisonResult = csvComparer.CompareFiles(file.FullName, candidatePaths.First().FullName);
-                }
-
+               
+                Console.WriteLine($"Comparing {file.FullName} with {candidateFile}");
+                var comparisonResult = csvComparer.CompareFiles(file.FullName, candidateFile);
+              
                 stopwatch.Stop();
                 var elapsedTime = stopwatch.ElapsedMilliseconds;
                 HandleResult(comparisonResult, elapsedTime, fileComparisonDefinition, outputFilePath);
@@ -214,6 +198,42 @@ namespace CSVComparison
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Fine for candidate file. Try exact file match first, then try filepattern match
+        /// </summary>
+        /// <param name="candidateFilePath">Root path to candidate files</param>
+        /// <param name="referenceFile">The reference file as base for search</param>
+        /// <param name="fileComparisonDefinition">Source for any file regex pattern</param>
+        /// <returns>Path to candidate file or empty string if not found</returns>
+        private static string FindCandidateFile(string candidateFilePath, FileInfo referenceFile, FileComparisonDefinition fileComparisonDefinition)
+        {
+            string candiateFile = "";
+
+            if (File.Exists(Path.Combine(candidateFilePath, referenceFile.Name)))
+            {
+                candiateFile = Path.Combine(candidateFilePath, referenceFile.Name);
+            }
+            else
+            {
+                var directoryInfo = new DirectoryInfo(candidateFilePath);
+                var regex = new Regex(fileComparisonDefinition.FilePattern);
+                Console.WriteLine($"Exact file match for reference: '{referenceFile.Name}' not found. Search using pattern: '{fileComparisonDefinition.FilePattern}'");
+                var candidatePaths = directoryInfo.GetFiles().Where(candidateFile => regex.IsMatch(candidateFile.Name));
+
+                if (candidatePaths.Count() == 1)
+                {
+                    candiateFile = candidatePaths.First().FullName;
+                }
+                else
+                {
+                    Console.WriteLine($"Unable to find a single matching file to compare with {referenceFile.FullName}. Found {candidatePaths.Count()}");
+
+                }
+            }
+
+            return candiateFile;
         }
     }
 }
