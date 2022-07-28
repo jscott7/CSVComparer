@@ -1,4 +1,5 @@
-﻿using CSVComparison;
+﻿
+using ComparisonRunner;
 
 if (args.Length < 3)
 {

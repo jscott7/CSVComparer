@@ -1,19 +1,20 @@
-﻿using System;
+﻿using CSVComparison;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace CSVComparison
+namespace ComparisonRunner
 {
+    /// <summary>
+    /// Helpers for finding and loading CSV files for comparison
+    /// </summary>
     public class ComparisonUtils
     {
         private static bool AppendFile = false;
 
         /// <summary>
-        /// Run comparison against all files in a directory
+        /// Run comparison against all CSV files in a directory
         /// </summary>
         /// <param name="configurationFilePath">Path to MultipleComparisonDefinition</param>
         /// <param name="referenceFilePath">Path to reference directory. This will be used as the source for files to match</param>
@@ -201,7 +202,7 @@ namespace CSVComparison
         }
 
         /// <summary>
-        /// Fine for candidate file. Try exact file match first, then try filepattern match
+        /// Find a candidate file that matches reference. Try exact file match first, then try filepattern match
         /// </summary>
         /// <param name="candidateFilePath">Root path to candidate files</param>
         /// <param name="referenceFile">The reference file as base for search</param>
