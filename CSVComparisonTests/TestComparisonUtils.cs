@@ -62,6 +62,10 @@ namespace CSVComparisonTests
             var comparisonDefinitionPath = Path.Combine(Directory.GetCurrentDirectory(), "TestData", "MultipleDefinition.xml");
             try
             {
+                // Run with no output path
+                ComparisonUtils.RunDirectoryComparison(comparisonDefinitionPath, expectedPath, candidatePath, "");
+                Assert.That(!File.Exists(Path.Combine(outputPath, "Reconciliation-Results-Test.BREAKS.csv")));
+
                 ComparisonUtils.RunDirectoryComparison(comparisonDefinitionPath, expectedPath, candidatePath, outputPath);
                 Assert.IsTrue(File.Exists(Path.Combine(outputPath, "Reconciliation-Results-Test.BREAKS.csv")));
             }

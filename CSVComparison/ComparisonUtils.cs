@@ -209,11 +209,11 @@ namespace CSVComparison
         /// <returns>Path to candidate file or empty string if not found</returns>
         private static string FindCandidateFile(string candidateFilePath, FileInfo referenceFile, FileComparisonDefinition fileComparisonDefinition)
         {
-            string candiateFile = "";
+            string candidateFile = "";
 
             if (File.Exists(Path.Combine(candidateFilePath, referenceFile.Name)))
             {
-                candiateFile = Path.Combine(candidateFilePath, referenceFile.Name);
+                candidateFile = Path.Combine(candidateFilePath, referenceFile.Name);
             }
             else
             {
@@ -224,16 +224,15 @@ namespace CSVComparison
 
                 if (candidatePaths.Count() == 1)
                 {
-                    candiateFile = candidatePaths.First().FullName;
+                    candidateFile = candidatePaths.First().FullName;
                 }
                 else
                 {
                     Console.WriteLine($"Unable to find a single matching file to compare with {referenceFile.FullName}. Found {candidatePaths.Count()}");
-
                 }
             }
 
-            return candiateFile;
+            return candidateFile;
         }
     }
 }
