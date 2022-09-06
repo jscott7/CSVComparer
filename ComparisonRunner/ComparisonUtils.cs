@@ -86,7 +86,16 @@ namespace ComparisonRunner
             xmlDocument.Load(configurationFilePath);
 
             var xmlSerializer = new XmlSerializer(typeof(ComparisonDefinition));
-            var comparisonDefinition = (ComparisonDefinition)xmlSerializer.Deserialize(new XmlNodeReader((XmlNode)xmlDocument.DocumentElement));
+            if (xmlDocument.DocumentElement == null)
+            {
+                throw new Exception($"Configuation {configurationFilePath} does not contain valid XML");
+            }
+
+            var comparisonDefinition = xmlSerializer.Deserialize(new XmlNodeReader(xmlDocument.DocumentElement)) as ComparisonDefinition;
+            if (comparisonDefinition == null)
+            {
+                throw new Exception($"Unable to deserialize {configurationFilePath}");
+            }
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
