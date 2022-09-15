@@ -25,11 +25,7 @@ namespace ComparisonRunner
         /// </remarks>
         public static void RunDirectoryComparison(string configurationFilePath, string referenceFilePath, string candidateFilePath, string outputFilePath)
         {
-            var xmlDocument = new XmlDocument();
-            xmlDocument.Load(configurationFilePath);
-
-            var xmlSerializer = new XmlSerializer(typeof(MultipleComparisonDefinition));
-            var multiComparisonDefinition = (MultipleComparisonDefinition)xmlSerializer.Deserialize(new XmlNodeReader((XmlNode)xmlDocument.DocumentElement));
+            var multiComparisonDefinition = DeserializeComparisonDefinition<MultipleComparisonDefinition>(configurationFilePath);
 
             // Now enumerate directory
             var referenceDirectory = new DirectoryInfo(referenceFilePath);
@@ -82,20 +78,7 @@ namespace ComparisonRunner
         /// <param name="outputFilePath">Location of output file</param>
         public static void RunSingleComparison(string configurationFilePath, string referenceFilePath, string candidateFilePath, string outputFilePath)
         {
-            var xmlDocument = new XmlDocument();
-            xmlDocument.Load(configurationFilePath);
-
-            var xmlSerializer = new XmlSerializer(typeof(ComparisonDefinition));
-            if (xmlDocument.DocumentElement == null)
-            {
-                throw new Exception($"Configuation {configurationFilePath} does not contain valid XML");
-            }
-
-            var comparisonDefinition = xmlSerializer.Deserialize(new XmlNodeReader(xmlDocument.DocumentElement)) as ComparisonDefinition;
-            if (comparisonDefinition == null)
-            {
-                throw new Exception($"Unable to deserialize {configurationFilePath}");
-            }
+            var comparisonDefinition = DeserializeComparisonDefinition<ComparisonDefinition>(configurationFilePath);
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -243,6 +226,32 @@ namespace ComparisonRunner
             }
 
             return candidateFile;
+        }
+        
+        /// <summary>
+        /// Deserialize an XML file into a supported ComparisonDefinition type 
+        /// </summary>
+        /// <typeparam name="T">The ComparisonDefinition type</typeparam>
+        /// <param name="configurationFilePath">Path to XML file</param>
+        /// <returns>Instance of comparison definition type</returns>
+        /// <exception cref="Exception">Unable to deserialize the file</exception>
+        private static T DeserializeComparisonDefinition<T>(string configurationFilePath) where T : class
+        {
+            var xmlDocument = new XmlDocument();
+            xmlDocument.Load(configurationFilePath);
+
+            var xmlSerializer = new XmlSerializer(typeof(T));
+            if (xmlDocument.DocumentElement == null)
+            {
+                throw new Exception($"Configuation {configurationFilePath} does not contain valid XML");
+            }
+
+            if (xmlSerializer.Deserialize(new XmlNodeReader(xmlDocument.DocumentElement)) is not T comparisonDefinition)
+            {
+                throw new Exception($"Unable to deserialize {configurationFilePath}");
+            }
+
+            return comparisonDefinition;
         }
     }
 }
