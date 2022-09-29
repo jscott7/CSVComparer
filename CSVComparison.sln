@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSVComparisonTests", "CSVCo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestDataGenerator", "TestDataGenerator\TestDataGenerator.csproj", "{B719C3E6-6F53-42D1-97AB-CC5AB19C140C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComparisonRunner", "ComparisonRunner\ComparisonRunner.csproj", "{8CA0DB2B-C46E-4272-90F9-D9E767E55D16}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ComparisonRunner", "ComparisonRunner\ComparisonRunner.csproj", "{8CA0DB2B-C46E-4272-90F9-D9E767E55D16}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benchmark", "Benchmark\Benchmark.csproj", "{E32B60A7-18AB-4744-8DF3-A70A499EE249}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{8CA0DB2B-C46E-4272-90F9-D9E767E55D16}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8CA0DB2B-C46E-4272-90F9-D9E767E55D16}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8CA0DB2B-C46E-4272-90F9-D9E767E55D16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E32B60A7-18AB-4744-8DF3-A70A499EE249}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E32B60A7-18AB-4744-8DF3-A70A499EE249}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E32B60A7-18AB-4744-8DF3-A70A499EE249}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E32B60A7-18AB-4744-8DF3-A70A499EE249}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
