@@ -169,3 +169,22 @@ To run from your own C# code:
       Console.WriteLine($"{breakDetail.BreakType} - {breakDetail.BreakDescription}");
  }
 ```
+
+## BenchmarkDotNet
+Running a comparison of two files (containing 1000) rows.
+Generated using the TestDataGenerator tool
+
+``` ini
+
+BenchmarkDotNet=v0.13.2, OS=Windows 10 (10.0.19044.2006/21H2/November2021Update)
+11th Gen Intel Core i7-11800H 2.30GHz, 1 CPU, 16 logical and 8 physical cores
+.NET SDK=6.0.401
+  [Host]     : .NET 6.0.9 (6.0.922.41905), X64 RyuJIT AVX2
+  DefaultJob : .NET 6.0.9 (6.0.922.41905), X64 RyuJIT AVX2
+
+
+```
+|           Method |     Mean |     Error |    StdDev | Ratio | RatioSD |    Gen0 |    Gen1 | Allocated | Alloc Ratio |
+|----------------- |---------:|----------:|----------:|------:|--------:|--------:|--------:|----------:|------------:|
+| CompareIdentical | 1.401 ms | 0.0160 ms | 0.0149 ms |  1.00 |    0.00 | 54.6875 | 17.5781 | 666.92 KB |        1.00 |
+| CompareDifferent | 1.424 ms | 0.0246 ms | 0.0230 ms |  1.02 |    0.02 | 54.6875 | 17.5781 | 675.65 KB |        1.01 |
