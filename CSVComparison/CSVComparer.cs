@@ -151,10 +151,7 @@ namespace CSVComparison
                             var excludedColumns = GetExcludedColumns(columns);
                             lock(_lockObj)
                             {
-                                if (_excludedColumns == null)
-                                {
-                                    _excludedColumns = excludedColumns;
-                                }
+                                _excludedColumns ??= excludedColumns;
                             }
                         }
 

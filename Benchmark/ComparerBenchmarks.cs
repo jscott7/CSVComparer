@@ -14,12 +14,11 @@ namespace Benchmark
         [Benchmark(Baseline=true)]
         public int CompareIdentical()
         {
-            var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "ComplexReferenceFile.csv");
-            var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "ComplexReferenceFile.csv");
+            var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "ReferenceTest.csv");
+            var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "ReferenceTest.csv");
 
             var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
-            comparisonDefinition.KeyColumns.Add("ABC");
-            comparisonDefinition.KeyColumns.Add("DEF");
+            comparisonDefinition.KeyColumns.Add("COL A");
             comparisonDefinition.HeaderRowIndex = 0;
             comparisonDefinition.ToleranceValue = 0.1;
             comparisonDefinition.ToleranceType = ToleranceType.Relative;
@@ -32,12 +31,11 @@ namespace Benchmark
         [Benchmark]
         public int CompareDifferent()
         {
-            var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "ComplexReferenceFile.csv");
-            var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "ComplexCandidateFile.csv");
+            var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "ReferenceTest.csv");
+            var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "CandidateTest.csv");
 
             var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
-            comparisonDefinition.KeyColumns.Add("ABC");
-            comparisonDefinition.KeyColumns.Add("DEF");
+            comparisonDefinition.KeyColumns.Add("COL A");
             comparisonDefinition.HeaderRowIndex = 0;
             comparisonDefinition.ToleranceValue = 0.1;
             comparisonDefinition.ToleranceType = ToleranceType.Relative;

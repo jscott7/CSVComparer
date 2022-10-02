@@ -5,9 +5,10 @@ namespace TestDataGenerator
 {
     class Program
     {
-        static string[] colBValues = new string[] { "A", "B", "C", "D" };
-        static string[] colCValues = new string[] { "E", "F", "G", "H" };
-        static double[] colDValues = new double[] { 1.5, 10.5, 32.1, 42.0 };
+        static string[] columnNames = new [] { "COL A,COL B,COL C,COL D" };
+        static string[] colBValues = new string[] { "A", "B", "C", "D", "AA", "BB", "CC", "DD" };
+        static string[] colCValues = new string[] { "E", "F", "G", "H", "EE", "FF", "GG", "HH"};
+        static double[] colDValues = new double[] { 1.5, 10.5, 32.1, 42.0, -9, -9.05, 999.6 };
 
         /// <summary>
         /// Tool to create sample csv test files. There are 4 columns, COL A is the index column and the remaining 3 are populated 
@@ -34,27 +35,28 @@ namespace TestDataGenerator
             {
                 int numberOfRows = int.Parse(args[0]);
                 var random = new Random();
-                using (StreamWriter referenceWriter = new StreamWriter(@"C:\temp\referenceTest.csv"))
-                using (StreamWriter candidateWriter = new StreamWriter(@"C:\temp\candidateTest.csv"))
+                using (var referenceWriter = new StreamWriter(@"C:\temp\referenceTest.csv"))
+                using (var candidateWriter = new StreamWriter(@"C:\temp\candidateTest.csv"))
                 {
                     // Write header
-                    referenceWriter.WriteLine("COL A,COL B,COL C,COL D");
-                    candidateWriter.WriteLine("COL A,COL B,COL C,COL D");
+                    referenceWriter.WriteLine(string.Join(',', columnNames));
+                    candidateWriter.WriteLine(string.Join(',', columnNames));
 
-                    for (int index = 0; index < numberOfRows; index++)
+                    for (var index = 0; index < numberOfRows; index++)
                     {
-                        int bIndex = random.Next(0, 3);
-                        int cIndex = random.Next(0, 3);
-                        int dIndex = random.Next(0, 3);
+                        var bIndex = random.Next(0, colBValues.Length - 1);
+                        var cIndex = random.Next(0, colCValues.Length - 1);
+                        var dIndex = random.Next(0, colDValues.Length - 1);
 
-                        string row = $"{index},{colBValues[bIndex]},{colCValues[cIndex]},{colDValues[dIndex]}";
+                        var row = $"{index},{colBValues[bIndex]},{colCValues[cIndex]},{colDValues[dIndex]}";
                         referenceWriter.WriteLine(row);
 
+                        // Add a break to the canidate
                         if (index > 0 && index % 100 == 0)
                         {
-                            bIndex = random.Next(0, 3);
-                            cIndex = random.Next(0, 3);
-                            dIndex = random.Next(0, 3);
+                            bIndex = random.Next(0, colBValues.Length - 1);
+                            cIndex = random.Next(0, colCValues.Length - 1);
+                            dIndex = random.Next(0, colDValues.Length - 1);
                             row = $"{index},{colBValues[bIndex]},{colCValues[cIndex]},{colDValues[dIndex]}";
                         }
 
