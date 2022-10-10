@@ -82,7 +82,7 @@ namespace CSVComparison
             if (!excludeBreak)
             {
                 _breaks.Add(new BreakDetail()
-                {
+                {                 
                     BreakType = breakType,
                     BreakKey = orphan.Key,
                     ReferenceRow = breakType == BreakType.RowInReferenceNotInCandidate ? orphan.Value.RowIndex : -1,
@@ -251,14 +251,15 @@ namespace CSVComparison
                     else
                     {
                         // See if the candidate row has a matching row in reference orphans
-                        var foundReferenceOrphan = CheckReferenceOrphan(candidateRow);
+                        var foundReferenceOrphan = GetOrAddOrphan(candidateRow, _referenceOrphans, _candidateOrphans);
                         if (foundReferenceOrphan != null)
                         { 
                             CompareRow(candidateRow.Key, foundReferenceOrphan, candidateRow);
                         }
 
                         // See if the reference row has a matching row in candidate orphans
-                        var foundCandidateOrphan = CheckCandidateOrphan(referenceRow);
+
+                        var foundCandidateOrphan = GetOrAddOrphan(referenceRow, _candidateOrphans, _referenceOrphans);
                         if (foundCandidateOrphan != null)
                         {
                             CompareRow(referenceRow.Key, referenceRow, foundCandidateOrphan);
@@ -267,7 +268,7 @@ namespace CSVComparison
                 }
                 else if (candidateRow != null)
                 {
-                    var foundReferenceOrphan = CheckReferenceOrphan(candidateRow);
+                    var foundReferenceOrphan = GetOrAddOrphan(candidateRow, _referenceOrphans, _candidateOrphans);
                     if (foundReferenceOrphan != null)
                     {             
                         CompareRow(candidateRow.Key, foundReferenceOrphan, candidateRow);
@@ -275,7 +276,7 @@ namespace CSVComparison
                 }
                 else if (referenceRow != null)
                 {
-                    var foundCandidateOrphan = CheckCandidateOrphan(referenceRow);
+                    var foundCandidateOrphan = GetOrAddOrphan(referenceRow, _candidateOrphans, _referenceOrphans);
                     if (foundCandidateOrphan != null)
                     {
                         CompareRow(referenceRow.Key, referenceRow, foundCandidateOrphan);
@@ -312,48 +313,33 @@ namespace CSVComparison
             }
         }
 
-        private CsvRow CheckReferenceOrphan(CsvRow candidateRow)
+        /// <summary>
+        /// Gets the orphan corresponding to the supplied CSV row. If that doesn't exist add CSV row to its own orphans dictionary
+        /// </summary>
+        /// <param name="row">CSV row we want to compare to</param>
+        /// <param name="existingOrphans">Existing orphans to check against</param>
+        /// <param name="orphansToAdd">Orphans for the current CSV row</param>
+        /// <returns>Existing Orphan row if it exists or null</returns>
+        /// <exception cref="ComparisonException">Duplicate key in orphan dictionary</exception>
+        private CsvRow GetOrAddOrphan(CsvRow row, Dictionary<string, CsvRow> existingOrphans, Dictionary<string, CsvRow> orphansToAdd)
         {
-            CsvRow csvRow = null;
-
-            if (_referenceOrphans.ContainsKey(candidateRow.Key))
+            CsvRow existingOrphan = null;
+            if (existingOrphans.ContainsKey(row.Key))
             {
-                csvRow = _referenceOrphans[candidateRow.Key];
-                _referenceOrphans.Remove(candidateRow.Key);
+                existingOrphan = existingOrphans[row.Key];
+                existingOrphans.Remove(row.Key);
             }
             else
             {
-                if (_candidateOrphans.ContainsKey(candidateRow.Key))
+                if (orphansToAdd.ContainsKey(row.Key))
                 {
-                    throw new ComparisonException($"Candidate orphan {candidateRow.Key} already exists. This usually means the key columns do not define unique rows.");
+                    throw new ComparisonException($"Orphan key: {row.Key} already exists. This usually means the key columns do not define unique rows.");
                 }
 
-                _candidateOrphans.Add(candidateRow.Key, candidateRow);
+                orphansToAdd.Add(row.Key, row);
             }
 
-            return csvRow;
-        }
-
-        private CsvRow CheckCandidateOrphan(CsvRow referenceRow)
-        {
-            CsvRow csvRow = null;
-            if (_candidateOrphans.ContainsKey(referenceRow.Key))
-            {             
-                csvRow = _candidateOrphans[referenceRow.Key];          
-                _candidateOrphans.Remove(referenceRow.Key);
-             
-            }
-            else
-            {
-                if (_referenceOrphans.ContainsKey(referenceRow.Key))
-                {
-                    throw new ComparisonException($"Reference orphan {referenceRow.Key} already exists. This usually means the key columns do not define unique rows.");
-                }
-
-                _referenceOrphans.Add(referenceRow.Key, referenceRow);
-            }
-
-            return csvRow;
+            return existingOrphan;
         }
 
         /// <summary>

@@ -92,7 +92,7 @@ namespace CSVComparisonTests
             var csvComparer = new CSVComparer(comparisonDefinition);
             var exception = Assert.Throws<AggregateException>(delegate { csvComparer.CompareFiles(referenceDataFile, candidateDataFile); });
         
-            Assert.AreEqual("Reference orphan A:x already exists. This usually means the key columns do not define unique rows.", exception.InnerException.Message);
+            Assert.AreEqual("Orphan key: A:x already exists. This usually means the key columns do not define unique rows.", exception.InnerException.Message);
         }
 
         [Test]    
