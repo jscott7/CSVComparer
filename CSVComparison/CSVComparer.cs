@@ -86,7 +86,8 @@ namespace CSVComparison
                     BreakType = breakType,
                     BreakKey = orphan.Key,
                     ReferenceRow = breakType == BreakType.RowInReferenceNotInCandidate ? orphan.Value.RowIndex : -1,
-                    CandidateRow = breakType == BreakType.RowInCandidateNotInReference ? orphan.Value.RowIndex : -1
+                    CandidateRow = breakType == BreakType.RowInCandidateNotInReference ? orphan.Value.RowIndex : -1,
+                    BreakDescription = $"Key missing: {orphan.Key}"
                 });
             }
         }
