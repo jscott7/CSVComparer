@@ -296,11 +296,11 @@ namespace CSVComparison
         {                
             if (_headerCheck)
             {
-                _headerColumns = referenceRow.Columns;
-                bool success = CompareValues(key, referenceRow, candidateRow);
                 _headerCheck = false;
+                _headerColumns = referenceRow.Columns;
+
                 // Early return for mismatching header
-                if (!success)
+                if (!CompareValues(key, referenceRow, candidateRow))
                 {
                     lock (_lockObj)
                     {
@@ -393,29 +393,40 @@ namespace CSVComparison
         private bool CompareWithTolerance(string key, string columnName, string referenceValue, string candidateValue, int referenceRowIndex, int candidateRowIndex)
         {
             var success = true;
-            double referenceDouble, candidateDouble;
-            if (double.TryParse(referenceValue.Trim('\"'), out referenceDouble) && double.TryParse(candidateValue.Trim('\"'), out candidateDouble))
+
+            if (double.TryParse(referenceValue.Trim('\"'), out double referenceDouble) && double.TryParse(candidateValue.Trim('\"'), out double candidateDouble))
             {
-                if (_comparisonDefinition.ToleranceType == ToleranceType.Absolute)
+                switch (_comparisonDefinition.ToleranceType)
                 {
-                    if (Math.Abs(referenceDouble - candidateDouble) > _comparisonDefinition.ToleranceValue)
-                    {
-                        success = false;
-                        AddBreak(BreakType.ValueMismatch, key, referenceRowIndex, candidateRowIndex, columnName, referenceValue, candidateValue);
-                    }
+                    case ToleranceType.Absolute:
+                        if (Math.Abs(referenceDouble - candidateDouble) > _comparisonDefinition.ToleranceValue)
+                        {
+                            success = false;
+                            AddBreak(BreakType.ValueMismatch, key, referenceRowIndex, candidateRowIndex, columnName, referenceValue, candidateValue);
+                        }
+                        break;
+                    case ToleranceType.Relative:
+                        var relativeDifference = (referenceDouble - candidateDouble) / referenceDouble;
+                        if (Math.Abs(relativeDifference) > _comparisonDefinition.ToleranceValue)
+                        {
+                            success = false;
+                            AddBreak(BreakType.ValueMismatch, key, referenceRowIndex, candidateRowIndex, columnName, referenceValue, candidateValue);
+                        }
+                        break;
+                    case ToleranceType.Exact:
+                    default:
+                        if (referenceDouble != candidateDouble)
+                        {
+                            success = false;
+                            AddBreak(BreakType.ValueMismatch, key, referenceRowIndex, candidateRowIndex, columnName, referenceValue, candidateValue);
+                        }
+                        
+                        break;
                 }
-                else if (_comparisonDefinition.ToleranceType == ToleranceType.Relative)
-                {
-                    double relativeDifference = (referenceDouble - candidateDouble) / referenceDouble;
-                    if (Math.Abs(relativeDifference) > _comparisonDefinition.ToleranceValue)
-                    {
-                        success = false;
-                        AddBreak(BreakType.ValueMismatch, key, referenceRowIndex, candidateRowIndex, columnName, referenceValue, candidateValue);
-                    }
-                }
-            }
+            }        
             else if (referenceValue != candidateValue)
             {
+                // Default to string comparison
                 success = false;
                 AddBreak(BreakType.ValueMismatch, key, referenceRowIndex, candidateRowIndex, columnName, referenceValue, candidateValue);
             }
