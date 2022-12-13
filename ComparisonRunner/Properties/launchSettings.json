@@ -1,9 +1,0 @@
-{
-  "profiles": {
-    "ComparisonRunner": {
-      "commandName": "Project",
-      "commandLineArgs": "ExampleData\\ReferenceFile.csv ExampleData\\CandidateFile.csv ExampleData\\Configuration.xml",
-      "workingDirectory": "C:\\Family Files\\Jonathan\\IT\\GitHub\\CSVComparer"
-    }
-  }
-}
