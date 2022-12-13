@@ -35,6 +35,10 @@ namespace CSVComparison
         /// </summary>
         public long NumberOfCandidateRows;
 
+        /// <summary>
+        /// The Columns used in the Key concatenated by ':'. In same order as Key values
+        /// </summary>
+        public string KeyDefinition;
         public ComparisonResult(List<BreakDetail> breakDetails)
         {
             BreakDetails = breakDetails;

@@ -184,7 +184,7 @@ namespace ComparisonRunner
 
                 if (comparisonResult.BreakDetails.Count() > 0)
                 {
-                    sw.WriteLine("Break Type,Key,Column Name,Reference Row, Reference Value, Candidate Row, Candidate Value");
+                    sw.WriteLine($"Break Type,Key ({comparisonResult.KeyDefinition}),Column Name,Reference Row, Reference Value, Candidate Row, Candidate Value");
                     foreach (var breakResult in comparisonResult.BreakDetails)
                     {
                         sw.WriteLine($"{breakResult.BreakType},{breakResult.BreakKey},{breakResult.Column},{breakResult.ReferenceRow},{breakResult.ReferenceValue},{breakResult.CandidateRow},{breakResult.CandidateValue}");

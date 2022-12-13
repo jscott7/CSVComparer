@@ -28,6 +28,7 @@ namespace CSVComparison
         private long _numberOfCandidateRows = 0;
         private HashSet<int> _excludedColumns = null;
         private string[] _headerColumns = null;
+        private string _keyDefinition = null;
 
         public CSVComparer(ComparisonDefinition comparisonDefinition)
         {
@@ -58,6 +59,7 @@ namespace CSVComparison
             }
 
             return new ComparisonResult(_breaks) { 
+                KeyDefinition = _keyDefinition,
                 ReferenceSource = referenceFile, 
                 CandidateSource = candidateFile, 
                 NumberOfReferenceRows = _numberOfReferenceRows,
@@ -107,6 +109,7 @@ namespace CSVComparison
             _numberOfCandidateRows = 0;
             _excludedColumns = null;
             _headerColumns = null;
+            _keyDefinition = null;
         }
 
         /// <summary>
@@ -140,6 +143,14 @@ namespace CSVComparison
                     if (rowIndex == _comparisonDefinition.HeaderRowIndex)
                     {
                         keyIndexes.AddRange(GetKeyIndexes(columns));
+                        var keyCols = new List<string>();
+                        foreach(var index in keyIndexes)
+                        {
+                            keyCols.Add(columns[index]);
+                        }
+
+                        var keyDefinition = string.Join(':', keyCols);
+
                         expectedColumnCount = columns.Length;
                         dataRow = true;
 
@@ -149,6 +160,7 @@ namespace CSVComparison
                         lock (_lockObj)
                         {
                             _excludedColumns ??= excludedColumns;
+                            _keyDefinition ??= keyDefinition;
                         }
                     }
 
@@ -156,7 +168,7 @@ namespace CSVComparison
                     {
                         if (columns.Length == expectedColumnCount || !_comparisonDefinition.IgnoreInvalidRows)
                         {
-                            string key = "";
+                            var key = "";
                             foreach (int index in keyIndexes)
                             {
                                 key += columns[index] + ":";
@@ -254,7 +266,6 @@ namespace CSVComparison
                         }
 
                         // See if the reference row has a matching row in candidate orphans
-
                         var foundCandidateOrphan = GetOrAddOrphan(referenceRow, _candidateOrphans, _referenceOrphans);
                         if (foundCandidateOrphan != null)
                         {
@@ -448,6 +459,12 @@ namespace CSVComparison
             _breaks.Add(new BreakDetail(breakType, breakKey, referenceRowIndex, candidateRowIndex, columnName, referenceValue, candidateValue));
         }
 
+        /// <summary>
+        /// Gets the column indexes of the key columns
+        /// </summary>
+        /// <param name="headerRow"></param>
+        /// <returns></returns>
+        /// <exception cref="ComparisonException">Thrown if no columns found matching keys</exception>
         List<int> GetKeyIndexes(string[] headerRow)
         {
             var keyIndexes = new List<int>();
