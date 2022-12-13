@@ -118,73 +118,68 @@ namespace CSVComparison
         {
             try
             {
-                using (var fileStream = File.OpenRead(file))
-                using (var streamReader = new StreamReader(fileStream))
+                var rowIndex = 0;
+                var dataRow = false;
+                var expectedColumnCount = 0;
+                var keyIndexes = new List<int>();
+
+                foreach (string line in File.ReadLines(file))
                 {
-                    string line;
-                    int rowIndex = 0;
-                    bool dataRow = false;
-                    int expectedColumnCount = 0;
-                    List<int> keyIndexes = new List<int>();
-
-                    while ((line = streamReader.ReadLine()) != null)
+                    string[] columns;
+                    if (_comparisonDefinition.Delimiter.Length == 1 && line.IndexOf("\"") > -1)
                     {
-                        string[] columns;
-                        if (_comparisonDefinition.Delimiter.Length == 1 && line.IndexOf("\"") > -1)
-                        {
-                            // If the delimiter is in quotes we don't want to split on it
-                            // However complex delimiters do not support this
-                            columns = SplitStringWithQuotes(line).ToArray();
-                        }
-                        else
-                        {
-                            columns = line.Split(_comparisonDefinition.Delimiter);
-                        }
-
-                        if (rowIndex == _comparisonDefinition.HeaderRowIndex)
-                        {
-                            keyIndexes.AddRange(GetKeyIndexes(columns));
-                            expectedColumnCount = columns.Length;
-                            dataRow = true;
-
-                            // Both loader threads can set excluded columns, but we only want to update once
-                            // If the columns are different we will early terminate the comparison
-                            var excludedColumns = GetExcludedColumns(columns);
-                            lock(_lockObj)
-                            {
-                                _excludedColumns ??= excludedColumns;
-                            }
-                        }
-
-                        if (dataRow)
-                        {
-                            if (columns.Length == expectedColumnCount || !_comparisonDefinition.IgnoreInvalidRows)
-                            {
-                                string key = "";
-                                foreach (int index in keyIndexes)
-                                {
-                                    key += columns[index] + ":";
-                                }
-
-                                key = key.Trim(':');
-
-                                lock (_lockObj)
-                                {
-                                    queue.Enqueue(new CsvRow() { Key = key, Columns = columns, RowIndex = rowIndex });
-                                }
-                            }
-
-                            _readyToStartComparisonEvent.Set();
-                        }
-
-                        rowIndex++;
+                        // If the delimiter is in quotes we don't want to split on it
+                        // However complex delimiters do not support this
+                        columns = SplitStringWithQuotes(line).ToArray();
+                    }
+                    else
+                    {
+                        columns = line.Split(_comparisonDefinition.Delimiter);
                     }
 
-                    if (rowIndex == 0)
+                    if (rowIndex == _comparisonDefinition.HeaderRowIndex)
                     {
-                        // There were no rows in this file. 
+                        keyIndexes.AddRange(GetKeyIndexes(columns));
+                        expectedColumnCount = columns.Length;
+                        dataRow = true;
+
+                        // Both loader threads can set excluded columns, but we only want to update once
+                        // If the columns are different we will early terminate the comparison
+                        var excludedColumns = GetExcludedColumns(columns);
+                        lock (_lockObj)
+                        {
+                            _excludedColumns ??= excludedColumns;
+                        }
+                    }
+
+                    if (dataRow)
+                    {
+                        if (columns.Length == expectedColumnCount || !_comparisonDefinition.IgnoreInvalidRows)
+                        {
+                            string key = "";
+                            foreach (int index in keyIndexes)
+                            {
+                                key += columns[index] + ":";
+                            }
+
+                            key = key.Trim(':');
+
+                            lock (_lockObj)
+                            {
+                                queue.Enqueue(new CsvRow() { Key = key, Columns = columns, RowIndex = rowIndex });
+                            }
+                        }
+
                         _readyToStartComparisonEvent.Set();
                     }
+
+                    rowIndex++;
+                }
+
+                if (rowIndex == 0)
+                {
+                    // There were no rows in this file. 
+                    _readyToStartComparisonEvent.Set();
                 }
             }
             catch (Exception ex)
