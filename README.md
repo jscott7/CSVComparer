@@ -49,7 +49,7 @@ Number of Candidate rows: 100001
 Comparison took 906ms
 Number of breaks 5
 
-Break Type,Key,Column Name,Reference Row, Reference Value, Candidate Row, Candidate Value
+Break Type,Key - COL A,Column Name,Reference Row, Reference Value, Candidate Row, Candidate Value
 ValueMismatch,1,COL B,2,A,2,"A,X"
 ValueMismatch,7,COL D,8,32.1,8,42.1
 ValueMismatch,77,COL B,78,B,78,A
