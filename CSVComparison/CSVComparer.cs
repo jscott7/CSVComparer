@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -27,8 +28,10 @@ namespace CSVComparison
         private long _numberOfReferenceRows = 0;
         private long _numberOfCandidateRows = 0;
         private HashSet<int> _excludedColumns = null;
-        private string[] _headerColumns = null;
-        private string _keyDefinition = null;
+#nullable enable 
+        private string[]? _headerColumns;
+        private string? _keyDefinition;
+#nullable disable
 
         public CSVComparer(ComparisonDefinition comparisonDefinition)
         {
@@ -122,11 +125,11 @@ namespace CSVComparison
             try
             {
                 var rowIndex = 0;
-                var dataRow = false;
+                var headerRow = true;
                 var expectedColumnCount = 0;
                 var keyIndexes = new List<int>();
 
-                foreach (string line in File.ReadLines(file))
+                foreach (var line in File.ReadLines(file))
                 {
                     string[] columns;
                     if (_comparisonDefinition.Delimiter.Length == 1 && line.IndexOf("\"") > -1)
@@ -142,29 +145,11 @@ namespace CSVComparison
 
                     if (rowIndex == _comparisonDefinition.HeaderRowIndex)
                     {
-                        keyIndexes.AddRange(GetKeyIndexes(columns));
-                        var keyCols = new List<string>();
-                        foreach(var index in keyIndexes)
-                        {
-                            keyCols.Add(columns[index]);
-                        }
-
-                        var keyDefinition = string.Join(':', keyCols);
-
-                        expectedColumnCount = columns.Length;
-                        dataRow = true;
-
-                        // Both loader threads can set excluded columns, but we only want to update once
-                        // If the columns are different we will early terminate the comparison
-                        var excludedColumns = GetExcludedColumns(columns);
-                        lock (_lockObj)
-                        {
-                            _excludedColumns ??= excludedColumns;
-                            _keyDefinition ??= keyDefinition;
-                        }
+                        expectedColumnCount = DecodeHeaderRow(keyIndexes, columns);
+                        headerRow = false;
                     }
 
-                    if (dataRow)
+                    if (!headerRow)
                     {
                         if (columns.Length == expectedColumnCount || !_comparisonDefinition.IgnoreInvalidRows)
                         {
@@ -208,6 +193,30 @@ namespace CSVComparison
             }
 
             Interlocked.Decrement(ref _runningLoaderThreads);
+        }
+
+        private int DecodeHeaderRow(List<int> keyIndexes, string[] columns)
+        {
+            keyIndexes.AddRange(GetKeyIndexes(columns));
+            var keyCols = new List<string>();
+            foreach (var index in keyIndexes)
+            {
+                keyCols.Add(columns[index]);
+            }
+
+            var keyDefinition = string.Join(':', keyCols);
+            var expectedColumnCount = columns.Length;
+          
+            // Both loader threads can set excluded columns, but we only want to update once
+            // If the columns are different we will early terminate the comparison
+            var excludedColumns = GetExcludedColumns(columns);
+            lock (_lockObj)
+            {
+                _excludedColumns ??= excludedColumns;
+                _keyDefinition ??= keyDefinition;
+            }
+
+            return expectedColumnCount;
         }
 
         /// <summary>
