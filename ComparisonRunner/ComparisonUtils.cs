@@ -105,7 +105,7 @@ namespace ComparisonRunner
                 }
 
                 var resultsFile = Path.Combine(outputFilePath, "ComparisonResults.csv");
-                Console.WriteLine($"Saving results to {resultsFile}");
+
                 AppendFile = false;
                 SaveResults(resultsFile, comparisonResult, comparisonDefinition, stopwatch.ElapsedMilliseconds);
             }
