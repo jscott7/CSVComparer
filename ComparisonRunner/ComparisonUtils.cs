@@ -83,7 +83,8 @@ namespace ComparisonRunner
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             var csvComparer = new CSVComparer(comparisonDefinition);
-            var comparisonResult = csvComparer.CompareFiles(referenceFilePath, candidateFilePath);
+
+            var comparisonResult = csvComparer.CompareFiles(new FileInfo(referenceFilePath).FullName, new FileInfo(candidateFilePath).FullName);
             stopwatch.Stop();
 
             Console.WriteLine($"Reference: {comparisonResult.ReferenceSource}");
@@ -199,10 +200,10 @@ namespace ComparisonRunner
         /// <param name="candidateFilePath">Root path to candidate files</param>
         /// <param name="referenceFile">The reference file as base for search</param>
         /// <param name="fileComparisonDefinition">Source for any file regex pattern</param>
-        /// <returns>Path to candidate file or empty string if not found</returns>
+        /// <returns>Full path to candidate file or empty string if not found</returns>
         private static string FindCandidateFile(string candidateFilePath, FileInfo referenceFile, FileComparisonDefinition fileComparisonDefinition)
         {
-            string candidateFile = "";
+            var candidateFile = "";
 
             if (File.Exists(Path.Combine(candidateFilePath, referenceFile.Name)))
             {
@@ -225,7 +226,13 @@ namespace ComparisonRunner
                 }
             }
 
-            return candidateFile;
+            if (!string.IsNullOrEmpty(candidateFile))
+            {
+                var candidateFileInfo = new FileInfo(candidateFile);
+                return candidateFileInfo.FullName;
+            }
+
+             return candidateFile;
         }
         
         /// <summary>
