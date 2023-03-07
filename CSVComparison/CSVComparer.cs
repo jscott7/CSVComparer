@@ -390,15 +390,7 @@ namespace CSVComparison
                 var candidateValue = candidateColumns[referenceIndex];
                 var columnName = _headerColumns[referenceIndex];
 
-                if (_comparisonDefinition.ToleranceType != ToleranceType.Exact)
-                {
-                    success &= CompareWithTolerance(key, columnName, referenceValue, candidateValue, referenceRow.RowIndex, candidateRow.RowIndex);
-                }
-                else if (referenceValue != candidateValue)
-                {
-                    success = false;
-                    AddBreak(BreakType.ValueMismatch, key, referenceRow.RowIndex, candidateRow.RowIndex, columnName, referenceValue, candidateValue);
-                }
+                success &= CompareWithTolerance(key, columnName, referenceValue, candidateValue, referenceRow.RowIndex, candidateRow.RowIndex);
             }
 
             return success;

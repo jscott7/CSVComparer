@@ -197,20 +197,30 @@ namespace CSVComparisonTests
         }
 
         [Test]
-        public void TestExactDoubleComparison()
+        public void DefaultExact_Tolerance_DoubleComparison()
         {
             var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVWithDouble.csv");
             var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVWithDoubleBreak.csv");
 
             var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
             comparisonDefinition.KeyColumns.Add("COL1");
-            comparisonDefinition.ToleranceValue = 0.1;
+            comparisonDefinition.ToleranceValue = 1.5;
 
             var csvComparer = new CSVComparer(comparisonDefinition);
             var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
-            Assert.AreEqual(2, comparisonResult.BreakDetails.Count, "Absolute tolerance");
-            Assert.AreEqual("Key:A, Reference Row:1, Value:1.0 != Candidate Row:1, Value:1.2", comparisonResult.BreakDetails[0].BreakDescription);
-            Assert.AreEqual("Key:C, Reference Row:2, Value:2.5 != Candidate Row:2, Value:2.61", comparisonResult.BreakDetails[1].BreakDescription);
+
+            Assert.That(comparisonResult.BreakDetails.Count, Is.EqualTo(2), "Exact tolerance");
+            Assert.That(comparisonResult.BreakDetails[0].BreakDescription, Is.EqualTo("Key:A, Reference Row:1, Value:1.0 != Candidate Row:1, Value:1.2"));
+            Assert.That(comparisonResult.BreakDetails[1].BreakDescription, Is.EqualTo("Key:C, Reference Row:2, Value:2.5 != Candidate Row:2, Value:2.61"));
+
+            // Explicitly set Exact
+            comparisonDefinition.ToleranceType = ToleranceType.Exact;
+            var csvComparerExact = new CSVComparer(comparisonDefinition);
+            var comparisonResultExact = csvComparerExact.CompareFiles(referenceDataFile, candidateDataFile);
+
+            Assert.That(comparisonResultExact.BreakDetails.Count, Is.EqualTo(2), "Exact tolerance");
+            Assert.That(comparisonResultExact.BreakDetails[0].BreakDescription, Is.EqualTo("Key:A, Reference Row:1, Value:1.0 != Candidate Row:1, Value:1.2"));
+            Assert.That(comparisonResultExact.BreakDetails[1].BreakDescription, Is.EqualTo("Key:C, Reference Row:2, Value:2.5 != Candidate Row:2, Value:2.61"));
         }
 
         [Test]
