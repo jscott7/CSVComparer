@@ -193,13 +193,12 @@ BenchmarkDotNet=v0.13.2, OS=Windows 11 (10.0.22621.1413)
 | CompareDifferent | 1.407 ms | 0.0194 ms | 0.0182 ms |  0.98 |    0.02 | 54.6875 | 5.8594 | 673.76 KB |        1.01 |
 
 Legends
-  Mean        : Arithmetic mean of all measurements
-  Error       : Half of 99.9% confidence interval
-  StdDev      : Standard deviation of all measurements
-  Ratio       : Mean of the ratio distribution ([Current]/[Baseline])
-  RatioSD     : Standard deviation of the ratio distribution ([Current]/[Baseline])
-  Gen0        : GC Generation 0 collects per 1000 operations
-  Gen1        : GC Generation 1 collects per 1000 operations
-  Allocated   : Allocated memory per single operation (managed only, inclusive, 1KB = 1024B)
-  Alloc Ratio : Allocated memory ratio distribution ([Current]/[Baseline])
-  1 ms        : 1 Millisecond (0.001 sec)
+*  Mean        : Arithmetic mean of all measurements
+*  Error       : Half of 99.9% confidence interval
+*  StdDev      : Standard deviation of all measurements
+*  Ratio       : Mean of the ratio distribution ([Current]/[Baseline])
+*  RatioSD     : Standard deviation of the ratio distribution ([Current]/[Baseline])
+*  Gen0        : GC Generation 0 collects per 1000 operations
+*  Gen1        : GC Generation 1 collects per 1000 operations
+*  Allocated   : Allocated memory per single operation (managed only, inclusive, 1KB = 1024B)
+*  Alloc Ratio : Allocated memory ratio distribution ([Current]/[Baseline])
