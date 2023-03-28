@@ -6,19 +6,12 @@ namespace CSVComparison
 {
     public class RowHelper
     {
-        public static List<string> SplitRowWithQuotes(ReadOnlySpan<char> line, string delimiter)
-        {
-            var delimiterIndex = line.IndexOf(delimiter);
-
-            return null;
-        }
-
-            /// <summary>
-            /// Split a string that can have delimiters embedded in quotes, for example: A,B,"C,D",E
-            /// </summary>
-            /// <param name="line">The full CSV line</param>
-            /// <returns>List of each CSV Column</returns>
-         public static List<string> SplitRowWithQuotes(string line, string delimiter)
+        /// <summary>
+        /// Split a string that can have delimiters embedded in quotes, for example: A,B,"C,D",E
+        /// </summary>
+        /// <param name="line">The full CSV line</param>
+        /// <returns>List of each CSV Column</returns>
+        public static List<string> SplitRowWithQuotes(string line, string delimiter)
         {
             var startingQuoteIndex = line.IndexOf("\"");
             var columnValues = new List<string>();
