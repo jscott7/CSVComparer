@@ -102,5 +102,17 @@ namespace CSVComparisonTests
             Assert.AreEqual(4, columnValues.Count);
             Assert.AreEqual("\"\"\"C A Field with starting quotes\"", columnValues[2]);
         }
+
+        [Test]
+        public void Split_With_LongStringDelimiter()
+        {
+            var complexLine = "A##\"B contains a quote##comma\"##\"Also contains a##comma\"##D";
+            var columnValues = RowHelper.SplitRowWithQuotes(complexLine, "##");
+            Assert.That(columnValues.Count, Is.EqualTo(4));
+            Assert.That(columnValues[0], Is.EqualTo("A"));
+            Assert.That(columnValues[1], Is.EqualTo("\"B contains a quote##comma\""));
+            Assert.That(columnValues[2], Is.EqualTo("\"Also contains a##comma\""));
+            Assert.That(columnValues[3], Is.EqualTo("D"));
+        }
     }
 }

@@ -1,16 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace CSVComparison
 {
     public class RowHelper
     {
-        /// <summary>
-        /// Split a string that can have delimiters embedded in quotes, for example: A,B,"C,D",E
-        /// </summary>
-        /// <param name="line">The full CSV line</param>
-        /// <returns>List of each CSV Column</returns>
-        public static List<string> SplitRowWithQuotes(string line, string delimiter)
+        public static List<string> SplitRowWithQuotes(ReadOnlySpan<char> line, string delimiter)
+        {
+            var delimiterIndex = line.IndexOf(delimiter);
+
+            return null;
+        }
+
+            /// <summary>
+            /// Split a string that can have delimiters embedded in quotes, for example: A,B,"C,D",E
+            /// </summary>
+            /// <param name="line">The full CSV line</param>
+            /// <returns>List of each CSV Column</returns>
+         public static List<string> SplitRowWithQuotes(string line, string delimiter)
         {
             var startingQuoteIndex = line.IndexOf("\"");
             var columnValues = new List<string>();
@@ -40,7 +48,7 @@ namespace CSVComparison
                 columnValues.Add(line.Substring(startIndex, currentIndex - startIndex));
                 if (currentIndex < line.Length)
                 {
-                    quoteSearchIndex = currentIndex + 1;
+                    quoteSearchIndex = currentIndex + delimiter.Length;
                 }
                 else
                 {

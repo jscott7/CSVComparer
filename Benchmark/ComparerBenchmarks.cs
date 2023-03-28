@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BenchmarkDotNet.Attributes;
+﻿using BenchmarkDotNet.Attributes;
 using CSVComparison;
 
 namespace Benchmark
@@ -44,5 +39,35 @@ namespace Benchmark
             var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
             return comparisonResult.BreakDetails.Count;
         }
+
+        private const string RowNoQuotes = "Val1,Val2,Val3,Val4,Val5";
+        private const string RowQuotes = "Val1,Val2,\"Val3,Val3B\",Val4,Val5";
+
+        [Benchmark]
+        public void StringSplit()
+        {
+            var split = RowNoQuotes.Split(',');
+        }
+
+        [Benchmark]
+        public void StringSplitWithQuotesControl()
+        {
+            var split = RowHelper.SplitRowWithQuotes(RowNoQuotes, ",");
+            if (split.Count != 5)
+            {
+                throw new Exception("ARRGH");
+            }
+        }
+
+        [Benchmark]
+        public void StringSplitWithQuotes()
+        {
+            var split = RowHelper.SplitRowWithQuotes(RowNoQuotes, ",");
+            if (split.Count != 5)
+            { 
+                throw new Exception("ARRGH");
+            }
+        }
+
     }
 }
