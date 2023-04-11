@@ -119,13 +119,13 @@ public class ComparisonUtils
         Console.WriteLine($"Reference: {comparisonResult.ReferenceSource}");
         Console.WriteLine($"Candidate: {comparisonResult.CandidateSource}");
 
-        if (comparisonResult.BreakDetails.Count() == 0)
+        if (comparisonResult.BreakDetails.Count == 0)
         {
             Console.WriteLine("No differences found.");
         }
         else
         {
-            Console.WriteLine($"{comparisonResult.BreakDetails.Count()} differences found");
+            Console.WriteLine($"{comparisonResult.BreakDetails.Count} differences found");
         }
 
         if (string.IsNullOrEmpty(outputFilePath))
@@ -180,10 +180,10 @@ public class ComparisonUtils
             sw.WriteLine($"Number of Reference rows,{comparisonResult.NumberOfReferenceRows}");
             sw.WriteLine($"Number of Candidate rows,{comparisonResult.NumberOfCandidateRows}");
             sw.WriteLine($"Duration,{elapsedMillis}ms");
-            sw.WriteLine($"Number of breaks,{comparisonResult.BreakDetails.Count()}");
+            sw.WriteLine($"Number of breaks,{comparisonResult.BreakDetails.Count}");
             sw.WriteLine();
 
-            if (comparisonResult.BreakDetails.Count() > 0)
+            if (comparisonResult.BreakDetails.Count > 0)
             {
                 sw.WriteLine($"Break Type,Key ({comparisonResult.KeyDefinition}),Column Name,Reference Row, Reference Value, Candidate Row, Candidate Value");
                 foreach (var breakResult in comparisonResult.BreakDetails)
