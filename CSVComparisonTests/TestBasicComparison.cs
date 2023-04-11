@@ -3,304 +3,303 @@ using CSVComparison;
 using System;
 using System.IO;
 
-namespace CSVComparisonTests
+namespace CSVComparisonTests;
+
+public class TestBasicComparison
 {
-    public class TestBasicComparison
+    [Test]
+    public void TestIdenticalFile()
     {
-        [Test]
-        public void TestIdenticalFile()
-        {
-            var testDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSV.csv");
-            var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
-            comparisonDefinition.KeyColumns.Add("COL1");
-   
-            var csvComparer = new CSVComparer(comparisonDefinition);
-            var comparisonResult = csvComparer.CompareFiles(testDataFile, testDataFile);
+        var testDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSV.csv");
+        var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
+        comparisonDefinition.KeyColumns.Add("COL1");
 
-            Assert.AreEqual(0, comparisonResult.BreakDetails.Count, "Invalid number of breaks");
-            Assert.AreEqual(2, comparisonResult.NumberOfReferenceRows, "Invalid number of reference rows");
-            Assert.AreEqual(2, comparisonResult.NumberOfCandidateRows, "Invalid number of candidate rows");
-            Assert.AreEqual(testDataFile, comparisonResult.ReferenceSource, "Invalid reference source name");
-            Assert.AreEqual(testDataFile, comparisonResult.CandidateSource, "Invalid candidate source name");
-        }
+        var csvComparer = new CSVComparer(comparisonDefinition);
+        var comparisonResult = csvComparer.CompareFiles(testDataFile, testDataFile);
 
-        [Test]
-        public void TestDifferentValue()
-        {
-            var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSV.csv");
-            var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVValueBreak.csv");
+        Assert.AreEqual(0, comparisonResult.BreakDetails.Count, "Invalid number of breaks");
+        Assert.AreEqual(2, comparisonResult.NumberOfReferenceRows, "Invalid number of reference rows");
+        Assert.AreEqual(2, comparisonResult.NumberOfCandidateRows, "Invalid number of candidate rows");
+        Assert.AreEqual(testDataFile, comparisonResult.ReferenceSource, "Invalid reference source name");
+        Assert.AreEqual(testDataFile, comparisonResult.CandidateSource, "Invalid candidate source name");
+    }
 
-            var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
-            comparisonDefinition.KeyColumns.Add("COL1");
-    
-            var csvComparer = new CSVComparer(comparisonDefinition);
-            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
+    [Test]
+    public void TestDifferentValue()
+    {
+        var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSV.csv");
+        var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVValueBreak.csv");
 
-            Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
-            Assert.AreEqual(BreakType.ValueMismatch, comparisonResult.BreakDetails[0].BreakType);
-            Assert.AreEqual("Key:A, Reference Row:1, Value:B != Candidate Row:1, Value:D", comparisonResult.BreakDetails[0].BreakDescription);
-        }
+        var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
+        comparisonDefinition.KeyColumns.Add("COL1");
 
-        [Test]
-        public void TestDifferentValuePipeDelimited()
-        {
-            var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVPipe.csv");
-            var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVValueBreakPipe.csv");
+        var csvComparer = new CSVComparer(comparisonDefinition);
+        var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
 
-            var comparisonDefinition = new ComparisonDefinition() { Delimiter = "|" };
-            comparisonDefinition.KeyColumns.Add("COL1");
+        Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
+        Assert.AreEqual(BreakType.ValueMismatch, comparisonResult.BreakDetails[0].BreakType);
+        Assert.AreEqual("Key:A, Reference Row:1, Value:B != Candidate Row:1, Value:D", comparisonResult.BreakDetails[0].BreakDescription);
+    }
 
-            var csvComparer = new CSVComparer(comparisonDefinition);
-            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
+    [Test]
+    public void TestDifferentValuePipeDelimited()
+    {
+        var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVPipe.csv");
+        var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVValueBreakPipe.csv");
 
-            Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
-            Assert.AreEqual(BreakType.ValueMismatch, comparisonResult.BreakDetails[0].BreakType);
-            Assert.AreEqual("Key:A, Reference Row:1, Value:B != Candidate Row:1, Value:D", comparisonResult.BreakDetails[0].BreakDescription);
-        }
+        var comparisonDefinition = new ComparisonDefinition() { Delimiter = "|" };
+        comparisonDefinition.KeyColumns.Add("COL1");
 
-        [Test]
-        public void TestDifferentValueRowsBeforeHeader()
-        {
-            var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVExtraHeaderRows.csv");
-            var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVValueBreakExtraHeaderRows.csv");
+        var csvComparer = new CSVComparer(comparisonDefinition);
+        var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
 
-            var comparisonDefinition = new ComparisonDefinition() { Delimiter = ",", HeaderRowIndex = 2 };
-            comparisonDefinition.KeyColumns.Add("COL1");
+        Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
+        Assert.AreEqual(BreakType.ValueMismatch, comparisonResult.BreakDetails[0].BreakType);
+        Assert.AreEqual("Key:A, Reference Row:1, Value:B != Candidate Row:1, Value:D", comparisonResult.BreakDetails[0].BreakDescription);
+    }
 
-            var csvComparer = new CSVComparer(comparisonDefinition);
-            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
+    [Test]
+    public void TestDifferentValueRowsBeforeHeader()
+    {
+        var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVExtraHeaderRows.csv");
+        var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVValueBreakExtraHeaderRows.csv");
 
-            Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
-            Assert.AreEqual(BreakType.ValueMismatch, comparisonResult.BreakDetails[0].BreakType);
-            Assert.AreEqual("Key:A, Reference Row:3, Value:B != Candidate Row:3, Value:D", comparisonResult.BreakDetails[0].BreakDescription);
-        }
+        var comparisonDefinition = new ComparisonDefinition() { Delimiter = ",", HeaderRowIndex = 2 };
+        comparisonDefinition.KeyColumns.Add("COL1");
 
-        [Test]
-        public void TestExtraRowValue()
-        {
-            var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSV.csv");
-            var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVExtraRow.csv");
+        var csvComparer = new CSVComparer(comparisonDefinition);
+        var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
 
-            var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
-            comparisonDefinition.KeyColumns.Add("COL1");
- 
-            var csvComparer = new CSVComparer(comparisonDefinition);
-            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
+        Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
+        Assert.AreEqual(BreakType.ValueMismatch, comparisonResult.BreakDetails[0].BreakType);
+        Assert.AreEqual("Key:A, Reference Row:3, Value:B != Candidate Row:3, Value:D", comparisonResult.BreakDetails[0].BreakDescription);
+    }
 
-            Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
-            Assert.AreEqual(BreakType.RowInCandidateNotInReference, comparisonResult.BreakDetails[0].BreakType);
-            Assert.AreEqual("D", comparisonResult.BreakDetails[0].BreakKey);
-        }
+    [Test]
+    public void TestExtraRowValue()
+    {
+        var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSV.csv");
+        var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVExtraRow.csv");
 
-        [Test]
-        public void TestMissingRowValue()
-        {
-            var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVExtraRow.csv");
-            var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSV.csv");
+        var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
+        comparisonDefinition.KeyColumns.Add("COL1");
 
-            var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
-            comparisonDefinition.KeyColumns.Add("COL1");
-  
-            var csvComparer = new CSVComparer(comparisonDefinition);
-            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
+        var csvComparer = new CSVComparer(comparisonDefinition);
+        var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
 
-            Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
-            Assert.AreEqual(BreakType.RowInReferenceNotInCandidate, comparisonResult.BreakDetails[0].BreakType);
-            Assert.AreEqual("D", comparisonResult.BreakDetails[0].BreakKey);
-        }
+        Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
+        Assert.AreEqual(BreakType.RowInCandidateNotInReference, comparisonResult.BreakDetails[0].BreakType);
+        Assert.AreEqual("D", comparisonResult.BreakDetails[0].BreakKey);
+    }
 
-        [Test]
-        public void TestDifferentColumns()
-        {
-            var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSV.csv");
-            var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVExtraColumn.csv");
+    [Test]
+    public void TestMissingRowValue()
+    {
+        var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVExtraRow.csv");
+        var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSV.csv");
 
-            var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
-            comparisonDefinition.KeyColumns.Add("COL1");
-    
-            var csvComparer = new CSVComparer(comparisonDefinition);
-            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
+        var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
+        comparisonDefinition.KeyColumns.Add("COL1");
 
-            Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
-            Assert.AreEqual(BreakType.ColumnsDifferent, comparisonResult.BreakDetails[0].BreakType);
-            Assert.AreEqual("Reference has 3 columns, Candidate has 4 columns", comparisonResult.BreakDetails[0].BreakDescription);
-        }
+        var csvComparer = new CSVComparer(comparisonDefinition);
+        var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
 
-        [Test]
-        public void TestMissingFile()
-        {
-            var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSV.csv");
-            var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "MissingFile.csv");
+        Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
+        Assert.AreEqual(BreakType.RowInReferenceNotInCandidate, comparisonResult.BreakDetails[0].BreakType);
+        Assert.AreEqual("D", comparisonResult.BreakDetails[0].BreakKey);
+    }
 
-            var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
-            comparisonDefinition.KeyColumns.Add("COL1");
+    [Test]
+    public void TestDifferentColumns()
+    {
+        var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSV.csv");
+        var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVExtraColumn.csv");
 
-            var csvComparer = new CSVComparer(comparisonDefinition);
-            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
+        var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
+        comparisonDefinition.KeyColumns.Add("COL1");
 
-            Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
-            Assert.IsTrue(comparisonResult.BreakDetails[0].BreakDescription.StartsWith("Problem loading"));
-            Assert.AreEqual(BreakType.ProcessFailure, comparisonResult.BreakDetails[0].BreakType);
-        }
+        var csvComparer = new CSVComparer(comparisonDefinition);
+        var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
 
-        [Test]
-        public void TestEmptyFile()
-        {
-            var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "EmptyFile.csv");
-            var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "EmptyFile.csv");
+        Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
+        Assert.AreEqual(BreakType.ColumnsDifferent, comparisonResult.BreakDetails[0].BreakType);
+        Assert.AreEqual("Reference has 3 columns, Candidate has 4 columns", comparisonResult.BreakDetails[0].BreakDescription);
+    }
 
-            var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
-            comparisonDefinition.KeyColumns.Add("COL1");
+    [Test]
+    public void TestMissingFile()
+    {
+        var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSV.csv");
+        var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "MissingFile.csv");
 
-            var csvComparer = new CSVComparer(comparisonDefinition);
-            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
-            Assert.AreEqual(0, comparisonResult.BreakDetails.Count, "Should be no breaks for two empty files");
-            
-            referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSV.csv");
-            var comparisonResult2 = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
-            Assert.AreEqual(2, comparisonResult2.BreakDetails.Count, "All reference rows should be orphans");
-        }
+        var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
+        comparisonDefinition.KeyColumns.Add("COL1");
 
-        [Test]
-        public void TestAbsoluteComparison()
-        {
-            var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVWithDouble.csv");
-            var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVWithDoubleBreak.csv");
+        var csvComparer = new CSVComparer(comparisonDefinition);
+        var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
 
-            var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
-            comparisonDefinition.KeyColumns.Add("COL1");
-            comparisonDefinition.ToleranceType = ToleranceType.Absolute;
-            comparisonDefinition.ToleranceValue = 0.1;
+        Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
+        Assert.IsTrue(comparisonResult.BreakDetails[0].BreakDescription.StartsWith("Problem loading"));
+        Assert.AreEqual(BreakType.ProcessFailure, comparisonResult.BreakDetails[0].BreakType);
+    }
 
-            var csvComparer = new CSVComparer(comparisonDefinition);
-            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
-            Assert.AreEqual(2, comparisonResult.BreakDetails.Count, "Absolute tolerance");
-            Assert.AreEqual("Key:A, Reference Row:1, Value:1.0 != Candidate Row:1, Value:1.2", comparisonResult.BreakDetails[0].BreakDescription);
-            Assert.AreEqual("Key:C, Reference Row:2, Value:2.5 != Candidate Row:2, Value:2.61", comparisonResult.BreakDetails[1].BreakDescription);
-        }
+    [Test]
+    public void TestEmptyFile()
+    {
+        var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "EmptyFile.csv");
+        var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "EmptyFile.csv");
 
-        [Test]
-        public void TestRelativeToleranceComparison()
-        {
-            var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVWithDouble.csv");
-            var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVWithDoubleBreak.csv");
+        var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
+        comparisonDefinition.KeyColumns.Add("COL1");
 
-            var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
-            comparisonDefinition.KeyColumns.Add("COL1");
-            comparisonDefinition.ToleranceType = ToleranceType.Relative;
-            comparisonDefinition.ToleranceValue = 0.1;
+        var csvComparer = new CSVComparer(comparisonDefinition);
+        var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
+        Assert.AreEqual(0, comparisonResult.BreakDetails.Count, "Should be no breaks for two empty files");
+        
+        referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSV.csv");
+        var comparisonResult2 = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
+        Assert.AreEqual(2, comparisonResult2.BreakDetails.Count, "All reference rows should be orphans");
+    }
 
-            var csvComparer = new CSVComparer(comparisonDefinition);
-            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
-            Assert.AreEqual(1, comparisonResult.BreakDetails.Count, "Relative tolerance");
-            Assert.AreEqual("Key:A, Reference Row:1, Value:1.0 != Candidate Row:1, Value:1.2", comparisonResult.BreakDetails[0].BreakDescription);
-        }
+    [Test]
+    public void TestAbsoluteComparison()
+    {
+        var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVWithDouble.csv");
+        var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVWithDoubleBreak.csv");
 
-        [Test]
-        public void DefaultExact_Tolerance_DoubleComparison()
-        {
-            var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVWithDouble.csv");
-            var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVWithDoubleBreak.csv");
+        var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
+        comparisonDefinition.KeyColumns.Add("COL1");
+        comparisonDefinition.ToleranceType = ToleranceType.Absolute;
+        comparisonDefinition.ToleranceValue = 0.1;
 
-            var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
-            comparisonDefinition.KeyColumns.Add("COL1");
-            comparisonDefinition.ToleranceValue = 1.5;
+        var csvComparer = new CSVComparer(comparisonDefinition);
+        var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
+        Assert.AreEqual(2, comparisonResult.BreakDetails.Count, "Absolute tolerance");
+        Assert.AreEqual("Key:A, Reference Row:1, Value:1.0 != Candidate Row:1, Value:1.2", comparisonResult.BreakDetails[0].BreakDescription);
+        Assert.AreEqual("Key:C, Reference Row:2, Value:2.5 != Candidate Row:2, Value:2.61", comparisonResult.BreakDetails[1].BreakDescription);
+    }
 
-            var csvComparer = new CSVComparer(comparisonDefinition);
-            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
+    [Test]
+    public void TestRelativeToleranceComparison()
+    {
+        var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVWithDouble.csv");
+        var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVWithDoubleBreak.csv");
 
-            Assert.That(comparisonResult.BreakDetails.Count, Is.EqualTo(2), "Exact tolerance");
-            Assert.That(comparisonResult.BreakDetails[0].BreakDescription, Is.EqualTo("Key:A, Reference Row:1, Value:1.0 != Candidate Row:1, Value:1.2"));
-            Assert.That(comparisonResult.BreakDetails[1].BreakDescription, Is.EqualTo("Key:C, Reference Row:2, Value:2.5 != Candidate Row:2, Value:2.61"));
+        var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
+        comparisonDefinition.KeyColumns.Add("COL1");
+        comparisonDefinition.ToleranceType = ToleranceType.Relative;
+        comparisonDefinition.ToleranceValue = 0.1;
 
-            // Explicitly set Exact
-            comparisonDefinition.ToleranceType = ToleranceType.Exact;
-            var csvComparerExact = new CSVComparer(comparisonDefinition);
-            var comparisonResultExact = csvComparerExact.CompareFiles(referenceDataFile, candidateDataFile);
+        var csvComparer = new CSVComparer(comparisonDefinition);
+        var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
+        Assert.AreEqual(1, comparisonResult.BreakDetails.Count, "Relative tolerance");
+        Assert.AreEqual("Key:A, Reference Row:1, Value:1.0 != Candidate Row:1, Value:1.2", comparisonResult.BreakDetails[0].BreakDescription);
+    }
 
-            Assert.That(comparisonResultExact.BreakDetails.Count, Is.EqualTo(2), "Exact tolerance");
-            Assert.That(comparisonResultExact.BreakDetails[0].BreakDescription, Is.EqualTo("Key:A, Reference Row:1, Value:1.0 != Candidate Row:1, Value:1.2"));
-            Assert.That(comparisonResultExact.BreakDetails[1].BreakDescription, Is.EqualTo("Key:C, Reference Row:2, Value:2.5 != Candidate Row:2, Value:2.61"));
-        }
+    [Test]
+    public void DefaultExact_Tolerance_DoubleComparison()
+    {
+        var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVWithDouble.csv");
+        var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVWithDoubleBreak.csv");
 
-        [Test]
-        public void TestFooter()
-        {
-            var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVValueExtraFooterRows.csv");
-            var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVValueBreakExtraFooterRows.csv");
+        var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
+        comparisonDefinition.KeyColumns.Add("COL1");
+        comparisonDefinition.ToleranceValue = 1.5;
 
-            var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
-            comparisonDefinition.KeyColumns.Add("COL1");
+        var csvComparer = new CSVComparer(comparisonDefinition);
+        var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
 
-            var csvComparer = new CSVComparer(comparisonDefinition);
-            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
+        Assert.That(comparisonResult.BreakDetails.Count, Is.EqualTo(2), "Exact tolerance");
+        Assert.That(comparisonResult.BreakDetails[0].BreakDescription, Is.EqualTo("Key:A, Reference Row:1, Value:1.0 != Candidate Row:1, Value:1.2"));
+        Assert.That(comparisonResult.BreakDetails[1].BreakDescription, Is.EqualTo("Key:C, Reference Row:2, Value:2.5 != Candidate Row:2, Value:2.61"));
 
-            Assert.AreEqual(2, comparisonResult.BreakDetails.Count);
+        // Explicitly set Exact
+        comparisonDefinition.ToleranceType = ToleranceType.Exact;
+        var csvComparerExact = new CSVComparer(comparisonDefinition);
+        var comparisonResultExact = csvComparerExact.CompareFiles(referenceDataFile, candidateDataFile);
 
-            var comparisonDefinition2 = new ComparisonDefinition() { Delimiter = ",", IgnoreInvalidRows = true };
-            comparisonDefinition2.KeyColumns.Add("COL1");
+        Assert.That(comparisonResultExact.BreakDetails.Count, Is.EqualTo(2), "Exact tolerance");
+        Assert.That(comparisonResultExact.BreakDetails[0].BreakDescription, Is.EqualTo("Key:A, Reference Row:1, Value:1.0 != Candidate Row:1, Value:1.2"));
+        Assert.That(comparisonResultExact.BreakDetails[1].BreakDescription, Is.EqualTo("Key:C, Reference Row:2, Value:2.5 != Candidate Row:2, Value:2.61"));
+    }
 
-            var csvComparer2 = new CSVComparer(comparisonDefinition2);
-            var comparisonResult2 = csvComparer2.CompareFiles(referenceDataFile, candidateDataFile);
+    [Test]
+    public void TestFooter()
+    {
+        var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVValueExtraFooterRows.csv");
+        var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVValueBreakExtraFooterRows.csv");
 
-            Assert.AreEqual(0, comparisonResult2.BreakDetails.Count);
-        }
+        var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
+        comparisonDefinition.KeyColumns.Add("COL1");
 
-        [Test]
-        public void TestOrphanColumnWithCommaInValue()
-        {
-            var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSV.csv");
-            var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVCommaInColumn.csv");
-            var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
-            comparisonDefinition.KeyColumns.Add("COL1");
+        var csvComparer = new CSVComparer(comparisonDefinition);
+        var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
 
-            var csvComparer = new CSVComparer(comparisonDefinition);
-            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
-            Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
-        }
+        Assert.AreEqual(2, comparisonResult.BreakDetails.Count);
 
-        [Test]
-        public void TestBreakColumnWithCommaInValue()
-        {
-            var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVCommaInColumn.csv");
-            var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVCommaInColumnBreak.csv");
-            var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
-            comparisonDefinition.KeyColumns.Add("COL1");
+        var comparisonDefinition2 = new ComparisonDefinition() { Delimiter = ",", IgnoreInvalidRows = true };
+        comparisonDefinition2.KeyColumns.Add("COL1");
 
-            var csvComparer = new CSVComparer(comparisonDefinition);
-            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
-            Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
-            Assert.AreEqual("A column without a comma!", comparisonResult.BreakDetails[0].CandidateValue);
-            Assert.AreEqual("\"A column, with a comma!\"", comparisonResult.BreakDetails[0].ReferenceValue);
-        }
+        var csvComparer2 = new CSVComparer(comparisonDefinition2);
+        var comparisonResult2 = csvComparer2.CompareFiles(referenceDataFile, candidateDataFile);
 
-        [Test]
-        public void TestDoubleComparisonInQuotes()
-        {
-            var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVWithDoubleInQuotes.csv");
-            var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVWithDoubleInQuotesBreak.csv");
-            var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
-            comparisonDefinition.KeyColumns.Add("COL1");
+        Assert.AreEqual(0, comparisonResult2.BreakDetails.Count);
+    }
 
-            var csvComparer = new CSVComparer(comparisonDefinition);
-            var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
+    [Test]
+    public void TestOrphanColumnWithCommaInValue()
+    {
+        var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSV.csv");
+        var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVCommaInColumn.csv");
+        var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
+        comparisonDefinition.KeyColumns.Add("COL1");
 
-            // Default is no tolerance, absolute match
-            Assert.AreEqual(2, comparisonResult.BreakDetails.Count, "Exact match test");
+        var csvComparer = new CSVComparer(comparisonDefinition);
+        var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
+        Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
+    }
 
-            comparisonDefinition.ToleranceValue = 0.1;
-            comparisonDefinition.ToleranceType = ToleranceType.Absolute;
-            csvComparer = new CSVComparer(comparisonDefinition);
-            comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
+    [Test]
+    public void TestBreakColumnWithCommaInValue()
+    {
+        var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVCommaInColumn.csv");
+        var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVCommaInColumnBreak.csv");
+        var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
+        comparisonDefinition.KeyColumns.Add("COL1");
 
-            Assert.AreEqual(1, comparisonResult.BreakDetails.Count, "Absolute Tolerance 0.1 test");
+        var csvComparer = new CSVComparer(comparisonDefinition);
+        var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
+        Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
+        Assert.AreEqual("A column without a comma!", comparisonResult.BreakDetails[0].CandidateValue);
+        Assert.AreEqual("\"A column, with a comma!\"", comparisonResult.BreakDetails[0].ReferenceValue);
+    }
 
-            comparisonDefinition.ToleranceValue = 0.25;
-            comparisonDefinition.ToleranceType = ToleranceType.Relative;
-            csvComparer = new CSVComparer(comparisonDefinition);
-            comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
+    [Test]
+    public void TestDoubleComparisonInQuotes()
+    {
+        var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVWithDoubleInQuotes.csv");
+        var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSVWithDoubleInQuotesBreak.csv");
+        var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
+        comparisonDefinition.KeyColumns.Add("COL1");
 
-            Assert.AreEqual(0, comparisonResult.BreakDetails.Count, "Relative Tolerance 0.25 test");
-        }
+        var csvComparer = new CSVComparer(comparisonDefinition);
+        var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
+
+        // Default is no tolerance, absolute match
+        Assert.AreEqual(2, comparisonResult.BreakDetails.Count, "Exact match test");
+
+        comparisonDefinition.ToleranceValue = 0.1;
+        comparisonDefinition.ToleranceType = ToleranceType.Absolute;
+        csvComparer = new CSVComparer(comparisonDefinition);
+        comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
+
+        Assert.AreEqual(1, comparisonResult.BreakDetails.Count, "Absolute Tolerance 0.1 test");
+
+        comparisonDefinition.ToleranceValue = 0.25;
+        comparisonDefinition.ToleranceType = ToleranceType.Relative;
+        csvComparer = new CSVComparer(comparisonDefinition);
+        comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
+
+        Assert.AreEqual(0, comparisonResult.BreakDetails.Count, "Relative Tolerance 0.25 test");
     }
 }

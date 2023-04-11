@@ -1,5 +1,4 @@
-﻿
-using ComparisonRunner;
+﻿using ComparisonRunner;
 
 if (args.Length < 3)
 {

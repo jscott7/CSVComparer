@@ -1,12 +1,11 @@
-﻿namespace CSVComparison
+﻿namespace CSVComparison;
+
+public enum BreakType
 {
-    public enum BreakType
-    {
-        Match,
-        ColumnsDifferent,
-        RowInReferenceNotInCandidate,
-        RowInCandidateNotInReference,
-        ValueMismatch,
-        ProcessFailure
-    }
+    Match,
+    ColumnsDifferent,
+    RowInReferenceNotInCandidate,
+    RowInCandidateNotInReference,
+    ValueMismatch,
+    ProcessFailure
 }

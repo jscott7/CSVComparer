@@ -1,12 +1,11 @@
 ﻿using BenchmarkDotNet.Running;
 
-namespace Benchmark
+namespace Benchmark;
+
+public class Program
 {
-    public class Program
+    static void Main(string[] args)
     {
-        static void Main(string[] args)
-        {
-            var summary = BenchmarkRunner.Run<ComparerBenchmarks>();
-        }
+        var summary = BenchmarkRunner.Run<ComparerBenchmarks>();
     }
 }

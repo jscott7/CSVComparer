@@ -1,9 +1,8 @@
 ﻿using System;
 
-namespace CSVComparison
+namespace CSVComparison;
+
+public class ComparisonException : Exception
 {
-    public class ComparisonException : Exception
-    {
-        public ComparisonException(string message) : base(message) { }
-    }
+    public ComparisonException(string message) : base(message) { }
 }
