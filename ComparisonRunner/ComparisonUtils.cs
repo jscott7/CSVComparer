@@ -162,34 +162,32 @@ public class ComparisonUtils
 
         Console.WriteLine($"Saving results to {outputFile}");
 
-        using (var sw = new StreamWriter(outputFile, AppendFile))
+        using var sw = new StreamWriter(outputFile, AppendFile);
+        var xmlSerializer = new XmlSerializer(typeof(ComparisonDefinition));
+
+        // If we are checking multiple files with the same configuration we don't want to write it out more than once
+        if (!AppendFile)
         {
-            var xmlSerializer = new XmlSerializer(typeof(ComparisonDefinition));
-
-            // If we are checking multiple files with the same configuration we don't want to write it out more than once
-            if (!AppendFile)
-            {
-                xmlSerializer.Serialize(sw, comparisonDefinition);
-                sw.WriteLine();
-            }
-
+            xmlSerializer.Serialize(sw, comparisonDefinition);
             sw.WriteLine();
-            sw.WriteLine($"Date run,{comparisonResult.Date}");
-            sw.WriteLine($"Reference,{comparisonResult.ReferenceSource}");
-            sw.WriteLine($"Candidate,{comparisonResult.CandidateSource}");
-            sw.WriteLine($"Number of Reference rows,{comparisonResult.NumberOfReferenceRows}");
-            sw.WriteLine($"Number of Candidate rows,{comparisonResult.NumberOfCandidateRows}");
-            sw.WriteLine($"Duration,{elapsedMillis}ms");
-            sw.WriteLine($"Number of breaks,{comparisonResult.BreakDetails.Count}");
-            sw.WriteLine();
+        }
 
-            if (comparisonResult.BreakDetails.Count > 0)
+        sw.WriteLine();
+        sw.WriteLine($"Date run,{comparisonResult.Date}");
+        sw.WriteLine($"Reference,{comparisonResult.ReferenceSource}");
+        sw.WriteLine($"Candidate,{comparisonResult.CandidateSource}");
+        sw.WriteLine($"Number of Reference rows,{comparisonResult.NumberOfReferenceRows}");
+        sw.WriteLine($"Number of Candidate rows,{comparisonResult.NumberOfCandidateRows}");
+        sw.WriteLine($"Duration,{elapsedMillis}ms");
+        sw.WriteLine($"Number of breaks,{comparisonResult.BreakDetails.Count}");
+        sw.WriteLine();
+
+        if (comparisonResult.BreakDetails.Count > 0)
+        {
+            sw.WriteLine($"Break Type,Key ({comparisonResult.KeyDefinition}),Column Name,Reference Row, Reference Value, Candidate Row, Candidate Value");
+            foreach (var breakResult in comparisonResult.BreakDetails)
             {
-                sw.WriteLine($"Break Type,Key ({comparisonResult.KeyDefinition}),Column Name,Reference Row, Reference Value, Candidate Row, Candidate Value");
-                foreach (var breakResult in comparisonResult.BreakDetails)
-                {
-                    sw.WriteLine($"{breakResult.BreakType},{breakResult.BreakKey},{breakResult.Column},{breakResult.ReferenceRow},{breakResult.ReferenceValue},{breakResult.CandidateRow},{breakResult.CandidateValue}");
-                }
+                sw.WriteLine($"{breakResult.BreakType},{breakResult.BreakKey},{breakResult.Column},{breakResult.ReferenceRow},{breakResult.ReferenceValue},{breakResult.CandidateRow},{breakResult.CandidateValue}");
             }
         }
     }

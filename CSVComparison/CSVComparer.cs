@@ -489,7 +489,7 @@ public class CSVComparer
     {
         var excludedColumns = new HashSet<int>();
 
-        for(int columnIndex = 0; columnIndex < headerRow.Length; columnIndex++)
+        for (int columnIndex = 0; columnIndex < headerRow.Length; columnIndex++)
         {
             if (_comparisonDefinition.ExcludedColumns != null && _comparisonDefinition.ExcludedColumns.Contains(headerRow[columnIndex]))
             {
