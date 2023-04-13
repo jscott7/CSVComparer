@@ -1,4 +1,4 @@
-[![Build Status](https://dev.azure.com/jonathanscott80/CSVComparer/_apis/build/status/jscott7.CSVComparer)](https://dev.azure.com/jonathanscott80/CSVComparer/_build/latest?definitionId=2)
+[![Build Status](https://dev.azure.com/jonathanscott80/CSVComparer/_apis/build/status%2Fjscott7.CSVComparer?branchName=main)](https://dev.azure.com/jonathanscott80/CSVComparer/_build/latest?definitionId=2&branchName=main)
 [![CodeQL](https://github.com/jscott7/CSVComparer/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/jscott7/CSVComparer/actions/workflows/codeql-analysis.yml)
 
 # CSVComparison
