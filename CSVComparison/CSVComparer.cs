@@ -159,7 +159,7 @@ public class CSVComparer
                             key.Append(columns[index]).Append(':');
                         }
 
-                        key.Length--;
+                        key.Length--; // Remove trailing ':'
 
                         lock (_lockObj)
                         {
