@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -152,17 +153,17 @@ public class CSVComparer
                 {
                     if (columns.Length == expectedColumnCount || !_comparisonDefinition.IgnoreInvalidRows)
                     {
-                        var key = "";
+                        var key = new StringBuilder();
                         foreach (int index in keyIndexes)
                         {
-                            key += columns[index] + ":";
+                            key.Append(columns[index]).Append(':');
                         }
 
-                        key = key.Trim(':');
+                        key.Length--;
 
                         lock (_lockObj)
                         {
-                            queue.Enqueue(new CsvRow() { Key = key, Columns = columns, RowIndex = rowIndex });
+                            queue.Enqueue(new CsvRow() { Key = key.ToString(), Columns = columns, RowIndex = rowIndex });
                         }
                     }
 
