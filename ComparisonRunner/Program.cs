@@ -9,12 +9,12 @@ if (args.Length < 3)
         Console.WriteLine(arg);
     }
 
-    Console.WriteLine("Usage: CsVComparison ReferenceFilePath CandidateFilePath ConfigurationFilePath [PathToOutputFile]");
+    Console.WriteLine("Usage: CsVComparison LeftHandSideFilePath RightHandSideFilePath ConfigurationFilePath [PathToOutputFile]");
     return;
 }
 
-var referenceFilePath = args[0];
-var candidateFilePath = args[1]; 
+var leftHandSideFilePath = args[0];
+var rightHandSideFilePath = args[1]; 
 var configurationFilePath = args[2];
 
 string outputFilePath = "";
@@ -28,13 +28,13 @@ if (args.Length > 3)
     }
 }
     
-if (Directory.Exists(referenceFilePath))
+if (Directory.Exists(leftHandSideFilePath))
 {
     // This is a directory
-    ComparisonUtils.RunDirectoryComparison(configurationFilePath, referenceFilePath, candidateFilePath, outputFilePath);
+    ComparisonUtils.RunDirectoryComparison(configurationFilePath, leftHandSideFilePath, rightHandSideFilePath, outputFilePath);
 }
 else
 {
     // Default to single file comparison
-    ComparisonUtils.RunSingleComparison(configurationFilePath, referenceFilePath, candidateFilePath, outputFilePath);
+    ComparisonUtils.RunSingleComparison(configurationFilePath, leftHandSideFilePath, rightHandSideFilePath, outputFilePath);
 }

@@ -35,12 +35,12 @@ namespace TestDataGenerator
             {
                 int numberOfRows = int.Parse(args[0]);
                 var random = new Random();
-                using (var referenceWriter = new StreamWriter(@"C:\temp\referenceTest.csv"))
-                using (var candidateWriter = new StreamWriter(@"C:\temp\candidateTest.csv"))
+                using (var leftHandSideWriter = new StreamWriter(@"C:\temp\leftHandSideTest.csv"))
+                using (var rightHandSideWriter = new StreamWriter(@"C:\temp\rightHandSideTest.csv"))
                 {
                     // Write header
-                    referenceWriter.WriteLine(string.Join(',', columnNames));
-                    candidateWriter.WriteLine(string.Join(',', columnNames));
+                    leftHandSideWriter.WriteLine(string.Join(',', columnNames));
+                    rightHandSideWriter.WriteLine(string.Join(',', columnNames));
 
                     for (var index = 0; index < numberOfRows; index++)
                     {
@@ -49,7 +49,7 @@ namespace TestDataGenerator
                         var dIndex = random.Next(0, colDValues.Length - 1);
 
                         var row = $"{index},{colBValues[bIndex]},{colCValues[cIndex]},{colDValues[dIndex]}";
-                        referenceWriter.WriteLine(row);
+                        leftHandSideWriter.WriteLine(row);
 
                         // Add a break to the canidate
                         if (index > 0 && index % 100 == 0)
@@ -60,7 +60,7 @@ namespace TestDataGenerator
                             row = $"{index},{colBValues[bIndex]},{colCValues[cIndex]},{colDValues[dIndex]}";
                         }
 
-                        candidateWriter.WriteLine(row);
+                        rightHandSideWriter.WriteLine(row);
                     }
                 }
             }

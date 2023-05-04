@@ -17,20 +17,20 @@ public class ComparisonUtils
     /// Run comparison against all CSV files in a directory
     /// </summary>
     /// <param name="configurationFilePath">Path to MultipleComparisonDefinition</param>
-    /// <param name="referenceFilePath">Path to reference directory. This will be used as the source for files to match</param>
-    /// <param name="candidateFilePath">Path to candidate directory</param>
+    /// <param name="leftHandSideFilePath">Path to leftHandSide directory. This will be used as the source for files to match</param>
+    /// <param name="rightHandSideFilePath">Path to rightHandSide directory</param>
     /// <param name="outputFilePath">Path to save output file for each comparison</param>
     /// <remarks>
-    /// For each file in the reference directory, check to see if a configuration match exists then check to see if a matching candidate file exists
+    /// For each file in the leftHandSide directory, check to see if a configuration match exists then check to see if a matching rightHandSide file exists
     /// </remarks>
-    public static void RunDirectoryComparison(string configurationFilePath, string referenceFilePath, string candidateFilePath, string outputFilePath)
+    public static void RunDirectoryComparison(string configurationFilePath, string leftHandSideFilePath, string rightHandSideFilePath, string outputFilePath)
     {
         var multiComparisonDefinition = DeserializeComparisonDefinition<MultipleComparisonDefinition>(configurationFilePath);
 
         // Now enumerate directory
-        var referenceDirectory = new DirectoryInfo(referenceFilePath);
+        var leftHandSideDirectory = new DirectoryInfo(leftHandSideFilePath);
 
-        foreach (var file in referenceDirectory.GetFiles())
+        foreach (var file in leftHandSideDirectory.GetFiles())
         {
             AppendFile = false;
             var stopwatch = Stopwatch.StartNew();
@@ -51,14 +51,14 @@ public class ComparisonUtils
             Console.WriteLine($"Found Comparison Definition. ID = {fileComparisonDefinition.Key}");
             var csvComparer = new CSVComparer(fileComparisonDefinition.ComparisonDefinition);
 
-            var candidateFile = FindCandidateFile(candidateFilePath, file, fileComparisonDefinition);
-            if (string.IsNullOrEmpty(candidateFile))
+            var rightHandSideFile = FindRightHandSideFile(rightHandSideFilePath, file, fileComparisonDefinition);
+            if (string.IsNullOrEmpty(rightHandSideFile))
             {
                 continue;
             }
            
-            Console.WriteLine($"Comparing {file.FullName} with {candidateFile}");
-            var comparisonResult = csvComparer.CompareFiles(file.FullName, candidateFile);
+            Console.WriteLine($"Comparing {file.FullName} with {rightHandSideFile}");
+            var comparisonResult = csvComparer.CompareFiles(file.FullName, rightHandSideFile);
           
             stopwatch.Stop();
             var elapsedTime = stopwatch.ElapsedMilliseconds;
@@ -73,10 +73,10 @@ public class ComparisonUtils
     /// Run a single comparison between two CSV files
     /// </summary>
     /// <param name="configurationFilePath">Path to ComparisonDefinition</param>
-    /// <param name="referenceFilePath">Path to reference CSV file</param>
-    /// <param name="candidateFilePath">Path to candidate CSV file</param>
+    /// <param name="leftHandSideFilePath">Path to leftHandSide CSV file</param>
+    /// <param name="rightHandSideFilePath">Path to rightHandSide CSV file</param>
     /// <param name="outputFilePath">Location of output file</param>
-    public static void RunSingleComparison(string configurationFilePath, string referenceFilePath, string candidateFilePath, string outputFilePath)
+    public static void RunSingleComparison(string configurationFilePath, string leftHandSideFilePath, string rightHandSideFilePath, string outputFilePath)
     {
         var comparisonDefinition = DeserializeComparisonDefinition<ComparisonDefinition>(configurationFilePath);
 
@@ -84,11 +84,11 @@ public class ComparisonUtils
         stopwatch.Start();
         var csvComparer = new CSVComparer(comparisonDefinition);
 
-        var comparisonResult = csvComparer.CompareFiles(new FileInfo(referenceFilePath).FullName, new FileInfo(candidateFilePath).FullName);
+        var comparisonResult = csvComparer.CompareFiles(new FileInfo(leftHandSideFilePath).FullName, new FileInfo(rightHandSideFilePath).FullName);
         stopwatch.Stop();
 
-        Console.WriteLine($"Reference: {comparisonResult.ReferenceSource}");
-        Console.WriteLine($"Candidate: {comparisonResult.CandidateSource}");
+        Console.WriteLine($"LeftHandSide: {comparisonResult.LeftHandSideSource}");
+        Console.WriteLine($"RightHandSide: {comparisonResult.RightHandSideSource}");
 
         if (string.IsNullOrEmpty(outputFilePath))
         {
@@ -116,8 +116,8 @@ public class ComparisonUtils
 
     private static void HandleResult(ComparisonResult comparisonResult, long elapsedTime, FileComparisonDefinition fileComparisonDefinition, string outputFilePath)
     {
-        Console.WriteLine($"Reference: {comparisonResult.ReferenceSource}");
-        Console.WriteLine($"Candidate: {comparisonResult.CandidateSource}");
+        Console.WriteLine($"LeftHandSide: {comparisonResult.LeftHandSideSource}");
+        Console.WriteLine($"RightHandSide: {comparisonResult.RightHandSideSource}");
 
         if (comparisonResult.BreakDetails.Count == 0)
         {
@@ -174,63 +174,63 @@ public class ComparisonUtils
 
         sw.WriteLine();
         sw.WriteLine($"Date run,{comparisonResult.Date}");
-        sw.WriteLine($"Reference,{comparisonResult.ReferenceSource}");
-        sw.WriteLine($"Candidate,{comparisonResult.CandidateSource}");
-        sw.WriteLine($"Number of Reference rows,{comparisonResult.NumberOfReferenceRows}");
-        sw.WriteLine($"Number of Candidate rows,{comparisonResult.NumberOfCandidateRows}");
+        sw.WriteLine($"LHS,{comparisonResult.LeftHandSideSource}");
+        sw.WriteLine($"RHS,{comparisonResult.RightHandSideSource}");
+        sw.WriteLine($"Number of LHS rows,{comparisonResult.NumberOfLeftHandSideRows}");
+        sw.WriteLine($"Number of RHS rows,{comparisonResult.NumberOfRightHandSideRows}");
         sw.WriteLine($"Duration,{elapsedMillis}ms");
         sw.WriteLine($"Number of breaks,{comparisonResult.BreakDetails.Count}");
         sw.WriteLine();
 
         if (comparisonResult.BreakDetails.Count > 0)
         {
-            sw.WriteLine($"Break Type,Key ({comparisonResult.KeyDefinition}),Column Name,Reference Row, Reference Value, Candidate Row, Candidate Value");
+            sw.WriteLine($"Break Type,Key ({comparisonResult.KeyDefinition}),Column Name,LHS Row,LHS Value,RHS Row,RHS Value");
             foreach (var breakResult in comparisonResult.BreakDetails)
             {
-                sw.WriteLine($"{breakResult.BreakType},{breakResult.BreakKey},{breakResult.Column},{breakResult.ReferenceRow},{breakResult.ReferenceValue},{breakResult.CandidateRow},{breakResult.CandidateValue}");
+                sw.WriteLine($"{breakResult.BreakType},{breakResult.BreakKey},{breakResult.Column},{breakResult.LeftHandSideRow},{breakResult.LeftHandSideValue},{breakResult.RightHandSideRow},{breakResult.RightHandSideValue}");
             }
         }
     }
 
     /// <summary>
-    /// Find a candidate file that matches reference. Try exact file match first, then try filepattern match
+    /// Find a rightHandSide file that matches leftHandSide. Try exact file match first, then try filepattern match
     /// </summary>
-    /// <param name="candidateFilePath">Root path to candidate files</param>
-    /// <param name="referenceFile">The reference file as base for search</param>
+    /// <param name="rightHandSideFilePath">Root path to rightHandSide files</param>
+    /// <param name="leftHandSideFile">The leftHandSide file as base for search</param>
     /// <param name="fileComparisonDefinition">Source for any file regex pattern</param>
-    /// <returns>Full path to candidate file or empty string if not found</returns>
-    private static string FindCandidateFile(string candidateFilePath, FileInfo referenceFile, FileComparisonDefinition fileComparisonDefinition)
+    /// <returns>Full path to rightHandSide file or empty string if not found</returns>
+    private static string FindRightHandSideFile(string rightHandSideFilePath, FileInfo leftHandSideFile, FileComparisonDefinition fileComparisonDefinition)
     {
-        var candidateFile = "";
+        var rightHandSideFile = "";
 
-        if (File.Exists(Path.Combine(candidateFilePath, referenceFile.Name)))
+        if (File.Exists(Path.Combine(rightHandSideFilePath, leftHandSideFile.Name)))
         {
-            candidateFile = Path.Combine(candidateFilePath, referenceFile.Name);
+            rightHandSideFile = Path.Combine(rightHandSideFilePath, leftHandSideFile.Name);
         }
         else
         {
-            var directoryInfo = new DirectoryInfo(candidateFilePath);
+            var directoryInfo = new DirectoryInfo(rightHandSideFilePath);
             var regex = new Regex(fileComparisonDefinition.FilePattern);
-            Console.WriteLine($"Exact file match for reference: '{referenceFile.Name}' not found. Search using pattern: '{fileComparisonDefinition.FilePattern}'");
-            var candidatePaths = directoryInfo.GetFiles().Where(candidateFile => regex.IsMatch(candidateFile.Name));
+            Console.WriteLine($"Exact file match for leftHandSide: '{leftHandSideFile.Name}' not found. Search using pattern: '{fileComparisonDefinition.FilePattern}'");
+            var rightHandSidePaths = directoryInfo.GetFiles().Where(rightHandSideFile => regex.IsMatch(rightHandSideFile.Name));
 
-            if (candidatePaths.Count() == 1)
+            if (rightHandSidePaths.Count() == 1)
             {
-                candidateFile = candidatePaths.First().FullName;
+                rightHandSideFile = rightHandSidePaths.First().FullName;
             }
             else
             {
-                Console.WriteLine($"Unable to find a single matching file to compare with {referenceFile.FullName}. Found {candidatePaths.Count()}");
+                Console.WriteLine($"Unable to find a single matching file to compare with {leftHandSideFile.FullName}. Found {rightHandSidePaths.Count()}");
             }
         }
 
-        if (!string.IsNullOrEmpty(candidateFile))
+        if (!string.IsNullOrEmpty(rightHandSideFile))
         {
-            var candidateFileInfo = new FileInfo(candidateFile);
-            return candidateFileInfo.FullName;
+            var rightHandSideFileInfo = new FileInfo(rightHandSideFile);
+            return rightHandSideFileInfo.FullName;
         }
 
-         return candidateFile;
+         return rightHandSideFile;
     }
     
     /// <summary>

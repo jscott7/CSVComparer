@@ -9,8 +9,8 @@ public class ComparerBenchmarks
     [Benchmark(Baseline=true)]
     public int CompareIdentical()
     {
-        var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "ReferenceTest.csv");
-        var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "ReferenceTest.csv");
+        var leftHandSideDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "LeftHandSideTest.csv");
+        var rightHandSideDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "LeftHandSideTest.csv");
 
         var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
         comparisonDefinition.KeyColumns.Add("COL A");
@@ -19,15 +19,15 @@ public class ComparerBenchmarks
         comparisonDefinition.ToleranceType = ToleranceType.Relative;
 
         var csvComparer = new CSVComparer(comparisonDefinition);
-        var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
+        var comparisonResult = csvComparer.CompareFiles(leftHandSideDataFile, rightHandSideDataFile);
         return comparisonResult.BreakDetails.Count;
     }
 
     [Benchmark]
     public int CompareDifferent()
     {
-        var referenceDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "ReferenceTest.csv");
-        var candidateDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "CandidateTest.csv");
+        var leftHandSideDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "LeftHandSideTest.csv");
+        var rightHandSideDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "RightHandSideTest.csv");
 
         var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
         comparisonDefinition.KeyColumns.Add("COL A");
@@ -36,7 +36,7 @@ public class ComparerBenchmarks
         comparisonDefinition.ToleranceType = ToleranceType.Relative;
 
         var csvComparer = new CSVComparer(comparisonDefinition);
-        var comparisonResult = csvComparer.CompareFiles(referenceDataFile, candidateDataFile);
+        var comparisonResult = csvComparer.CompareFiles(leftHandSideDataFile, rightHandSideDataFile);
         return comparisonResult.BreakDetails.Count;
     }
 

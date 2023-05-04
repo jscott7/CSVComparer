@@ -8,8 +8,8 @@ A tool to compare 2 CSV files. Results of the comparison are saved to an output 
 
 ## Some terminology
 
-* **Reference file** The first CSV file for the comparison.
-* **Candidate file** The second CSV file for the comparison.
+* **Left Hand Side file** The first CSV file for the comparison.
+* **Right Hand Side file** The second CSV file for the comparison.
 * **Key** Unique definition of a single CSV Row. This can be made from one or more Columns
 * **Break** A single difference between the files. There may be multiple breaks.
 * **Orphan** A row in the reference file but not in the candidate file. Or vice-versa.
@@ -19,11 +19,11 @@ A tool to compare 2 CSV files. Results of the comparison are saved to an output 
 
 Run the CSVComparison executable with the following arguments
 
-*"Path to reference csv file" "Path to candidate reference file" "Path to configuration file" "Optional Path to directory to save output*
+*"Path to left hand side csv file" "Path to right hand side reference file" "Path to configuration file" "Optional Path to directory to save output*
 
 If no output file is specified the console will list the breaks between the files
 
-`Key:C, Reference Row:2, Value:2.5 != Candidate Row:2, Value:2.61`
+`Key:C, LeftHandSide Row:2, Value:2.5 != RightHandSide Row:2, Value:2.61`
 
 The output file will list the configuration used, the input files, time taken to run the comparison and a tabular view of the differences
 
@@ -42,19 +42,19 @@ The output file will list the configuration used, the input files, time taken to
 </ComparisonDefinition>
 
 Date run: 11/01/2021 18:32:48
-Reference: C:\temp\ReferenceDirectory\Test.csv
-Candidate: C:\temp\CandidateDirectory\Test.csv
-Number of Reference rows: 100001
-Number of Candidate rows: 100001
+LeftHandSide: C:\temp\LeftHandSideDirectory\Test.csv
+RightHandSide: C:\temp\RightHandSideDirectory\Test.csv
+Number of LeftHandSide rows: 100001
+Number of RightHandSide rows: 100001
 Comparison took 906ms
 Number of breaks 5
 
-Break Type,Key - COL A,Column Name,Reference Row, Reference Value, Candidate Row, Candidate Value
+Break Type,Key - COL A,Column Name,LHS Row,LHS Value,RHS Row,RHS Value
 ValueMismatch,1,COL B,2,A,2,"A,X"
 ValueMismatch,7,COL D,8,32.1,8,42.1
 ValueMismatch,77,COL B,78,B,78,A
-RowInCandidateNotInReference,100000,,-1,,100000,
-RowInReferenceNotInCandidate,99,,100,,-1,
+RowInRHS_NotInLHS,100000,,-1,,100000,
+RowInLHS_NotInRHS,99,,100,,-1,
 ```
 
 ##  Configuration
@@ -105,7 +105,7 @@ The configuration is used to define how to treat the CSV files:
  
 ## Directory comparison
 
-If the Reference and Candidate paths are directories you can compare multiple files. If the files have different structures a configuration can
+If the LHS and RHS paths are directories you can compare multiple files. If the files have different structures a configuration can
 be created that can define all comparisons.
 
 The FilePattern element is a Regex pattern that is used to determine the configuration.

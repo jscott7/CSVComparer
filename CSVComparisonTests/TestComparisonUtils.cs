@@ -12,18 +12,18 @@ public class TestComparisonUtils
     {       
         Console.WriteLine($"{Directory.GetCurrentDirectory()} - {Path.GetTempPath()} - {Path.GetTempFileName()}"); // + TestData
 
-        var expectedPath = Path.Combine(Directory.GetCurrentDirectory(), "TestData", "ComplexReferenceFile.csv");
-        var candidatePath = Path.Combine(Directory.GetCurrentDirectory(), "TestData", "ComplexCandidateFile.csv");
+        var expectedPath = Path.Combine(Directory.GetCurrentDirectory(), "TestData", "ComplexLeftHandSideFile.csv");
+        var rightHandSidePath = Path.Combine(Directory.GetCurrentDirectory(), "TestData", "ComplexRightHandSideFile.csv");
 
         var outputPath = Path.Combine(Path.GetTempPath(), "Output");
         var comparisonDefinitionPath = Path.Combine(Directory.GetCurrentDirectory(), "TestData", "Definition.xml");
 
         try
         {
-            ComparisonUtils.RunSingleComparison(comparisonDefinitionPath, expectedPath, candidatePath, "");
+            ComparisonUtils.RunSingleComparison(comparisonDefinitionPath, expectedPath, rightHandSidePath, "");
             Assert.That(!File.Exists(Path.Combine(outputPath, "ComparisonResults.BREAKS.csv")));
 
-            ComparisonUtils.RunSingleComparison(comparisonDefinitionPath, expectedPath, candidatePath, outputPath);
+            ComparisonUtils.RunSingleComparison(comparisonDefinitionPath, expectedPath, rightHandSidePath, outputPath);
             Assert.IsTrue(File.Exists(Path.Combine(outputPath, "ComparisonResults.BREAKS.csv")));
         }
         finally
@@ -35,9 +35,9 @@ public class TestComparisonUtils
         }
     }
 
-    [TestCase("ComplexCandidateFile.csv")]
-    [TestCase("ComplexReferenceFile.csv")]
-    public void TestFolderComparison(string candidateFileName)
+    [TestCase("ComplexRightHandSideFile.csv")]
+    [TestCase("ComplexLeftHandSideFile.csv")]
+    public void TestFolderComparison(string rightHandSideFileName)
     {
         Console.WriteLine($"{Directory.GetCurrentDirectory()} - {Path.GetTempPath()} - {Path.GetTempFileName()}"); // + TestData
 
@@ -47,29 +47,29 @@ public class TestComparisonUtils
             Directory.CreateDirectory(expectedPath);
         }
 
-        var candidatePath = Path.Combine(Path.GetTempPath(), "CandidateTest");
-        if (!Directory.Exists(candidatePath))
+        var rightHandSidePath = Path.Combine(Path.GetTempPath(), "RightHandSideTest");
+        if (!Directory.Exists(rightHandSidePath))
         {
-            Directory.CreateDirectory(candidatePath);
+            Directory.CreateDirectory(rightHandSidePath);
         }
 
         var outputPath = Path.Combine(Path.GetTempPath(), "Output");
 
-        var expectedFile = Path.Combine(expectedPath, "ComplexReferenceFile.csv");
-        var candidateFile = Path.Combine(candidatePath, candidateFileName);
-        File.Copy(Path.Combine(Directory.GetCurrentDirectory(), "TestData", "ComplexReferenceFile.csv"), expectedFile, true);
-        File.Copy(Path.Combine(Directory.GetCurrentDirectory(), "TestData", candidateFileName), candidateFile, true);
+        var expectedFile = Path.Combine(expectedPath, "ComplexLeftHandSideFile.csv");
+        var rightHandSideFile = Path.Combine(rightHandSidePath, rightHandSideFileName);
+        File.Copy(Path.Combine(Directory.GetCurrentDirectory(), "TestData", "ComplexLeftHandSideFile.csv"), expectedFile, true);
+        File.Copy(Path.Combine(Directory.GetCurrentDirectory(), "TestData", rightHandSideFileName), rightHandSideFile, true);
 
         var comparisonDefinitionPath = Path.Combine(Directory.GetCurrentDirectory(), "TestData", "MultipleDefinition.xml");
         try
         {
             // Run with no output path
-            ComparisonUtils.RunDirectoryComparison(comparisonDefinitionPath, expectedPath, candidatePath, "");
+            ComparisonUtils.RunDirectoryComparison(comparisonDefinitionPath, expectedPath, rightHandSidePath, "");
             Assert.That(!File.Exists(Path.Combine(outputPath, "Reconciliation-Results-Test.BREAKS.csv")));
 
-            ComparisonUtils.RunDirectoryComparison(comparisonDefinitionPath, expectedPath, candidatePath, outputPath);
+            ComparisonUtils.RunDirectoryComparison(comparisonDefinitionPath, expectedPath, rightHandSidePath, outputPath);
 
-            if (candidateFileName != "ComplexReferenceFile.csv")
+            if (rightHandSideFileName != "ComplexLeftHandSideFile.csv")
             {
                 Assert.IsTrue(File.Exists(Path.Combine(outputPath, "Reconciliation-Results-Test.BREAKS.csv")));
             }
@@ -85,9 +85,9 @@ public class TestComparisonUtils
                 Directory.Delete(expectedPath, true);
             }
 
-            if (Directory.Exists(candidatePath))
+            if (Directory.Exists(rightHandSidePath))
             {
-                Directory.Delete(candidatePath, true);
+                Directory.Delete(rightHandSidePath, true);
             }
 
             if (Directory.Exists(outputPath))

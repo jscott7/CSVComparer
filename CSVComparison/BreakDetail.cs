@@ -21,14 +21,14 @@ public class BreakDetail
     public string BreakKey;
 
     /// <summary>
-    /// The index of the row in the reference CSV file
+    /// The index of the row in the leftHandSide CSV file
     /// </summary>
-    public int ReferenceRow;
+    public int LeftHandSideRow;
 
     /// <summary>
-    /// The index of the row in the candidate CSV file
+    /// The index of the row in the rightHandSide CSV file
     /// </summary>
-    public int CandidateRow;
+    public int RightHandSideRow;
 
     /// <summary>
     /// The name of the column of the mismatching data. Will be blank if the row is an orphan
@@ -38,33 +38,33 @@ public class BreakDetail
     /// <summary>
     /// The value of mismatching data. Will be blank if the row is an orphan
     /// </summary>
-    public string ReferenceValue;
+    public string LeftHandSideValue;
 
     /// <summary>
     /// The value of mismatching data. Will be blank if the row is an orphan
     /// </summary>
-    public string CandidateValue;
+    public string RightHandSideValue;
 
     public BreakDetail() { }
 
     public BreakDetail(
         BreakType breakType,         
         string breakKey, 
-        int referenceRow, 
-        int candidateRow, 
+        int leftHandSideRow, 
+        int rightHandSideRow, 
         string column,
-        string referenceValue, 
-        string candidateValue)
+        string leftHandSideValue, 
+        string rightHandSideValue)
     {
         BreakType = breakType;
         BreakKey = breakKey;
-        ReferenceRow = referenceRow;
-        CandidateRow = candidateRow;
+        LeftHandSideRow = leftHandSideRow;
+        RightHandSideRow = rightHandSideRow;
         Column = column;
-        ReferenceValue = referenceValue;
-        CandidateValue = candidateValue;
+        LeftHandSideValue = leftHandSideValue;
+        RightHandSideValue = rightHandSideValue;
 
-        BreakDescription = $"Key:{BreakKey}, Reference Row:{ReferenceRow}, Value:{ReferenceValue} != Candidate Row:{CandidateRow}, Value:{CandidateValue}";
+        BreakDescription = $"Key:{BreakKey}, LeftHandSide Row:{LeftHandSideRow}, Value:{LeftHandSideValue} != RightHandSide Row:{RightHandSideRow}, Value:{RightHandSideValue}";
     }
 
     public override string ToString()

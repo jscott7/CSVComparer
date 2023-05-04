@@ -6,14 +6,14 @@ namespace CSVComparison;
 public class ComparisonResult
 {
     /// <summary>
-    /// Description of reference file (typically Path)
+    /// Description of leftHandSide file (typically Path)
     /// </summary>
-    public string ReferenceSource;
+    public string LeftHandSideSource;
 
     /// <summary>
-    /// Description of candidate file (typically Path)
+    /// Description of rightHandSide file (typically Path)
     /// </summary>
-    public string CandidateSource;
+    public string RightHandSideSource;
 
     /// <summary>
     /// Date the Comparison was made
@@ -26,14 +26,14 @@ public class ComparisonResult
     public List<BreakDetail> BreakDetails = new List<BreakDetail>();
 
     /// <summary>
-    /// Number of rows in the reference file
+    /// Number of rows in the leftHandSide file
     /// </summary>
-    public long NumberOfReferenceRows;
+    public long NumberOfLeftHandSideRows;
 
     /// <summary>
-    /// Number of rows in the candidate file
+    /// Number of rows in the rightHandSide file
     /// </summary>
-    public long NumberOfCandidateRows;
+    public long NumberOfRightHandSideRows;
 
     /// <summary>
     /// The Columns used in the Key concatenated by ':'. In same order as Key values

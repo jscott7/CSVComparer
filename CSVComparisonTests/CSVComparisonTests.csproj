@@ -30,19 +30,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="TestData\ComplexCandidateFile.csv">
+    <None Update="TestData\ComplexRightHandSideFile.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\ComplexReferenceFile.csv">
+    <None Update="TestData\ComplexLeftHandSideFile.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\ComplexTargetFileKeyExclusion.csv">
+    <None Update="TestData\ComplexFileKeyExclusion.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\ComplexTargetFileDifferentColumns.csv">
+    <None Update="TestData\ComplexFileDifferentColumns.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\ComplexTargetFile.csv">
+    <None Update="TestData\ComplexFile.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestData\MultipleDefinition.xml">

@@ -4,8 +4,8 @@ public enum BreakType
 {
     Match,
     ColumnsDifferent,
-    RowInReferenceNotInCandidate,
-    RowInCandidateNotInReference,
+    RowInLHS_NotInRHS,
+    RowInRHS_NotInLHS,
     ValueMismatch,
     ProcessFailure
 }
