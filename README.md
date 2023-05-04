@@ -15,6 +15,17 @@ A tool to compare 2 CSV files. Results of the comparison are saved to an output 
 * **Orphan** A row in the reference file but not in the candidate file. Or vice-versa.
 * **Value Break** A difference in a column value between a row with matching key on Reference and Candidate file 
 
+## Features
+* Any number of columns in the CSV can be defined as keys
+* CSV Files do not require any pre-sorting
+* Supports any delimiter, including string delimiters, e.g. "=="
+* Columns can be excluded (for example timestamps)
+* Rows can be excluded based on Key pattern matching
+* Orphans can be excluded based on pattern matching
+* Additional rows at the start and end of file can be excluded, for example rows with footer information
+* Supports Numeric tolerance, relative and absolute
+* Double Quotes in a row supported e.g.  A,B,"C,D are one column",E
+
 ## How to use
 
 Run the CSVComparison executable with the following arguments
@@ -56,6 +67,8 @@ ValueMismatch,77,COL B,78,B,78,A
 RowInRHS_NotInLHS,100000,,-1,,100000,
 RowInLHS_NotInRHS,99,,100,,-1,
 ```
+
+In tabular form (open in a spreadsheet)
 
 |Break Type|Key - COL A|Column Name|LHS Row|LHS Value|RHS Row|RHS Value|
 |----------|-----------|-----------|-------|---------|-------|---------|
