@@ -57,6 +57,14 @@ RowInRHS_NotInLHS,100000,,-1,,100000,
 RowInLHS_NotInRHS,99,,100,,-1,
 ```
 
+|Break Type|Key - COL A|Column Name|LHS Row|LHS Value|RHS Row|RHS Value|
+|----------|-----------|-----------|-------|---------|-------|---------|
+|ValueMismatch|1|COL B|2|A|2|"A,X"|
+|ValueMismatch|7|COL D|8|32.1|8|42.1|
+|ValueMismatch|77|COL B|78|B|78|A|
+|RowInRHS_NotInLHS|100000||-1||100000||
+|RowInLHS_NotInRHS|99||100||-1|
+
 ##  Configuration
 The configuration is used to define how to treat the CSV files:
 
@@ -179,18 +187,20 @@ From a Release Build, open a command prompt in CSVComparer\Benchmark\bin\Release
 
 ``` ini
 
-BenchmarkDotNet=v0.13.2, OS=Windows 11 (10.0.22621.1413)
+BenchmarkDotNet=v0.13.5, OS=Windows 11 (10.0.22621.1413/22H2/2022Update/SunValley2)
 11th Gen Intel Core i7-11800H 2.30GHz, 1 CPU, 16 logical and 8 physical cores
 .NET SDK=7.0.202
   [Host]     : .NET 6.0.15 (6.0.1523.11507), X64 RyuJIT AVX2
   DefaultJob : .NET 6.0.15 (6.0.1523.11507), X64 RyuJIT AVX2
 
-```
 
-|           Method |     Mean |     Error |    StdDev | Ratio | RatioSD |    Gen0 |   Gen1 | Allocated | Alloc Ratio |
-|----------------- |---------:|----------:|----------:|------:|--------:|--------:|-------:|----------:|------------:|
-| CompareIdentical | 1.431 ms | 0.0136 ms | 0.0127 ms |  1.00 |    0.00 | 54.6875 | 3.9063 | 667.77 KB |        1.00 |
-| CompareDifferent | 1.407 ms | 0.0194 ms | 0.0182 ms |  0.98 |    0.02 | 54.6875 | 5.8594 | 673.76 KB |        1.01 |
+```
+|                       Method |            Mean |         Error |        StdDev | Ratio |    Gen0 |   Gen1 | Allocated | Alloc Ratio |
+|----------------------------- |----------------:|--------------:|--------------:|------:|--------:|-------:|----------:|------------:|
+|             CompareIdentical | 1,405,817.46 ns | 21,308.380 ns | 17,793.462 ns | 1.000 | 54.6875 | 3.9063 |  683792 B |       1.000 |
+|             CompareDifferent | 1,402,760.11 ns | 11,363.135 ns |  9,488.733 ns | 0.998 | 54.6875 | 5.8594 |  690979 B |       1.011 |
+|                  StringSplit |        60.82 ns |      0.655 ns |      0.613 ns | 0.000 |  0.0178 |      - |     224 B |       0.000 |
+|        StringSplitWithQuotes |       138.74 ns |      1.322 ns |      1.236 ns | 0.000 |  0.0267 |      - |     336 B |       0.000 |
 
 Legends
 *  Mean        : Arithmetic mean of all measurements
@@ -202,3 +212,10 @@ Legends
 *  Gen1        : GC Generation 1 collects per 1000 operations
 *  Allocated   : Allocated memory per single operation (managed only, inclusive, 1KB = 1024B)
 *  Alloc Ratio : Allocated memory ratio distribution ([Current]/[Baseline])
+
+
+Before changing to use ReadOnlySpan<char> for StringSplitWithQuotes, the benchmark was:
+
+|                       Method |            Mean |         Error |        StdDev | Ratio | RatioSD |    Gen0 |   Gen1 | Allocated | Alloc Ratio |
+|----------------------------- |----------------:|--------------:|--------------:|------:|--------:|--------:|-------:|----------:|------------:|
+|        StringSplitWithQuotes |       352.94 ns |      6.950 ns |      6.501 ns | 0.000 |    0.00 |  0.0267 |      - |     336 B |       0.000 |
