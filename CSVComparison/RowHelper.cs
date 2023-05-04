@@ -13,32 +13,32 @@ public class RowHelper
 
         while (remaining.Length > 0)
         {
-            var nextDelimiter = remaining.IndexOf(delimiter);
-            var nextQuote = remaining.IndexOf("\"");
+            var nextDelimiterIndex = remaining.IndexOf(delimiter);
+            var nextQuoteIndex = remaining.IndexOf("\"");
 
-            if (nextDelimiter == -1)
+            if (nextDelimiterIndex == -1)
             {
-                // Last characters
+                // Add the last characters on the row
                 columnValues.Add(remaining[0..remaining.Length].ToString());
                 break;
             }
-            else if (nextQuote == -1 || nextDelimiter < nextQuote)
+            else if (nextQuoteIndex == -1 || nextDelimiterIndex < nextQuoteIndex)
             {
-                columnValues.Add(remaining[0..nextDelimiter].ToString());
+                columnValues.Add(remaining[0..nextDelimiterIndex].ToString());
                 if (remaining.Length == 1) {
                     columnValues.Add("");
                 }
 
-                remaining = remaining[(nextDelimiter + delimiter.Length)..remaining.Length];
+                remaining = remaining[(nextDelimiterIndex + delimiter.Length)..remaining.Length];
             }
-            else if (nextQuote > -1)
+            else if (nextQuoteIndex > -1)
             {
                 bool isInQuoteBlock = true;
                 var quote = new StringBuilder();
 
                 while (isInQuoteBlock)
                 {
-                    remaining = remaining[(nextQuote + 1)..remaining.Length];
+                    remaining = remaining[(nextQuoteIndex + 1)..remaining.Length];
                     var quoteIndex = remaining.IndexOf("\"");
                     if (quoteIndex == -1)
                     {

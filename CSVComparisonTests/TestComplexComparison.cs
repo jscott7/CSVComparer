@@ -90,7 +90,7 @@ public class TestComplexComparison
         comparisonDefinition.KeyColumns.Add("AnotherColumn");
 
         var csvComparer = new CSVComparer(comparisonDefinition);
-        var exception = Assert.Throws<AggregateException>(delegate { csvComparer.CompareFiles(leftHandSideDataFile, rightHandSideDataFile); });
+        var exception = Assert.Throws<AggregateException>( () => csvComparer.CompareFiles(leftHandSideDataFile, rightHandSideDataFile) );
     
         Assert.AreEqual("Orphan key: A:x already exists. This usually means the key columns do not define unique rows.", exception.InnerException.Message);
     }
