@@ -4,7 +4,7 @@
     <OutputType>Library</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Title>Compare two different CSV Files</Title>
+    <Title>Utility to compare two CSV Files and report differences</Title>
     <Authors>Jonathan Scott</Authors>
     <PackageProjectUrl>https://github.com/jscott7/CSVComparer</PackageProjectUrl>
     <PackageId>CSVComparer</PackageId>
