@@ -3,6 +3,15 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>net6.0</TargetFramework>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Compare two different CSV Files</Title>
+    <Authors>Jonathan Scott</Authors>
+    <PackageProjectUrl>https://github.com/jscott7/CSVComparer</PackageProjectUrl>
+    <PackageId>CSVComparer</PackageId>
+    <Product>CSVComparer</Product>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReleaseNotes>First published version</PackageReleaseNotes>
+    <PackageTags>CSV;Comparison;Compare</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -17,6 +26,13 @@
     <Compile Remove="CSVComparisonTests\**" />
     <EmbeddedResource Remove="CSVComparisonTests\**" />
     <None Remove="CSVComparisonTests\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\RunningTracker\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
