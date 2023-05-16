@@ -27,8 +27,57 @@ A tool to compare 2 CSV files. Results of the comparison are saved to an output 
 * Double Quotes in a row supported e.g.  A,B,"C,D are one column",E
 
 ## How to use
+The CSVComparison is available either by building from this project or from NuGet. In both cases an xml configuration is used to define how to compare two CSV files. The comparer is then run against LHS and RHS files using this configuration.
 
-Run the CSVComparison executable with the following arguments
+### Configuration
+The configuration is used to define how to treat the CSV files:
+
+```html
+<?xml version="1.0" encoding="utf-8"?>
+<ComparisonDefinition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Delimiter>,</Delimiter>
+  <KeyColumns>
+    <Column>COL A</Column>
+    <Column>COL B</Column>
+  </KeyColumns>
+  <ExcludedColumns>
+    <Column>COL D</Column>
+    <Column>COL E</Column>
+  </ExcludedColumns>
+  <IgnoreInvalidRows>true</IgnoreInvalidRows>
+  <HeaderRowIndex>0</HeaderRowIndex>
+  <ToleranceType>Relative</ToleranceType>
+  <ToleranceValue>0.1</ToleranceValue>
+  <OrphanExclusions>
+    <ExclusionPattern>RegexPattern</ExclusionPattern>
+  </OrphanExclusions>
+  <KeyExclusions>
+    <ExclusionPattern>RegexPattern</ExclusionPattern>
+  </KeyExclusions>
+</ComparisonDefinition>
+```
+
+**Delimiter**  Allows other separaters, i.e. pipe '|' to be used
+
+**KeyColumns** Lists the columns required to obtain a unique key for each row
+
+**ExcludedColumns** List the columns to be excluded from the comparison
+
+**IgnoreInvalidRows** If a row doesn't have the same number of columns (it may be a descriptive footer for example) do not include in the comparison
+
+**HeaderRowIndex** Set the row for header columns, if some non csv data occurs at the start of the file
+
+**ToleranceType** How to compare numeric values
+
+**ToleranceValue** The tolerance to use for numeric values
+
+**OrphanExclusions** A list of Regex Patterns used to exclude orphans whose key matches the pattern
+
+**KeyExclusions** A list of Regex Patterns used to exclude Value breaks whose key matches the pattern
+ 
+ 
+### Comparison Runner
+The solution includes a ComparisonRunner project which builds an exe that can be used with the following arguments:
 
 *"Path to left hand side csv file" "Path to right hand side reference file" "Path to configuration file" "Optional Path to directory to save output*
 
@@ -78,55 +127,10 @@ In tabular form (open in a spreadsheet)
 |RowInRHS_NotInLHS|100000||-1||100000||
 |RowInLHS_NotInRHS|99||100||-1|
 
-##  Configuration
-The configuration is used to define how to treat the CSV files:
 
-```html
-<?xml version="1.0" encoding="utf-8"?>
-<ComparisonDefinition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Delimiter>,</Delimiter>
-  <KeyColumns>
-    <Column>COL A</Column>
-    <Column>COL B</Column>
-  </KeyColumns>
-  <ExcludedColumns>
-    <Column>COL D</Column>
-    <Column>COL E</Column>
-  </ExcludedColumns>
-  <IgnoreInvalidRows>true</IgnoreInvalidRows>
-  <HeaderRowIndex>0</HeaderRowIndex>
-  <ToleranceType>Relative</ToleranceType>
-  <ToleranceValue>0.1</ToleranceValue>
-  <OrphanExclusions>
-    <ExclusionPattern>RegexPattern</ExclusionPattern>
-  </OrphanExclusions>
-  <KeyExclusions>
-    <ExclusionPattern>RegexPattern</ExclusionPattern>
-  </KeyExclusions>
-</ComparisonDefinition>
-```
+### Directory comparison
 
-**Delimiter**  Allows other separaters, i.e. pipe '|' to be used
-
-**KeyColumns** Lists the columns required to obtain a unique key for each row
-
-**ExcludedColumns** List the columns to be excluded from the comparison
-
-**IgnoreInvalidRows** If a row doesn't have the same number of columns (it may be a descriptive footer for example) do not include in the comparison
-
-**HeaderRowIndex** Set the row for header columns, if some non csv data occurs at the start of the file
-
-**ToleranceType** How to compare numeric values
-
-**ToleranceValue** The tolerance to use for numeric values
-
-**OrphanExclusions** A list of Regex Patterns used to exclude orphans whose key matches the pattern
-
-**KeyExclusions** A list of Regex Patterns used to exclude Value breaks whose key matches the pattern
- 
-## Directory comparison
-
-If the LHS and RHS paths are directories you can compare multiple files. If the files have different structures a configuration can
+If the LHS and RHS paths are directories you can compare multiple files. If the files have different structures a single global configuration can
 be created that can define all comparisons.
 
 The FilePattern element is a Regex pattern that is used to determine the configuration.
@@ -172,7 +176,10 @@ The comparison will be performed only if:
 * A comparison definition is found
 * Exactly one candidate file is found, either by exact match or file pattern match
 
-## API
+### TestGenerator Tool
+The TestGenerator project very simply builds two CSV files of user-defined lengh with random breaks added.
+
+## NuGet API
 
 To run from your own C# code, first install the CSVComparer packgage from NuGet.org into your project
 
@@ -241,9 +248,8 @@ Each break detail contains the following properties describing the difference in
     public string RightHandSideValue;
 ```
 
-## BenchmarkDotNet
-Running a comparison of two files (containing 1000) rows.
-Generated using the TestDataGenerator tool
+## Benchmarks
+BenchmarkDotNet is used to obtain the information below, stats are obtained by running a comparison of two files containing 1000 rows, generated using the TestDataGenerator tool.
 
 From a Release Build, open a command prompt in CSVComparer\Benchmark\bin\Release\net6.0 and run Benchmark.exe
 
