@@ -174,7 +174,9 @@ The comparison will be performed only if:
 
 ## API
 
-To run from your own C# code:
+To run from your own C# code, first install the CSVComparer packgage from NuGet.org into your project
+
+The following code will compare two CSV files given their paths. The files both contain columns named ABC and DEF which together define uniqueness for each row.
 
 ```csharp
  # You can either deserialize the comparison definition xml or create your own in code
@@ -183,13 +185,60 @@ To run from your own C# code:
  comparisonDefinition.KeyColumns.Add("DEF");
 
  var csvComparer = new CSVComparer(comparisonDefinition);
- var comparisonResult = csvComparer.CompareFiles(referenceDataFilePath, targetDataFilePath);
-
+ var comparisonResult = csvComparer.CompareFiles(lhsCsvFilePath, rhsCsvFilePath);
+ Console.WriteLine($"Time started {comparisonResult.Date}. #LHS Rows {comparisonResult.NumberOfLeftHandSideRows}. #RHS Rows {comparisonResult.NumberOfRightHandSideRows}");
+            
  # Add code to interrogate the comparison result.
  foreach(var breakDetail in comparisonResult.BreakDetails)
  {
       Console.WriteLine($"{breakDetail.BreakType} - {breakDetail.BreakDescription}");
  }
+```
+
+The comparisonResult output contains high level summary information and a list of all differences or breaks found between the two inputs.
+
+Each break detail contains the following properties describing the difference in detail:
+ 
+```csharp
+    /// <summary>
+    /// The type of Break
+    /// </summary>
+    public BreakType BreakType;
+
+    /// <summary>
+    /// A single line description of the break
+    /// </summary>
+    public string BreakDescription;
+
+    /// <summary>
+    /// The key of the row in the CSV file
+    /// </summary>
+    public string BreakKey;
+
+    /// <summary>
+    /// The index of the row in the leftHandSide CSV file
+    /// </summary>
+    public int LeftHandSideRow;
+
+    /// <summary>
+    /// The index of the row in the rightHandSide CSV file
+    /// </summary>
+    public int RightHandSideRow;
+
+    /// <summary>
+    /// The name of the column of the mismatching data. Will be blank if the row is an orphan
+    /// </summary>
+    public string Column;
+
+    /// <summary>
+    /// The value of mismatching data. Will be blank if the row is an orphan
+    /// </summary>
+    public string LeftHandSideValue;
+
+    /// <summary>
+    /// The value of mismatching data. Will be blank if the row is an orphan
+    /// </summary>
+    public string RightHandSideValue;
 ```
 
 ## BenchmarkDotNet

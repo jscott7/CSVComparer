@@ -14,6 +14,7 @@
     <PackageTags>CSV;Comparison;Compare</PackageTags>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Copyright>Copyright (c) Jonathan Scott 2023</Copyright>
+    <Description>.NET library for running a comparison of two CSV files and reporting differences</Description>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
