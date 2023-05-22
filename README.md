@@ -1,9 +1,10 @@
+# CSVComparison
+A tool to compare 2 CSV files. Results of the comparison are saved to an output file or can be interrogated via an API.
+
+[![NuGet Version](https://img.shields.io/nuget/v/CSVComparer.svg)](https://www.nuget.org/packages?q=CSVComparer)
 [![Build Status](https://dev.azure.com/jonathanscott80/CSVComparer/_apis/build/status%2Fjscott7.CSVComparer?branchName=main)](https://dev.azure.com/jonathanscott80/CSVComparer/_build/latest?definitionId=2&branchName=main)
 [![CodeQL](https://github.com/jscott7/CSVComparer/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/jscott7/CSVComparer/actions/workflows/codeql-analysis.yml)
 
-# CSVComparison
-
-A tool to compare 2 CSV files. Results of the comparison are saved to an output file or can be interrogated via an API.
 [See here for more information and a list of updates](https://github.com/jscott7/CSVComparer/wiki)
 
 ## Some terminology
