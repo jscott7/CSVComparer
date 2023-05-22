@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="TestData\candidateTest.csv">
+    <None Update="TestData\RightHandSideTest.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="TestData\ComplexCandidateFile.csv">
@@ -28,7 +28,7 @@
     <None Update="TestData\Definition.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\referenceTest.csv">
+    <None Update="TestData\LeftHandSideTest.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

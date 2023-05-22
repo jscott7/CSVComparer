@@ -19,7 +19,7 @@ namespace TestDataGenerator
         /// <ComparisonDefinition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
         ///    <Delimiter>,</Delimiter>
         ///    <KeyColumns>
-        ///       <Column>A</Column>
+        ///       <Column>COL A</Column>
         ///    </KeyColumns>
         ///    <HeaderRowIndex>0</HeaderRowIndex>
         ///    <ToleranceValue>0.1</ToleranceValue>
