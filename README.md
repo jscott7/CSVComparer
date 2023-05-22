@@ -264,12 +264,14 @@ BenchmarkDotNet=v0.13.5, OS=Windows 11 (10.0.22621.1413/22H2/2022Update/SunValle
 
 
 ```
-|                       Method |            Mean |         Error |        StdDev | Ratio |    Gen0 |   Gen1 | Allocated | Alloc Ratio |
-|----------------------------- |----------------:|--------------:|--------------:|------:|--------:|-------:|----------:|------------:|
-|             CompareIdentical | 1,405,817.46 ns | 21,308.380 ns | 17,793.462 ns | 1.000 | 54.6875 | 3.9063 |  683792 B |       1.000 |
-|             CompareDifferent | 1,402,760.11 ns | 11,363.135 ns |  9,488.733 ns | 0.998 | 54.6875 | 5.8594 |  690979 B |       1.011 |
-|                  StringSplit |        60.82 ns |      0.655 ns |      0.613 ns | 0.000 |  0.0178 |      - |     224 B |       0.000 |
-|        StringSplitWithQuotes |       138.74 ns |      1.322 ns |      1.236 ns | 0.000 |  0.0267 |      - |     336 B |       0.000 |
+|                       Method |            Mean |         Error |        StdDev | Ratio | RatioSD |    Gen0 |   Gen1 | Allocated | Alloc Ratio |
+|----------------------------- |----------------:|--------------:|--------------:|------:|--------:|--------:|-------:|----------:|------------:|
+|             CompareIdentical | 1,269,694.12 ns | 22,525.557 ns | 25,037.097 ns | 1.000 |    0.00 | 66.4063 | 5.8594 |  830445 B |       1.000 |
+|             CompareDifferent | 1,288,638.57 ns | 25,125.239 ns | 37,606.275 ns | 1.019 |    0.05 | 66.4063 | 7.8125 |  837210 B |       1.008 |
+|                  StringSplit |        64.24 ns |      1.257 ns |      1.544 ns | 0.000 |    0.00 |  0.0178 |      - |     224 B |       0.000 |
+| StringSplitWithQuotesControl |       139.90 ns |      2.598 ns |      2.431 ns | 0.000 |    0.00 |  0.0267 |      - |     336 B |       0.000 |
+|        StringSplitWithQuotes |       145.07 ns |      2.617 ns |      2.448 ns | 0.000 |    0.00 |  0.0267 |      - |     336 B |       0.000 |
+
 
 Legends
 *  Mean        : Arithmetic mean of all measurements
