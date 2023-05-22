@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -16,8 +17,8 @@ public class CSVComparer
 {
     private ManualResetEvent _readyToStartComparisonEvent = new(false);
     private readonly object _lockObj = new();
-    private Queue<CsvRow> _leftHandSideQueue = new();
-    private Queue<CsvRow> _rightHandSideQueue = new();
+    private ConcurrentQueue<CsvRow> _leftHandSideQueue = new();
+    private ConcurrentQueue<CsvRow> _rightHandSideQueue = new();
     private int _runningLoaderThreads = 2;
     private ComparisonDefinition _comparisonDefinition;
     private Dictionary<string, CsvRow> _leftHandSideOrphans = new();
@@ -120,7 +121,7 @@ public class CSVComparer
     /// </summary>
     /// <param name="file">Full path to csv file</param>
     /// <param name="queue">Target data queue</param>
-    void LoadFile(string file, Queue<CsvRow> queue)
+    void LoadFile(string file, ConcurrentQueue<CsvRow> queue)
     {
         try
         {
@@ -160,11 +161,8 @@ public class CSVComparer
                         }
 
                         key.Length--; // Remove trailing ':'
-
-                        lock (_lockObj)
-                        {
-                            queue.Enqueue(new CsvRow() { Key = key.ToString(), Columns = columns, RowIndex = rowIndex });
-                        }
+                        queue.Enqueue(new CsvRow() { Key = key.ToString(), Columns = columns, RowIndex = rowIndex });
+                       
                     }
 
                     _readyToStartComparisonEvent.Set();
@@ -238,24 +236,20 @@ public class CSVComparer
 
             CsvRow leftHandSideRow = null;
             CsvRow rightHandSideRow = null;
-            lock (_lockObj)
+
+            if (!_leftHandSideQueue.IsEmpty && _leftHandSideQueue.TryDequeue(out leftHandSideRow))
             {
-                if (_leftHandSideQueue.Count > 0)
-                {
-                    leftHandSideRow = _leftHandSideQueue.Dequeue();
-                    _numberOfLeftHandSideRows++;
-                }
+                _numberOfLeftHandSideRows++;
+            }
 
-                if (_rightHandSideQueue.Count > 0)
-                {
-                    rightHandSideRow = _rightHandSideQueue.Dequeue();
-                    _numberOfRightHandSideRows++;
-                }
+            if (!_rightHandSideQueue.IsEmpty && _rightHandSideQueue.TryDequeue(out rightHandSideRow))
+            {
+                _numberOfRightHandSideRows++;
+            }
 
-                if (_leftHandSideQueue.Count == 0 && _rightHandSideQueue.Count == 0 && _runningLoaderThreads == 0)
-                {
-                    complete = true;
-                }
+            if (_leftHandSideQueue.Count == 0 && _rightHandSideQueue.Count == 0 && _runningLoaderThreads == 0)
+            {
+                complete = true;
             }
          
             if (leftHandSideRow != null && rightHandSideRow != null)
