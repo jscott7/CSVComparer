@@ -66,7 +66,7 @@ The configuration is used to define how to treat the CSV files:
 
 **IgnoreInvalidRows** If a row doesn't have the same number of columns (it may be a descriptive footer for example) do not include in the comparison
 
-**HeaderRowIndex** Set the row for header columns, if some non csv data occurs at the start of the file
+**HeaderRowIndex** Set the row for header columns, if some non csv data occurs at the start of the file. Index is Zero-based
 
 **ToleranceType** How to compare numeric values
 
