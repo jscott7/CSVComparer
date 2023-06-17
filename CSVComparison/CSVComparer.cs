@@ -150,6 +150,7 @@ public class CSVComparer
                     headerRow = false;
                 }
 
+                rowIndex++;
                 if (!headerRow)
                 {
                     if (columns.Length == expectedColumnCount || !_comparisonDefinition.IgnoreInvalidRows)
@@ -161,14 +162,11 @@ public class CSVComparer
                         }
 
                         key.Length--; // Remove trailing ':'
-                        queue.Enqueue(new CsvRow() { Key = key.ToString(), Columns = columns, RowIndex = rowIndex });
-                       
+                        queue.Enqueue(new CsvRow() { Key = key.ToString(), Columns = columns, RowIndex = rowIndex });                   
                     }
 
                     _readyToStartComparisonEvent.Set();
                 }
-
-                rowIndex++;
             }
 
             if (rowIndex == 0)
