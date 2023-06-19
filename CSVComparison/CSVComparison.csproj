@@ -11,7 +11,7 @@
     <Product>CSVComparer</Product>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageReleaseNotes>Fix bug where row numbers were out by 1 in the report: https://github.com/jscott7/CSVComparer/issues/40
-</PackageReleaseNotes>
+Replace Queue with lock statements with ConcurrentQueue. This reduced the benchmarks for different file comparison from 1.5ms to 1.28ms</PackageReleaseNotes>
     <PackageTags>CSV;Comparison;Compare</PackageTags>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Copyright>Copyright (c) Jonathan Scott 2023</Copyright>
