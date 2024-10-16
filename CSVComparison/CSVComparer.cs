@@ -43,11 +43,11 @@ public class CSVComparer
     {
         ResetState();
 
-        var leftHandSideLoaderTask = Task.Run(() => LoadFile(leftHandSideFile, _leftHandSideQueue));
-        var rightHandSideLoaderTask = Task.Run(() => LoadFile(rightHandSideFile, _rightHandSideQueue));
-        var compareTask = Task.Run(() => CompareCsvs());
+        Task leftHandSideLoaderTask = Task.Run(() => LoadFile(leftHandSideFile, _leftHandSideQueue));
+        Task rightHandSideLoaderTask = Task.Run(() => LoadFile(rightHandSideFile, _rightHandSideQueue));
+        Task compareTask = Task.WhenAll(leftHandSideLoaderTask, rightHandSideLoaderTask).ContinueWith(_ => CompareCsvs());
 
-        Task.WaitAll(leftHandSideLoaderTask, rightHandSideLoaderTask, compareTask);
+        compareTask.Wait();
 
         if (!_earlyTerminate)
         {
