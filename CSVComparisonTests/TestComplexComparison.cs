@@ -98,7 +98,6 @@ public class TestComplexComparison
     [Test]    
     public void TestOrphanExclusions()
     {
-        //TODO Implement this
         var leftHandSideDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "ComplexLeftHandSideFile.csv");
         var rightHandSideDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "ComplexFile.csv");
         var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
@@ -121,7 +120,6 @@ public class TestComplexComparison
     [Test]
     public void TestKeyExclusions()
     {
-        //TODO Implement this
         var leftHandSideDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "ComplexLeftHandSideFile.csv");
         var rightHandSideDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "ComplexFileKeyExclusion.csv");
         var comparisonDefinition = new ComparisonDefinition() { Delimiter = "," };
