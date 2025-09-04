@@ -252,25 +252,25 @@ Each break detail contains the following properties describing the difference in
 ## Benchmarks
 BenchmarkDotNet is used to obtain the information below, stats are obtained by running a comparison of two files containing 1000 rows, generated using the TestDataGenerator tool.
 
-From a Release Build, open a command prompt in CSVComparer\Benchmark\bin\Release\net6.0 and run Benchmark.exe
+From a Release Build, open a command prompt in CSVComparer\Benchmark\bin\Release\net8.0 and run Benchmark.exe
 
 ``` ini
 
-BenchmarkDotNet=v0.13.5, OS=Windows 11 (10.0.22621.1413/22H2/2022Update/SunValley2)
+BenchmarkDotNet=v0.13.5, OS=Windows 11 (10.0.26100.4652)
 11th Gen Intel Core i7-11800H 2.30GHz, 1 CPU, 16 logical and 8 physical cores
-.NET SDK=7.0.202
-  [Host]     : .NET 6.0.15 (6.0.1523.11507), X64 RyuJIT AVX2
-  DefaultJob : .NET 6.0.15 (6.0.1523.11507), X64 RyuJIT AVX2
+.NET SDK=9.0.201
+  [Host]     : .NET 8.0.14 (8.0.1425.11118), X64 RyuJIT AVX2
+  DefaultJob : .NET 8.0.14 (8.0.1425.11118), X64 RyuJIT AVX2
 
 
 ```
-|                       Method |            Mean |         Error |        StdDev | Ratio | RatioSD |    Gen0 |   Gen1 | Allocated | Alloc Ratio |
-|----------------------------- |----------------:|--------------:|--------------:|------:|--------:|--------:|-------:|----------:|------------:|
-|             CompareIdentical | 1,269,694.12 ns | 22,525.557 ns | 25,037.097 ns | 1.000 |    0.00 | 66.4063 | 5.8594 |  830445 B |       1.000 |
-|             CompareDifferent | 1,288,638.57 ns | 25,125.239 ns | 37,606.275 ns | 1.019 |    0.05 | 66.4063 | 7.8125 |  837210 B |       1.008 |
-|                  StringSplit |        64.24 ns |      1.257 ns |      1.544 ns | 0.000 |    0.00 |  0.0178 |      - |     224 B |       0.000 |
-| StringSplitWithQuotesControl |       139.90 ns |      2.598 ns |      2.431 ns | 0.000 |    0.00 |  0.0267 |      - |     336 B |       0.000 |
-|        StringSplitWithQuotes |       145.07 ns |      2.617 ns |      2.448 ns | 0.000 |    0.00 |  0.0267 |      - |     336 B |       0.000 |
+|                       Method |          Mean |         Error |        StdDev | Ratio | RatioSD |    Gen0 |   Gen1 | Allocated | Alloc Ratio |
+|----------------------------- |--------------:|--------------:|--------------:|------:|--------:|--------:|-------:|----------:|------------:|
+|             CompareIdentical | 694,328.20 ns |  5,424.836 ns |  7,242.000 ns | 1.000 |    0.00 | 66.4063 | 9.7656 |  829206 B |       1.000 |
+|             CompareDifferent | 655,519.23 ns | 10,940.346 ns | 12,598.919 ns | 0.946 |    0.02 | 66.4063 | 7.8125 |  834637 B |       1.007 |
+|                  StringSplit |      54.29 ns |      0.691 ns |      0.647 ns | 0.000 |    0.00 |  0.0178 |      - |     224 B |       0.000 |
+| StringSplitWithQuotesControl |     117.60 ns |      0.551 ns |      0.460 ns | 0.000 |    0.00 |  0.0267 |      - |     336 B |       0.000 |
+|        StringSplitWithQuotes |     117.82 ns |      1.296 ns |      1.213 ns | 0.000 |    0.00 |  0.0267 |      - |     336 B |       0.000 |
 
 
 Legends
