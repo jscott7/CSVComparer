@@ -10,13 +10,12 @@
     <PackageId>CSVComparer</PackageId>
     <Product>CSVComparer</Product>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageReleaseNotes>Fix bug where row numbers were out by 1 in the report: https://github.com/jscott7/CSVComparer/issues/40
-Replace Queue with lock statements with ConcurrentQueue. This reduced the benchmarks for different file comparison from 1.5ms to 1.28ms</PackageReleaseNotes>
+    <PackageReleaseNotes>Update to .NET 8.0</PackageReleaseNotes>
     <PackageTags>CSV;Comparison;Compare</PackageTags>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Copyright>Copyright (c) Jonathan Scott 2023</Copyright>
     <Description>.NET library for running a comparison of two CSV files and reporting differences</Description>
-	<VersionPrefix>1.0.1</VersionPrefix>
+	<VersionPrefix>1.1.0</VersionPrefix>
 	<RepositoryUrl>https://github.com/jscott7/CSVComparer.git</RepositoryUrl>
   </PropertyGroup>
 
