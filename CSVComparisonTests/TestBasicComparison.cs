@@ -17,11 +17,11 @@ public class TestBasicComparison
         var csvComparer = new CSVComparer(comparisonDefinition);
         var comparisonResult = csvComparer.CompareFiles(testDataFile, testDataFile);
 
-        Assert.AreEqual(0, comparisonResult.BreakDetails.Count, "Invalid number of breaks");
-        Assert.AreEqual(2, comparisonResult.NumberOfLeftHandSideRows, "Invalid number of leftHandSide rows");
-        Assert.AreEqual(2, comparisonResult.NumberOfRightHandSideRows, "Invalid number of rightHandSide rows");
-        Assert.AreEqual(testDataFile, comparisonResult.LeftHandSideSource, "Invalid leftHandSide source name");
-        Assert.AreEqual(testDataFile, comparisonResult.RightHandSideSource, "Invalid rightHandSide source name");
+        Assert.That(comparisonResult.BreakDetails.Count, Is.EqualTo(0), "Invalid number of breaks");
+        Assert.That(comparisonResult.NumberOfLeftHandSideRows, Is.EqualTo(2), "Invalid number of leftHandSide rows");
+        Assert.That(comparisonResult.NumberOfRightHandSideRows, Is.EqualTo(2), "Invalid number of rightHandSide rows");
+        Assert.That(comparisonResult.LeftHandSideSource, Is.EqualTo(testDataFile), "Invalid leftHandSide source name");
+        Assert.That(comparisonResult.RightHandSideSource, Is.EqualTo(testDataFile), "Invalid rightHandSide source name");
     }
 
     [Test]
@@ -36,9 +36,9 @@ public class TestBasicComparison
         var csvComparer = new CSVComparer(comparisonDefinition);
         var comparisonResult = csvComparer.CompareFiles(leftHandSideDataFile, rightHandSideDataFile);
 
-        Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
-        Assert.AreEqual(BreakType.ValueMismatch, comparisonResult.BreakDetails[0].BreakType);
-        Assert.AreEqual("Key:A, LeftHandSide Row:2, Value:B != RightHandSide Row:2, Value:D", comparisonResult.BreakDetails[0].BreakDescription);
+        Assert.That(comparisonResult.BreakDetails.Count, Is.EqualTo(1));
+        Assert.That(comparisonResult.BreakDetails[0].BreakType, Is.EqualTo(BreakType.ValueMismatch));
+        Assert.That(comparisonResult.BreakDetails[0].BreakDescription, Is.EqualTo("Key:A, LeftHandSide Row:2, Value:B != RightHandSide Row:2, Value:D"));
     }
 
     [Test]
@@ -53,9 +53,9 @@ public class TestBasicComparison
         var csvComparer = new CSVComparer(comparisonDefinition);
         var comparisonResult = csvComparer.CompareFiles(leftHandSideDataFile, rightHandSideDataFile);
 
-        Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
-        Assert.AreEqual(BreakType.ValueMismatch, comparisonResult.BreakDetails[0].BreakType);
-        Assert.AreEqual("Key:A, LeftHandSide Row:2, Value:B != RightHandSide Row:2, Value:D", comparisonResult.BreakDetails[0].BreakDescription);
+        Assert.That(1, Is.EqualTo(comparisonResult.BreakDetails.Count));
+        Assert.That(comparisonResult.BreakDetails[0].BreakType, Is.EqualTo(BreakType.ValueMismatch));
+        Assert.That(comparisonResult.BreakDetails[0].BreakDescription, Is.EqualTo("Key:A, LeftHandSide Row:2, Value:B != RightHandSide Row:2, Value:D"));
     }
 
     [Test]
@@ -70,9 +70,9 @@ public class TestBasicComparison
         var csvComparer = new CSVComparer(comparisonDefinition);
         var comparisonResult = csvComparer.CompareFiles(leftHandSideDataFile, rightHandSideDataFile);
 
-        Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
-        Assert.AreEqual(BreakType.ValueMismatch, comparisonResult.BreakDetails[0].BreakType);
-        Assert.AreEqual("Key:A, LeftHandSide Row:4, Value:B != RightHandSide Row:4, Value:D", comparisonResult.BreakDetails[0].BreakDescription);
+        Assert.That(comparisonResult.BreakDetails.Count, Is.EqualTo(1));
+        Assert.That(comparisonResult.BreakDetails[0].BreakType, Is.EqualTo(BreakType.ValueMismatch));
+        Assert.That(comparisonResult.BreakDetails[0].BreakDescription, Is.EqualTo("Key:A, LeftHandSide Row:4, Value:B != RightHandSide Row:4, Value:D"));
     }
 
     [Test]
@@ -87,9 +87,9 @@ public class TestBasicComparison
         var csvComparer = new CSVComparer(comparisonDefinition);
         var comparisonResult = csvComparer.CompareFiles(leftHandSideDataFile, rightHandSideDataFile);
 
-        Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
-        Assert.AreEqual(BreakType.RowInRHS_NotInLHS, comparisonResult.BreakDetails[0].BreakType);
-        Assert.AreEqual("D", comparisonResult.BreakDetails[0].BreakKey);
+        Assert.That(comparisonResult.BreakDetails.Count, Is.EqualTo(1));
+        Assert.That(comparisonResult.BreakDetails[0].BreakType, Is.EqualTo(BreakType.RowInRHS_NotInLHS));
+        Assert.That(comparisonResult.BreakDetails[0].BreakKey, Is.EqualTo("D"));
     }
 
     [Test]
@@ -104,9 +104,9 @@ public class TestBasicComparison
         var csvComparer = new CSVComparer(comparisonDefinition);
         var comparisonResult = csvComparer.CompareFiles(leftHandSideDataFile, rightHandSideDataFile);
 
-        Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
-        Assert.AreEqual(BreakType.RowInLHS_NotInRHS, comparisonResult.BreakDetails[0].BreakType);
-        Assert.AreEqual("D", comparisonResult.BreakDetails[0].BreakKey);
+        Assert.That(comparisonResult.BreakDetails.Count, Is.EqualTo(1));
+        Assert.That(comparisonResult.BreakDetails[0].BreakType, Is.EqualTo(BreakType.RowInLHS_NotInRHS));
+        Assert.That(comparisonResult.BreakDetails[0].BreakKey, Is.EqualTo("D"));
     }
 
     [Test]
@@ -121,9 +121,9 @@ public class TestBasicComparison
         var csvComparer = new CSVComparer(comparisonDefinition);
         var comparisonResult = csvComparer.CompareFiles(leftHandSideDataFile, rightHandSideDataFile);
 
-        Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
-        Assert.AreEqual(BreakType.ColumnsDifferent, comparisonResult.BreakDetails[0].BreakType);
-        Assert.AreEqual("LeftHandSide has 3 columns, RightHandSide has 4 columns", comparisonResult.BreakDetails[0].BreakDescription);
+        Assert.That(comparisonResult.BreakDetails.Count, Is.EqualTo(1));
+        Assert.That(comparisonResult.BreakDetails[0].BreakType, Is.EqualTo(BreakType.ColumnsDifferent));
+        Assert.That(comparisonResult.BreakDetails[0].BreakDescription, Is.EqualTo("LeftHandSide has 3 columns, RightHandSide has 4 columns"));
     }
 
     [Test]
@@ -138,9 +138,9 @@ public class TestBasicComparison
         var csvComparer = new CSVComparer(comparisonDefinition);
         var comparisonResult = csvComparer.CompareFiles(leftHandSideDataFile, rightHandSideDataFile);
 
-        Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
-        Assert.IsTrue(comparisonResult.BreakDetails[0].BreakDescription.StartsWith("Problem loading"));
-        Assert.AreEqual(BreakType.ProcessFailure, comparisonResult.BreakDetails[0].BreakType);
+        Assert.That(comparisonResult.BreakDetails.Count, Is.EqualTo(1));
+        Assert.That(comparisonResult.BreakDetails[0].BreakDescription.StartsWith("Problem loading"), Is.True);
+        Assert.That(comparisonResult.BreakDetails[0].BreakType, Is.EqualTo(BreakType.ProcessFailure));
     }
 
     [Test]
@@ -154,11 +154,11 @@ public class TestBasicComparison
 
         var csvComparer = new CSVComparer(comparisonDefinition);
         var comparisonResult = csvComparer.CompareFiles(leftHandSideDataFile, rightHandSideDataFile);
-        Assert.AreEqual(0, comparisonResult.BreakDetails.Count, "Should be no breaks for two empty files");
+        Assert.That(comparisonResult.BreakDetails.Count, Is.EqualTo(0), "Should be no breaks for two empty files");
         
         leftHandSideDataFile = Path.Combine(AppContext.BaseDirectory, "TestData", "SimpleCSV.csv");
         var comparisonResult2 = csvComparer.CompareFiles(leftHandSideDataFile, rightHandSideDataFile);
-        Assert.AreEqual(2, comparisonResult2.BreakDetails.Count, "All leftHandSide rows should be orphans");
+        Assert.That(comparisonResult2.BreakDetails.Count, Is.EqualTo(2), "All leftHandSide rows should be orphans");
     }
 
     [Test]
@@ -174,9 +174,9 @@ public class TestBasicComparison
 
         var csvComparer = new CSVComparer(comparisonDefinition);
         var comparisonResult = csvComparer.CompareFiles(leftHandSideDataFile, rightHandSideDataFile);
-        Assert.AreEqual(2, comparisonResult.BreakDetails.Count, "Absolute tolerance");
-        Assert.AreEqual("Key:A, LeftHandSide Row:2, Value:1.0 != RightHandSide Row:2, Value:1.2", comparisonResult.BreakDetails[0].BreakDescription);
-        Assert.AreEqual("Key:C, LeftHandSide Row:3, Value:2.5 != RightHandSide Row:3, Value:2.61", comparisonResult.BreakDetails[1].BreakDescription);
+        Assert.That(comparisonResult.BreakDetails.Count, Is.EqualTo(2), "Absolute tolerance");
+        Assert.That(comparisonResult.BreakDetails[0].BreakDescription, Is.EqualTo("Key:A, LeftHandSide Row:2, Value:1.0 != RightHandSide Row:2, Value:1.2"));
+        Assert.That(comparisonResult.BreakDetails[1].BreakDescription, Is.EqualTo("Key:C, LeftHandSide Row:3, Value:2.5 != RightHandSide Row:3, Value:2.61"));
     }
 
     [Test]
@@ -192,8 +192,8 @@ public class TestBasicComparison
 
         var csvComparer = new CSVComparer(comparisonDefinition);
         var comparisonResult = csvComparer.CompareFiles(leftHandSideDataFile, rightHandSideDataFile);
-        Assert.AreEqual(1, comparisonResult.BreakDetails.Count, "Relative tolerance");
-        Assert.AreEqual("Key:A, LeftHandSide Row:2, Value:1.0 != RightHandSide Row:2, Value:1.2", comparisonResult.BreakDetails[0].BreakDescription);
+        Assert.That(comparisonResult.BreakDetails.Count, Is.EqualTo(1), "Relative tolerance");
+        Assert.That(comparisonResult.BreakDetails[0].BreakDescription, Is.EqualTo("Key:A, LeftHandSide Row:2, Value:1.0 != RightHandSide Row:2, Value:1.2"));
     }
 
     [Test]
@@ -235,7 +235,7 @@ public class TestBasicComparison
         var csvComparer = new CSVComparer(comparisonDefinition);
         var comparisonResult = csvComparer.CompareFiles(leftHandSideDataFile, rightHandSideDataFile);
 
-        Assert.AreEqual(2, comparisonResult.BreakDetails.Count);
+        Assert.That(comparisonResult.BreakDetails.Count, Is.EqualTo(2));
 
         var comparisonDefinition2 = new ComparisonDefinition() { Delimiter = ",", IgnoreInvalidRows = true };
         comparisonDefinition2.KeyColumns.Add("COL1");
@@ -243,7 +243,7 @@ public class TestBasicComparison
         var csvComparer2 = new CSVComparer(comparisonDefinition2);
         var comparisonResult2 = csvComparer2.CompareFiles(leftHandSideDataFile, rightHandSideDataFile);
 
-        Assert.AreEqual(0, comparisonResult2.BreakDetails.Count);
+        Assert.That(comparisonResult2.BreakDetails.Count, Is.EqualTo(0));
     }
 
     [Test]
@@ -256,7 +256,7 @@ public class TestBasicComparison
 
         var csvComparer = new CSVComparer(comparisonDefinition);
         var comparisonResult = csvComparer.CompareFiles(leftHandSideDataFile, rightHandSideDataFile);
-        Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
+        Assert.That(comparisonResult.BreakDetails.Count, Is.EqualTo(1));
     }
 
     [Test]
@@ -269,9 +269,9 @@ public class TestBasicComparison
 
         var csvComparer = new CSVComparer(comparisonDefinition);
         var comparisonResult = csvComparer.CompareFiles(leftHandSideDataFile, rightHandSideDataFile);
-        Assert.AreEqual(1, comparisonResult.BreakDetails.Count);
-        Assert.AreEqual("A column without a comma!", comparisonResult.BreakDetails[0].RightHandSideValue);
-        Assert.AreEqual("\"A column, with a comma!\"", comparisonResult.BreakDetails[0].LeftHandSideValue);
+        Assert.That(comparisonResult.BreakDetails.Count, Is.EqualTo(1));
+        Assert.That(comparisonResult.BreakDetails[0].RightHandSideValue, Is.EqualTo("A column without a comma!"));
+        Assert.That(comparisonResult.BreakDetails[0].LeftHandSideValue, Is.EqualTo("\"A column, with a comma!\""));
     }
 
     [Test]
@@ -286,20 +286,20 @@ public class TestBasicComparison
         var comparisonResult = csvComparer.CompareFiles(leftHandSideDataFile, rightHandSideDataFile);
 
         // Default is no tolerance, absolute match
-        Assert.AreEqual(2, comparisonResult.BreakDetails.Count, "Exact match test");
+        Assert.That(comparisonResult.BreakDetails.Count, Is.EqualTo(2), "Exact match test");
 
         comparisonDefinition.ToleranceValue = 0.1;
         comparisonDefinition.ToleranceType = ToleranceType.Absolute;
         csvComparer = new CSVComparer(comparisonDefinition);
         comparisonResult = csvComparer.CompareFiles(leftHandSideDataFile, rightHandSideDataFile);
 
-        Assert.AreEqual(1, comparisonResult.BreakDetails.Count, "Absolute Tolerance 0.1 test");
+        Assert.That(comparisonResult.BreakDetails.Count, Is.EqualTo(1), "Absolute Tolerance 0.1 test");
 
         comparisonDefinition.ToleranceValue = 0.25;
         comparisonDefinition.ToleranceType = ToleranceType.Relative;
         csvComparer = new CSVComparer(comparisonDefinition);
         comparisonResult = csvComparer.CompareFiles(leftHandSideDataFile, rightHandSideDataFile);
 
-        Assert.AreEqual(0, comparisonResult.BreakDetails.Count, "Relative Tolerance 0.25 test");
+        Assert.That(comparisonResult.BreakDetails.Count, Is.EqualTo(0), "Relative Tolerance 0.25 test");
     }
 }

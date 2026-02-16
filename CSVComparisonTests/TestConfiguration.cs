@@ -38,11 +38,11 @@ public class TestConfiguration
 
         var deserializedDefinition = (ComparisonDefinition)xmlSerializer.Deserialize(new XmlNodeReader((XmlNode)xmlDocument.DocumentElement));
 
-        Assert.AreEqual(comparisonDefinition.Delimiter, deserializedDefinition.Delimiter, "Delimiter");
-        Assert.AreEqual(comparisonDefinition.HeaderRowIndex, deserializedDefinition.HeaderRowIndex, "HeaderRowIndex");
-        Assert.AreEqual(comparisonDefinition.ToleranceType, deserializedDefinition.ToleranceType, "ToleranceType");
-        Assert.AreEqual(comparisonDefinition.ToleranceValue, deserializedDefinition.ToleranceValue, "ToleranceValue");
-        Assert.AreEqual(comparisonDefinition.KeyColumns.Count, deserializedDefinition.KeyColumns.Count, "KeyColumns count");
+        Assert.That(deserializedDefinition.Delimiter, Is.EqualTo(comparisonDefinition.Delimiter), "Delimiter");
+        Assert.That(deserializedDefinition.HeaderRowIndex, Is.EqualTo(comparisonDefinition.HeaderRowIndex), "HeaderRowIndex");
+        Assert.That(deserializedDefinition.ToleranceType, Is.EqualTo(comparisonDefinition.ToleranceType), "ToleranceType");
+        Assert.That(deserializedDefinition.ToleranceValue, Is.EqualTo(comparisonDefinition.ToleranceValue), "ToleranceValue");
+        Assert.That(deserializedDefinition.KeyColumns.Count, Is.EqualTo(comparisonDefinition.KeyColumns.Count), "KeyColumns count");
     }
 
     [Test]
@@ -61,9 +61,9 @@ public class TestConfiguration
         var csvComparer = new CSVComparer(comparisonDefinition);
         var comparisonResult = csvComparer.CompareFiles(testDataFile, testDataFile);
 
-        Assert.AreEqual(2, comparisonResult.BreakDetails.Count);
-        Assert.AreEqual(BreakType.ProcessFailure, comparisonResult.BreakDetails[0].BreakType);
-        Assert.IsTrue(comparisonResult.BreakDetails[0].BreakDescription.Contains("No columns match the key columns defined in configuration"));
+        Assert.That(comparisonResult.BreakDetails.Count, Is.EqualTo(2));
+        Assert.That(comparisonResult.BreakDetails[0].BreakType, Is.EqualTo(BreakType.ProcessFailure));
+        Assert.That(comparisonResult.BreakDetails[0].BreakDescription.Contains("No columns match the key columns defined in configuration"), Is.True);
     }
 
     [Test]
@@ -103,6 +103,6 @@ public class TestConfiguration
 
         var deserializedDefinition = (MultipleComparisonDefinition)xmlSerializer.Deserialize(new XmlNodeReader((XmlNode)xmlDocument.DocumentElement));
 
-        Assert.AreEqual(1, deserializedDefinition.FileComparisonDefinitions.Count);
+        Assert.That(deserializedDefinition.FileComparisonDefinitions.Count, Is.EqualTo(1));
     }
 }
