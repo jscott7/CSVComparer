@@ -252,26 +252,25 @@ Each break detail contains the following properties describing the difference in
 ## Benchmarks
 BenchmarkDotNet is used to obtain the information below, stats are obtained by running a comparison of two files containing 1000 rows, generated using the TestDataGenerator tool.
 
-From a Release Build, open a command prompt in CSVComparer\Benchmark\bin\Release\net8.0 and run Benchmark.exe
+From a Release Build, open a command prompt in CSVComparer\Benchmark\bin\Release\net10.0 and run Benchmark.exe
 
 ``` ini
 
-BenchmarkDotNet=v0.13.5, OS=Windows 11 (10.0.26100.4652)
+BenchmarkDotNet v0.15.8, Windows 11 (10.0.26200.9711/25H2/2025Update/HudsonValley2)
 11th Gen Intel Core i7-11800H 2.30GHz, 1 CPU, 16 logical and 8 physical cores
-.NET SDK=9.0.201
-  [Host]     : .NET 8.0.14 (8.0.1425.11118), X64 RyuJIT AVX2
-  DefaultJob : .NET 8.0.14 (8.0.1425.11118), X64 RyuJIT AVX2
+.NET SDK 10.0.403
+  [Host]     : .NET 10.0.14 (10.0.14, 10.0.1426.52326), X64 RyuJIT x86-64-v4
+  DefaultJob : .NET 10.0.14 (10.0.14, 10.0.1426.52326), X64 RyuJIT x86-64-v4
 
 
 ```
-|                       Method |          Mean |         Error |        StdDev | Ratio | RatioSD |    Gen0 |   Gen1 | Allocated | Alloc Ratio |
-|----------------------------- |--------------:|--------------:|--------------:|------:|--------:|--------:|-------:|----------:|------------:|
-|             CompareIdentical | 694,328.20 ns |  5,424.836 ns |  7,242.000 ns | 1.000 |    0.00 | 66.4063 | 9.7656 |  829206 B |       1.000 |
-|             CompareDifferent | 655,519.23 ns | 10,940.346 ns | 12,598.919 ns | 0.946 |    0.02 | 66.4063 | 7.8125 |  834637 B |       1.007 |
-|                  StringSplit |      54.29 ns |      0.691 ns |      0.647 ns | 0.000 |    0.00 |  0.0178 |      - |     224 B |       0.000 |
-| StringSplitWithQuotesControl |     117.60 ns |      0.551 ns |      0.460 ns | 0.000 |    0.00 |  0.0267 |      - |     336 B |       0.000 |
-|        StringSplitWithQuotes |     117.82 ns |      1.296 ns |      1.213 ns | 0.000 |    0.00 |  0.0267 |      - |     336 B |       0.000 |
-
+| Method                       | Mean          | Error        | StdDev       | Ratio | Gen0    | Gen1   | Allocated | Alloc Ratio |
+|----------------------------- |--------------:|-------------:|-------------:|------:|--------:|-------:|----------:|------------:|
+| CompareIdentical             | 676,840.27 ns | 5,267.054 ns | 4,926.805 ns | 1.000 | 65.4297 | 7.8125 |  827092 B |       1.000 |
+| CompareDifferent             | 677,630.02 ns | 9,940.899 ns | 8,812.348 ns | 1.001 | 66.4063 | 9.7656 |  833693 B |       1.008 |
+| StringSplit                  |      45.59 ns |     0.714 ns |     0.668 ns | 0.000 |  0.0178 |      - |     224 B |       0.000 |
+| StringSplitWithQuotesControl |      98.20 ns |     1.313 ns |     1.164 ns | 0.000 |  0.0267 |      - |     336 B |       0.000 |
+| StringSplitWithQuotes        |      99.61 ns |     1.520 ns |     1.348 ns | 0.000 |  0.0267 |      - |     336 B |       0.000 |
 
 Legends
 *  Mean        : Arithmetic mean of all measurements
@@ -283,6 +282,7 @@ Legends
 *  Gen1        : GC Generation 1 collects per 1000 operations
 *  Allocated   : Allocated memory per single operation (managed only, inclusive, 1KB = 1024B)
 *  Alloc Ratio : Allocated memory ratio distribution ([Current]/[Baseline])
+*  1 ns        : 1 Nanosecond (0.000000001 sec)
 
 
 Before changing to use ReadOnlySpan<char> for StringSplitWithQuotes, the benchmark was:
