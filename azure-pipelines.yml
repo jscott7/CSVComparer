@@ -7,7 +7,7 @@ trigger:
 - main
 
 pool:
-  vmImage: 'windows-2022'
+  vmImage: 'windows-2025-vs2026'
 
 variables:
   solution: '**/*.sln'
@@ -16,9 +16,9 @@ variables:
 
 steps:
 - task: UseDotNet@2
-  displayName: 'Install .NET Core 8.0.x SDK'
+  displayName: 'Install .NET Core 10.0.x SDK'
   inputs:
-    version: 8.0.x
+    version: 10.0.x
     performMultiLevelLookup: true
 
 - task: NuGetToolInstaller@0
